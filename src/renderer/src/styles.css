@@ -264,12 +264,9 @@ button.primary {
 }
 
 .download-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
+  position: fixed;
   z-index: 10;
-  width: 230px;
-  margin-top: 4px;
+  width: 250px;
   display: flex;
   flex-direction: column;
   border: 1px solid #aab6c2;

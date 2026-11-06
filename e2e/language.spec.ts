@@ -115,6 +115,52 @@ test('the language to recognize can differ from the app, and follows it until ch
   await expect(page.getByTestId('ocr-language')).toHaveValue('de')
 })
 
+test('the output menu can be read whole in every language, on a low window too', async () => {
+  await start({ locale: 'en-US' })
+  await answerFileDialog(app, [await writePdf(directory, 'menu.pdf', [{ text: 'One' }])])
+  await page.getByTestId('select-file').click()
+  await expect(page.getByTestId('pdf-page')).toHaveCount(1)
+
+  /** Whether each corner and the middle of each item is really that item on screen, not cut off or covered. */
+  const hiddenParts = () =>
+    page.evaluate(() => {
+      const hidden: string[] = []
+      for (const item of document.querySelectorAll<HTMLElement>('.download-menu button')) {
+        const box = item.getBoundingClientRect()
+        const points = [
+          [box.left + 2, box.top + 2],
+          [box.right - 2, box.top + 2],
+          [box.left + 2, box.bottom - 2],
+          [box.right - 2, box.bottom - 2],
+          [box.left + box.width / 2, box.top + box.height / 2]
+        ]
+        for (const [x, y] of points) {
+          const found = document.elementFromPoint(x!, y!)
+          if (found !== item && !item.contains(found)) hidden.push(`${item.textContent} at ${x},${y}`)
+        }
+      }
+      return hidden
+    })
+
+  for (const locale of ['en', 'de', 'fr', 'es', 'it', 'pl', 'uk', 'ru']) {
+    await page.getByTestId('language').selectOption(locale)
+    await page.getByTestId('more-download').click()
+    await expect(page.getByTestId('print-document')).toBeVisible()
+    expect(await hiddenParts(), locale).toEqual([])
+    if (locale === 'ru') await page.screenshot({ path: join(ROOT, 'samples', 'private', 'out', 'output-menu.png') })
+    await page.getByTestId('page-counter').click()
+    await expect(page.getByTestId('print-document')).toHaveCount(0)
+  }
+
+  // The smallest window the app allows, where the menu has little room below the button.
+  await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0]?.setSize(900, 600))
+  await page.waitForTimeout(300)
+  await page.getByTestId('more-download').scrollIntoViewIfNeeded()
+  await page.getByTestId('more-download').click()
+  await expect(page.getByTestId('print-document')).toBeVisible()
+  expect(await hiddenParts()).toEqual([])
+})
+
 test('every language fits the side panel without pushing anything off', async () => {
   await start({ locale: 'en-US' })
   await answerFileDialog(app, [await writePdf(directory, 'fit.pdf', [{ text: 'One' }])])

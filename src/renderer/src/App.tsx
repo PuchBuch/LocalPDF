@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { hasUnsavedChanges } from '../../core/history'
 import { MAX_ZOOM, MIN_ZOOM } from '../../core/zoom'
 import { PasswordDialog } from './editor/PasswordDialog'
@@ -201,16 +201,40 @@ function ZoomControls() {
   )
 }
 
+/** Space between the output menu and its button or the edge of the window. */
+const MENU_GAP = 4
+
 function DownloadButton() {
   const saving = useEditor((state) => state.saving)
   const statusNote = useEditor((state) => state.statusNote)
   const [menuOpen, setMenuOpen] = useState(false)
+  const group = useRef<HTMLDivElement>(null)
+  const menu = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!menuOpen) return
     const close = () => setMenuOpen(false)
     window.addEventListener('click', close)
-    return () => window.removeEventListener('click', close)
+    window.addEventListener('resize', close)
+    // Capturing, because a scroll inside the panel does not reach the window otherwise.
+    window.addEventListener('scroll', close, true)
+    return () => {
+      window.removeEventListener('click', close)
+      window.removeEventListener('resize', close)
+      window.removeEventListener('scroll', close, true)
+    }
+  }, [menuOpen])
+
+  // The panel scrolls and would cut the menu off, so it is placed on the window itself.
+  useLayoutEffect(() => {
+    const anchor = group.current?.getBoundingClientRect()
+    const element = menu.current
+    if (!menuOpen || !anchor || !element) return
+    const height = element.getBoundingClientRect().height
+    const below = anchor.bottom + MENU_GAP
+    const fitsBelow = below + height <= window.innerHeight - MENU_GAP
+    element.style.top = `${fitsBelow ? below : Math.max(MENU_GAP, anchor.top - MENU_GAP - height)}px`
+    element.style.right = `${window.innerWidth - anchor.right}px`
   }, [menuOpen])
 
   const outputs = [
@@ -221,7 +245,7 @@ function DownloadButton() {
 
   return (
     <>
-      <div className="download-group">
+      <div className="download-group" ref={group}>
         <button type="button" className="primary" data-testid="download" disabled={saving} onClick={() => void saveDocument()}>
           {saving ? t.saving : t.download}
         </button>
@@ -241,7 +265,7 @@ function DownloadButton() {
           ▾
         </button>
         {menuOpen && (
-          <div className="download-menu" role="menu">
+          <div className="download-menu" role="menu" ref={menu}>
             {outputs.map(({ testId, label, run }) => (
               <button key={testId} type="button" role="menuitem" data-testid={testId} onClick={() => void run()}>
                 {label}
