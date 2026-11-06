@@ -1,0 +1,147 @@
+const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
+
+export const ru = {
+  appName: 'LocalPDF',
+  language: 'Язык',
+  ocrLanguage: 'Язык распознавания',
+  dialogs: {
+    unsavedMessage: 'Сохранить изменения перед закрытием?',
+    unsavedDetail: 'Если не сохранить, они будут потеряны.',
+    save: 'Сохранить',
+    dontSave: 'Не сохранять',
+    cancel: 'Отмена',
+    incomingMessage: 'Открыть {names}?',
+    incomingDetail: 'Сейчас открыт другой документ.',
+    add: 'Добавить к документу',
+    replace: 'Открыть вместо него',
+    filesFilter: 'PDF и изображения'
+  },
+  selectFile: 'Выбрать файл',
+  dropHint: 'или перетащите сюда PDF или картинку',
+  dropOverlay: 'Отпустите файл, чтобы добавить его',
+  opening: 'Открываю файл…',
+  newFile: 'Новый файл',
+  download: 'Скачать',
+  saving: 'Подождите…',
+  savedAs: (name: string) => `Сохранено: ${name}`,
+  saveFailed: 'Не удалось сохранить файл. Возможно, он открыт в другой программе. Попробуйте другое имя или папку.',
+  moreOptions: 'Другие способы вывода',
+  print: 'Печать',
+  printFailed: 'Не удалось отправить документ на печать.',
+  copyMarkdown: 'Скопировать текст как Markdown',
+  saveMarkdown: 'Сохранить текст как Markdown',
+  extractFailed: 'Не удалось извлечь текст документа.',
+  copied: 'Текст скопирован в буфер обмена',
+  password: {
+    title: 'Документ защищён паролем',
+    placeholder: 'Пароль',
+    wrong: 'Неверный пароль. Попробуйте ещё раз.',
+    keep: 'Сохранить пароль',
+    keepOn: 'Сохранённый файл останется защищённым этим паролем',
+    keepOff: 'В сохранённом файле защиты не будет',
+    unlock: 'Открыть',
+    cancel: 'Отмена'
+  },
+  thumbnailMenu: {
+    copyContent: 'Скопировать текст',
+    recognize: 'Распознать текст',
+    findFields: 'Найти поля',
+    thisPage: 'Эта страница',
+    allPages: 'Все страницы',
+    clearFields: (count: number) => (count === 1 ? 'Очистить поле (1)' : `Очистить поля${countSuffix(count)}`),
+    deleteFields: (count: number) => (count === 1 ? 'Удалить поле (1)' : `Удалить поля${countSuffix(count)}`)
+  },
+  textLeftInFile: (pages: string) =>
+    `Внимание: на странице ${pages} заменённый текст не удалось полностью удалить из файла. На вид его нет, но программами его можно найти.`,
+  imageLeftInFile: (pages: string) =>
+    `Внимание: на странице ${pages} под заменённым текстом лежит картинка. Она закрыта, но осталась в файле, и то, что на ней изображено, можно извлечь.`,
+  ocr: {
+    starting: 'Запускаю распознавание…',
+    progress: (page: number, total: number) => `Распознаю страницу ${page} из ${total}…`,
+    done: (words: number) => `Распознано слов: ${words}`,
+    nothingToRead: 'На этих страницах уже есть текст, распознавать нечего',
+    noWords: 'Текст не найден. Возможно, скан слишком бледный или на странице нет текста.',
+    failed: 'Не удалось распознать текст.'
+  },
+  detect: {
+    found: (count: number) => `Найдено полей: ${count}`,
+    none: 'Полей для заполнения не найдено',
+    failed: 'Не удалось найти поля.'
+  },
+  moveHint: 'Удерживайте Shift, чтобы отключить выравнивание',
+  editScope: { line: 'Строка', word: 'Слово', label: 'Что править' },
+  font: {
+    title: 'Шрифт',
+    family: 'Гарнитура',
+    bold: 'Жирный',
+    italic: 'Курсив',
+    color: 'Цвет текста',
+    boldIcon: 'Ж',
+    italicIcon: 'К',
+    families: {
+      arial: 'Arial',
+      times: 'Times New Roman',
+      calibri: 'Calibri',
+      courier: 'Courier New'
+    }
+  },
+  recovery: {
+    title: 'Найден несохранённый документ',
+    details: (names: string, time: string) => `${names}. Последнее изменение: ${time}.`,
+    restore: 'Восстановить',
+    discard: 'Удалить',
+    failed: 'Не удалось восстановить документ.'
+  },
+  missingCharacters: (characters: string) =>
+    `В файл не попали символы, которых нет в шрифте: ${characters}`,
+  zoomIn: 'Увеличить',
+  zoomOut: 'Уменьшить',
+  close: 'Закрыть',
+  undo: 'Отменить',
+  redo: 'Повторить',
+  addPages: 'Добавить страницы',
+  deletePage: 'Удалить страницу',
+  rotatePage: 'Повернуть по часовой',
+  movePageUp: 'Переместить выше',
+  movePageDown: 'Переместить ниже',
+  tools: {
+    cursor: { label: 'Курсор', hint: 'Курсор: выделяйте текст и выбирайте поля в документе' },
+    edit: { label: 'Править текст', hint: 'Править текст: нажмите на строку или слово документа и измените их' },
+    text: { label: 'Текст', hint: 'Текст: нажмите в любом месте страницы, чтобы добавить поле' },
+    checkbox: { label: 'Отметка', hint: 'Отметка: нажмите на страницу, затем выберите галочку, крестик или точку' },
+    signature: { label: 'Подпись', hint: 'Подпись: нажмите в любом месте страницы, чтобы добавить поле' },
+    picture: { label: 'Картинка', hint: 'Картинка: нажмите в любом месте страницы, чтобы добавить поле' },
+    comb: { label: 'Текст по ячейкам', hint: 'Текст по ячейкам: нажмите в любом месте страницы, чтобы добавить поле' }
+  },
+  signature: {
+    title: 'Подпись',
+    tabDraw: 'Нарисовать',
+    tabType: 'Напечатать',
+    clear: 'Очистить',
+    finish: 'Готово',
+    namePlaceholder: 'Введите имя'
+  },
+  choosePicture: 'Выбрать картинку',
+  pictureUnsupported: (name: string) => `«${name}» не добавлен: для поля подходят JPEG, PNG, WebP и GIF.`,
+  spacingSmaller: 'Уже ячейки',
+  spacingLarger: 'Шире ячейки',
+  resizeHint: 'Удерживайте Shift, чтобы снять фиксацию пропорций',
+  fieldCopy: 'Копировать поле',
+  fieldDelete: 'Удалить поле',
+  fieldMove: 'Перетащить поле',
+  fieldBackground: 'Фон: прозрачный или белый',
+  fontSmaller: 'Уменьшить шрифт',
+  fontLarger: 'Увеличить шрифт',
+  checkbox: 'Галочка',
+  checkboxMarks: { tick: 'Галочка', cross: 'Крестик', dot: 'Точка' },
+  pasteHint: 'Нажмите на любую страницу, чтобы вставить поле. Esc — отмена',
+  pageOf: (page: number, total: number) => `Страница ${page} из ${total}`,
+  zoomPercent: (zoom: number) => `${Math.round(zoom * 100)} %`,
+  goToPage: (page: number) => `Перейти к странице ${page}`,
+  fileUnreadable: (name: string) => `Не удалось открыть «${name}». Файл повреждён или его формат не поддерживается.`,
+  filePassword: (name: string) => `Не удалось снять защиту с «${name}».`,
+  fileHeic: (name: string) => `«${name}» не открыт: формат HEIC пока не поддерживается. Сохраните фото как JPEG.`,
+  fileUnsupported: (name: string) => `«${name}» не открыт: поддерживаются PDF, JPEG, PNG, WebP и GIF.`
+}
+
+export type Messages = typeof ru

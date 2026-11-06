@@ -1,0 +1,142 @@
+import type { Messages } from './ru'
+
+const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
+
+export const de: Messages = {
+  appName: 'LocalPDF',
+  language: 'Sprache',
+  ocrLanguage: 'Sprache der Texterkennung',
+  dialogs: {
+    unsavedMessage: 'Änderungen vor dem Schließen speichern?',
+    unsavedDetail: 'Wenn Sie nicht speichern, gehen sie verloren.',
+    save: 'Speichern',
+    dontSave: 'Nicht speichern',
+    cancel: 'Abbrechen',
+    incomingMessage: '{names} öffnen?',
+    incomingDetail: 'Es ist bereits ein anderes Dokument geöffnet.',
+    add: 'Zum Dokument hinzufügen',
+    replace: 'Stattdessen öffnen',
+    filesFilter: 'PDF und Bilder'
+  },
+  selectFile: 'Datei auswählen',
+  dropHint: 'oder ziehen Sie eine PDF-Datei oder ein Bild hierher',
+  dropOverlay: 'Datei loslassen, um sie hinzuzufügen',
+  opening: 'Datei wird geöffnet…',
+  newFile: 'Neue Datei',
+  download: 'Herunterladen',
+  saving: 'Bitte warten…',
+  savedAs: (name) => `Gespeichert: ${name}`,
+  saveFailed:
+    'Die Datei konnte nicht gespeichert werden. Vielleicht ist sie in einem anderen Programm geöffnet. Versuchen Sie einen anderen Namen oder Ordner.',
+  moreOptions: 'Weitere Ausgaben',
+  print: 'Drucken',
+  printFailed: 'Das Dokument konnte nicht an den Drucker gesendet werden.',
+  copyMarkdown: 'Text als Markdown kopieren',
+  saveMarkdown: 'Text als Markdown speichern',
+  extractFailed: 'Der Text des Dokuments konnte nicht ausgelesen werden.',
+  copied: 'Text in die Zwischenablage kopiert',
+  password: {
+    title: 'Dieses Dokument ist passwortgeschützt',
+    placeholder: 'Passwort',
+    wrong: 'Falsches Passwort. Bitte versuchen Sie es erneut.',
+    keep: 'Passwort beibehalten',
+    keepOn: 'Die gespeicherte Datei bleibt mit diesem Passwort geschützt',
+    keepOff: 'Die gespeicherte Datei ist nicht geschützt',
+    unlock: 'Öffnen',
+    cancel: 'Abbrechen'
+  },
+  thumbnailMenu: {
+    copyContent: 'Text kopieren',
+    recognize: 'Text erkennen',
+    findFields: 'Felder finden',
+    thisPage: 'Diese Seite',
+    allPages: 'Alle Seiten',
+    clearFields: (count) => (count === 1 ? 'Feld leeren (1)' : `Felder leeren${countSuffix(count)}`),
+    deleteFields: (count) => (count === 1 ? 'Feld löschen (1)' : `Felder löschen${countSuffix(count)}`)
+  },
+  textLeftInFile: (pages) =>
+    `Achtung: Auf Seite ${pages} konnte der ersetzte Text nicht vollständig aus der Datei entfernt werden. Er ist nicht zu sehen, kann aber mit Programmen gefunden werden.`,
+  imageLeftInFile: (pages) =>
+    `Achtung: Auf Seite ${pages} liegt unter dem ersetzten Text ein Bild. Es ist verdeckt, bleibt aber in der Datei, und sein Inhalt kann ausgelesen werden.`,
+  ocr: {
+    starting: 'Texterkennung wird gestartet…',
+    progress: (page, total) => `Seite ${page} von ${total} wird erkannt…`,
+    done: (words) => `Erkannte Wörter: ${words}`,
+    nothingToRead: 'Diese Seiten enthalten bereits Text, es gibt nichts zu erkennen',
+    noWords: 'Kein Text gefunden. Vielleicht ist der Scan zu blass oder die Seite enthält keinen Text.',
+    failed: 'Der Text konnte nicht erkannt werden.'
+  },
+  detect: {
+    found: (count) => `Gefundene Felder: ${count}`,
+    none: 'Keine auszufüllenden Felder gefunden',
+    failed: 'Die Felder konnten nicht gesucht werden.'
+  },
+  moveHint: 'Halten Sie die Umschalttaste gedrückt, um das Ausrichten abzuschalten',
+  editScope: { line: 'Zeile', word: 'Wort', label: 'Was bearbeiten' },
+  font: {
+    title: 'Schrift',
+    family: 'Schriftart',
+    bold: 'Fett',
+    italic: 'Kursiv',
+    color: 'Textfarbe',
+    boldIcon: 'F',
+    italicIcon: 'K',
+    families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }
+  },
+  recovery: {
+    title: 'Ein nicht gespeichertes Dokument wurde gefunden',
+    details: (names, time) => `${names}. Letzte Änderung: ${time}.`,
+    restore: 'Wiederherstellen',
+    discard: 'Löschen',
+    failed: 'Das Dokument konnte nicht wiederhergestellt werden.'
+  },
+  missingCharacters: (characters) => `Zeichen, die in der Schrift fehlen, wurden nicht übernommen: ${characters}`,
+  zoomIn: 'Vergrößern',
+  zoomOut: 'Verkleinern',
+  close: 'Schließen',
+  undo: 'Rückgängig',
+  redo: 'Wiederholen',
+  addPages: 'Seiten hinzufügen',
+  deletePage: 'Seite löschen',
+  rotatePage: 'Im Uhrzeigersinn drehen',
+  movePageUp: 'Nach oben',
+  movePageDown: 'Nach unten',
+  tools: {
+    cursor: { label: 'Zeiger', hint: 'Zeiger: Text und Felder im Dokument auswählen' },
+    edit: { label: 'Text bearbeiten', hint: 'Text bearbeiten: Klicken Sie auf eine Zeile oder ein Wort und ändern Sie es' },
+    text: { label: 'Text', hint: 'Text: Klicken Sie auf die Seite, um ein Feld hinzuzufügen' },
+    checkbox: { label: 'Markierung', hint: 'Markierung: Klicken Sie auf die Seite und wählen Sie Haken, Kreuz oder Punkt' },
+    signature: { label: 'Unterschrift', hint: 'Unterschrift: Klicken Sie auf die Seite, um ein Feld hinzuzufügen' },
+    picture: { label: 'Bild', hint: 'Bild: Klicken Sie auf die Seite, um ein Feld hinzuzufügen' },
+    comb: { label: 'Text in Kästchen', hint: 'Text in Kästchen: Klicken Sie auf die Seite, um ein Feld hinzuzufügen' }
+  },
+  signature: {
+    title: 'Unterschrift',
+    tabDraw: 'Zeichnen',
+    tabType: 'Tippen',
+    clear: 'Leeren',
+    finish: 'Fertig',
+    namePlaceholder: 'Namen eingeben'
+  },
+  choosePicture: 'Bild auswählen',
+  pictureUnsupported: (name) => `„${name}“ wurde nicht hinzugefügt: Dieses Feld nimmt JPEG, PNG, WebP und GIF an.`,
+  spacingSmaller: 'Schmalere Kästchen',
+  spacingLarger: 'Breitere Kästchen',
+  resizeHint: 'Halten Sie die Umschalttaste gedrückt, um die Proportionen freizugeben',
+  fieldCopy: 'Feld kopieren',
+  fieldDelete: 'Feld löschen',
+  fieldMove: 'Feld ziehen',
+  fieldBackground: 'Hintergrund: transparent oder weiß',
+  fontSmaller: 'Schrift verkleinern',
+  fontLarger: 'Schrift vergrößern',
+  checkbox: 'Haken',
+  checkboxMarks: { tick: 'Haken', cross: 'Kreuz', dot: 'Punkt' },
+  pasteHint: 'Klicken Sie auf eine Seite, um das Feld einzufügen. Esc bricht ab',
+  pageOf: (page, total) => `Seite ${page} von ${total}`,
+  zoomPercent: (zoom) => `${Math.round(zoom * 100)} %`,
+  goToPage: (page) => `Zu Seite ${page}`,
+  fileUnreadable: (name) => `„${name}“ konnte nicht geöffnet werden. Die Datei ist beschädigt oder ihr Format wird nicht unterstützt.`,
+  filePassword: (name) => `Der Schutz von „${name}“ konnte nicht entfernt werden.`,
+  fileHeic: (name) => `„${name}“ wurde nicht geöffnet: HEIC wird noch nicht unterstützt. Speichern Sie das Foto als JPEG.`,
+  fileUnsupported: (name) => `„${name}“ wurde nicht geöffnet: Unterstützt werden PDF, JPEG, PNG, WebP und GIF.`
+}

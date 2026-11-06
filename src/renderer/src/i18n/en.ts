@@ -1,0 +1,141 @@
+import type { Messages } from './ru'
+
+const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
+
+export const en: Messages = {
+  appName: 'LocalPDF',
+  language: 'Language',
+  ocrLanguage: 'Text recognition language',
+  dialogs: {
+    unsavedMessage: 'Save changes before closing?',
+    unsavedDetail: 'If you do not save, they will be lost.',
+    save: 'Save',
+    dontSave: 'Don’t save',
+    cancel: 'Cancel',
+    incomingMessage: 'Open {names}?',
+    incomingDetail: 'Another document is open.',
+    add: 'Add to the document',
+    replace: 'Open instead',
+    filesFilter: 'PDF and images'
+  },
+  selectFile: 'Choose a file',
+  dropHint: 'or drop a PDF or a picture here',
+  dropOverlay: 'Drop the file to add it',
+  opening: 'Opening the file…',
+  newFile: 'New file',
+  download: 'Download',
+  saving: 'Please wait…',
+  savedAs: (name) => `Saved: ${name}`,
+  saveFailed: 'The file could not be saved. It may be open in another program. Try another name or folder.',
+  moreOptions: 'Other outputs',
+  print: 'Print',
+  printFailed: 'The document could not be sent to the printer.',
+  copyMarkdown: 'Copy text as Markdown',
+  saveMarkdown: 'Save text as Markdown',
+  extractFailed: 'The text of the document could not be extracted.',
+  copied: 'Text copied to the clipboard',
+  password: {
+    title: 'This document is password-protected',
+    placeholder: 'Password',
+    wrong: 'Wrong password. Please try again.',
+    keep: 'Keep password',
+    keepOn: 'The saved file will stay protected by this password',
+    keepOff: 'The saved file will not be protected',
+    unlock: 'Unlock',
+    cancel: 'Cancel'
+  },
+  thumbnailMenu: {
+    copyContent: 'Copy text',
+    recognize: 'Recognize text',
+    findFields: 'Find fields',
+    thisPage: 'This page',
+    allPages: 'All pages',
+    clearFields: (count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`),
+    deleteFields: (count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`)
+  },
+  textLeftInFile: (pages) =>
+    `Warning: on page ${pages} the replaced text could not be fully removed from the file. It cannot be seen, but software can find it.`,
+  imageLeftInFile: (pages) =>
+    `Warning: on page ${pages} there is a picture under the replaced text. It is covered but stays in the file, and what it shows can be extracted.`,
+  ocr: {
+    starting: 'Starting text recognition…',
+    progress: (page, total) => `Recognizing page ${page} of ${total}…`,
+    done: (words) => `Words recognized: ${words}`,
+    nothingToRead: 'These pages already have text, there is nothing to recognize',
+    noWords: 'No text found. The scan may be too faint, or the page may have no text.',
+    failed: 'The text could not be recognized.'
+  },
+  detect: {
+    found: (count) => `Fields found: ${count}`,
+    none: 'No fields to fill in were found',
+    failed: 'Fields could not be searched for.'
+  },
+  moveHint: 'Hold Shift to turn alignment off',
+  editScope: { line: 'Line', word: 'Word', label: 'What to edit' },
+  font: {
+    title: 'Font',
+    family: 'Typeface',
+    bold: 'Bold',
+    italic: 'Italic',
+    color: 'Text color',
+    boldIcon: 'B',
+    italicIcon: 'I',
+    families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }
+  },
+  recovery: {
+    title: 'An unsaved document was found',
+    details: (names, time) => `${names}. Last change: ${time}.`,
+    restore: 'Restore',
+    discard: 'Delete',
+    failed: 'The document could not be restored.'
+  },
+  missingCharacters: (characters) => `Characters missing from the font were left out of the file: ${characters}`,
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  close: 'Close',
+  undo: 'Undo',
+  redo: 'Redo',
+  addPages: 'Add pages',
+  deletePage: 'Delete page',
+  rotatePage: 'Rotate clockwise',
+  movePageUp: 'Move up',
+  movePageDown: 'Move down',
+  tools: {
+    cursor: { label: 'Cursor', hint: 'Cursor: select text and fields in the document' },
+    edit: { label: 'Edit text', hint: 'Edit text: click a line or word of the document and change it' },
+    text: { label: 'Text', hint: 'Text: click anywhere on the page to add a field' },
+    checkbox: { label: 'Mark', hint: 'Mark: click the page, then choose a tick, a cross or a dot' },
+    signature: { label: 'Signature', hint: 'Signature: click anywhere on the page to add a field' },
+    picture: { label: 'Picture', hint: 'Picture: click anywhere on the page to add a field' },
+    comb: { label: 'Text in cells', hint: 'Text in cells: click anywhere on the page to add a field' }
+  },
+  signature: {
+    title: 'Signature',
+    tabDraw: 'Draw',
+    tabType: 'Type',
+    clear: 'Clear',
+    finish: 'Done',
+    namePlaceholder: 'Enter a name'
+  },
+  choosePicture: 'Choose a picture',
+  pictureUnsupported: (name) => `“${name}” was not added: this field takes JPEG, PNG, WebP and GIF.`,
+  spacingSmaller: 'Narrower cells',
+  spacingLarger: 'Wider cells',
+  resizeHint: 'Hold Shift to unlock the proportions',
+  fieldCopy: 'Copy field',
+  fieldDelete: 'Delete field',
+  fieldMove: 'Drag field',
+  fieldBackground: 'Background: transparent or white',
+  fontSmaller: 'Smaller font',
+  fontLarger: 'Larger font',
+  checkbox: 'Tick',
+  checkboxMarks: { tick: 'Tick', cross: 'Cross', dot: 'Dot' },
+  pasteHint: 'Click any page to paste the field. Esc cancels',
+  pageOf: (page, total) => `Page ${page} of ${total}`,
+  zoomPercent: (zoom) => `${Math.round(zoom * 100)}%`,
+  goToPage: (page) => `Go to page ${page}`,
+  fileUnreadable: (name) => `“${name}” could not be opened. The file is damaged or its format is not supported.`,
+  filePassword: (name) => `The protection of “${name}” could not be removed.`,
+  fileHeic: (name) => `“${name}” was not opened: HEIC is not supported yet. Save the photo as JPEG.`,
+  fileUnsupported: (name) => `“${name}” was not opened: PDF, JPEG, PNG, WebP and GIF are supported.`
+}

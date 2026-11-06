@@ -1,0 +1,141 @@
+import type { Messages } from './ru'
+
+const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
+
+export const es: Messages = {
+  appName: 'LocalPDF',
+  language: 'Idioma',
+  ocrLanguage: 'Idioma del reconocimiento de texto',
+  dialogs: {
+    unsavedMessage: '¿Guardar los cambios antes de cerrar?',
+    unsavedDetail: 'Si no los guarda, se perderán.',
+    save: 'Guardar',
+    dontSave: 'No guardar',
+    cancel: 'Cancelar',
+    incomingMessage: '¿Abrir {names}?',
+    incomingDetail: 'Hay otro documento abierto.',
+    add: 'Añadir al documento',
+    replace: 'Abrir en su lugar',
+    filesFilter: 'PDF e imágenes'
+  },
+  selectFile: 'Elegir un archivo',
+  dropHint: 'o arrastre aquí un PDF o una imagen',
+  dropOverlay: 'Suelte el archivo para añadirlo',
+  opening: 'Abriendo el archivo…',
+  newFile: 'Archivo nuevo',
+  download: 'Descargar',
+  saving: 'Espere…',
+  savedAs: (name) => `Guardado: ${name}`,
+  saveFailed: 'No se pudo guardar el archivo. Puede que esté abierto en otro programa. Pruebe con otro nombre o carpeta.',
+  moreOptions: 'Otras salidas',
+  print: 'Imprimir',
+  printFailed: 'No se pudo enviar el documento a la impresora.',
+  copyMarkdown: 'Copiar el texto como Markdown',
+  saveMarkdown: 'Guardar el texto como Markdown',
+  extractFailed: 'No se pudo extraer el texto del documento.',
+  copied: 'Texto copiado al portapapeles',
+  password: {
+    title: 'Este documento está protegido con contraseña',
+    placeholder: 'Contraseña',
+    wrong: 'Contraseña incorrecta. Inténtelo de nuevo.',
+    keep: 'Mantener la contraseña',
+    keepOn: 'El archivo guardado seguirá protegido con esta contraseña',
+    keepOff: 'El archivo guardado no estará protegido',
+    unlock: 'Abrir',
+    cancel: 'Cancelar'
+  },
+  thumbnailMenu: {
+    copyContent: 'Copiar el texto',
+    recognize: 'Reconocer el texto',
+    findFields: 'Buscar campos',
+    thisPage: 'Esta página',
+    allPages: 'Todas las páginas',
+    clearFields: (count) => (count === 1 ? 'Vaciar el campo (1)' : `Vaciar los campos${countSuffix(count)}`),
+    deleteFields: (count) => (count === 1 ? 'Eliminar el campo (1)' : `Eliminar los campos${countSuffix(count)}`)
+  },
+  textLeftInFile: (pages) =>
+    `Atención: en la página ${pages} el texto sustituido no se pudo quitar por completo del archivo. No se ve, pero se puede encontrar con programas.`,
+  imageLeftInFile: (pages) =>
+    `Atención: en la página ${pages} hay una imagen bajo el texto sustituido. Está tapada, pero sigue en el archivo y su contenido se puede extraer.`,
+  ocr: {
+    starting: 'Iniciando el reconocimiento de texto…',
+    progress: (page, total) => `Reconociendo la página ${page} de ${total}…`,
+    done: (words) => `Palabras reconocidas: ${words}`,
+    nothingToRead: 'Estas páginas ya tienen texto, no hay nada que reconocer',
+    noWords: 'No se encontró texto. Puede que el escaneo sea demasiado pálido o que la página no tenga texto.',
+    failed: 'No se pudo reconocer el texto.'
+  },
+  detect: {
+    found: (count) => `Campos encontrados: ${count}`,
+    none: 'No se encontraron campos para rellenar',
+    failed: 'No se pudieron buscar los campos.'
+  },
+  moveHint: 'Mantenga pulsada Mayús para desactivar la alineación',
+  editScope: { line: 'Línea', word: 'Palabra', label: 'Qué editar' },
+  font: {
+    title: 'Fuente',
+    family: 'Tipo de letra',
+    bold: 'Negrita',
+    italic: 'Cursiva',
+    color: 'Color del texto',
+    boldIcon: 'N',
+    italicIcon: 'C',
+    families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }
+  },
+  recovery: {
+    title: 'Se encontró un documento sin guardar',
+    details: (names, time) => `${names}. Último cambio: ${time}.`,
+    restore: 'Restaurar',
+    discard: 'Eliminar',
+    failed: 'No se pudo restaurar el documento.'
+  },
+  missingCharacters: (characters) => `No se incluyeron los caracteres que faltan en la fuente: ${characters}`,
+  zoomIn: 'Ampliar',
+  zoomOut: 'Reducir',
+  close: 'Cerrar',
+  undo: 'Deshacer',
+  redo: 'Rehacer',
+  addPages: 'Añadir páginas',
+  deletePage: 'Eliminar la página',
+  rotatePage: 'Girar a la derecha',
+  movePageUp: 'Subir',
+  movePageDown: 'Bajar',
+  tools: {
+    cursor: { label: 'Cursor', hint: 'Cursor: seleccione texto y campos del documento' },
+    edit: { label: 'Editar texto', hint: 'Editar texto: haga clic en una línea o palabra del documento y cámbiela' },
+    text: { label: 'Texto', hint: 'Texto: haga clic en la página para añadir un campo' },
+    checkbox: { label: 'Marca', hint: 'Marca: haga clic en la página y elija una marca de verificación, una cruz o un punto' },
+    signature: { label: 'Firma', hint: 'Firma: haga clic en la página para añadir un campo' },
+    picture: { label: 'Imagen', hint: 'Imagen: haga clic en la página para añadir un campo' },
+    comb: { label: 'Texto en casillas', hint: 'Texto en casillas: haga clic en la página para añadir un campo' }
+  },
+  signature: {
+    title: 'Firma',
+    tabDraw: 'Dibujar',
+    tabType: 'Escribir',
+    clear: 'Borrar',
+    finish: 'Listo',
+    namePlaceholder: 'Escriba un nombre'
+  },
+  choosePicture: 'Elegir una imagen',
+  pictureUnsupported: (name) => `«${name}» no se añadió: este campo admite JPEG, PNG, WebP y GIF.`,
+  spacingSmaller: 'Casillas más estrechas',
+  spacingLarger: 'Casillas más anchas',
+  resizeHint: 'Mantenga pulsada Mayús para liberar las proporciones',
+  fieldCopy: 'Copiar el campo',
+  fieldDelete: 'Eliminar el campo',
+  fieldMove: 'Arrastrar el campo',
+  fieldBackground: 'Fondo: transparente o blanco',
+  fontSmaller: 'Reducir la fuente',
+  fontLarger: 'Ampliar la fuente',
+  checkbox: 'Marca de verificación',
+  checkboxMarks: { tick: 'Marca de verificación', cross: 'Cruz', dot: 'Punto' },
+  pasteHint: 'Haga clic en una página para pegar el campo. Esc cancela',
+  pageOf: (page, total) => `Página ${page} de ${total}`,
+  zoomPercent: (zoom) => `${Math.round(zoom * 100)} %`,
+  goToPage: (page) => `Ir a la página ${page}`,
+  fileUnreadable: (name) => `No se pudo abrir «${name}». El archivo está dañado o su formato no es compatible.`,
+  filePassword: (name) => `No se pudo quitar la protección de «${name}».`,
+  fileHeic: (name) => `«${name}» no se abrió: HEIC aún no es compatible. Guarde la foto como JPEG.`,
+  fileUnsupported: (name) => `«${name}» no se abrió: se admiten PDF, JPEG, PNG, WebP y GIF.`
+}

@@ -1,0 +1,1275 @@
+@font-face {
+  font-family: 'Liberation Sans';
+  src: url('/fonts/LiberationSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Liberation Sans';
+  font-weight: bold;
+  src: url('/fonts/LiberationSans-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Liberation Sans';
+  font-style: italic;
+  src: url('/fonts/LiberationSans-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Liberation Sans';
+  font-weight: bold;
+  font-style: italic;
+  src: url('/fonts/LiberationSans-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Tinos';
+  src: url('/fonts/Tinos-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Tinos';
+  font-weight: bold;
+  src: url('/fonts/Tinos-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Tinos';
+  font-style: italic;
+  src: url('/fonts/Tinos-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Tinos';
+  font-weight: bold;
+  font-style: italic;
+  src: url('/fonts/Tinos-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Carlito';
+  src: url('/fonts/Carlito-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Carlito';
+  font-weight: bold;
+  src: url('/fonts/Carlito-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Carlito';
+  font-style: italic;
+  src: url('/fonts/Carlito-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Carlito';
+  font-weight: bold;
+  font-style: italic;
+  src: url('/fonts/Carlito-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cousine';
+  src: url('/fonts/Cousine-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cousine';
+  font-weight: bold;
+  src: url('/fonts/Cousine-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cousine';
+  font-style: italic;
+  src: url('/fonts/Cousine-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cousine';
+  font-weight: bold;
+  font-style: italic;
+  src: url('/fonts/Cousine-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('/fonts/RobotoMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Caveat';
+  src: url('/fonts/Caveat-Regular.ttf') format('truetype');
+}
+
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #1c2733;
+  background: #e6ebf0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+button.primary {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  background: #2460c8;
+}
+
+/* Empty state */
+
+.empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.empty-state h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.dropzone {
+  width: min(520px, 80vw);
+  padding: 48px 24px;
+  box-sizing: border-box;
+  border: 2px dashed #8a99a8;
+  border-radius: 8px;
+  text-align: center;
+  background: #f5f7f9;
+}
+
+.dropzone p {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #566573;
+}
+
+.drop-overlay {
+  position: fixed;
+  inset: 12px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed #2460c8;
+  border-radius: 10px;
+  font-size: 18px;
+  color: #173f87;
+  background: rgb(230 238 250 / 0.92);
+  pointer-events: none;
+}
+
+/* Workspace */
+
+.workspace {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 204px minmax(0, 1fr) 200px;
+}
+
+.history-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tools {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-left: 1px solid #cbd4dd;
+  background: #f5f7f9;
+}
+
+.tools button {
+  padding: 8px 12px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.tools button.primary {
+  border-color: #2460c8;
+  color: #fff;
+  background: #2460c8;
+}
+
+.tool-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.tools .tool-buttons button {
+  height: 44px;
+  padding: 0;
+}
+
+.tools .tool-buttons button.active {
+  border: 2px solid #2460c8;
+  color: #173f87;
+  background: #e6eefa;
+}
+
+.tool-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #566573;
+}
+
+.download-group {
+  position: relative;
+  display: flex;
+  gap: 1px;
+}
+
+.download-group > button:first-child {
+  flex: 1;
+  border-radius: 6px 0 0 6px;
+}
+
+.download-group > button:nth-child(2) {
+  border-radius: 0 6px 6px 0;
+}
+
+.download-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  width: 230px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.tools .download-menu button {
+  border: 0;
+  border-radius: 0;
+  text-align: left;
+  background: none;
+}
+
+.tools .download-menu button:hover {
+  background: #e6eefa;
+}
+
+.saved-note {
+  margin: 0;
+  font-size: 12px;
+  color: #2c6e3f;
+  overflow-wrap: anywhere;
+}
+
+.context-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 15;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #fff;
+  background: #1c2733;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.page-counter {
+  margin: 0;
+  font-size: 13px;
+  color: #3d4c5a;
+}
+
+/* Thumbnails */
+
+.thumbnails {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  border-right: 1px solid #cbd4dd;
+  background: #f5f7f9;
+}
+
+.thumbnail-strip {
+  box-sizing: border-box;
+  padding-bottom: 16px;
+}
+
+.thumbnail-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+}
+
+.page-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-actions button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #c3ccd5;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 1;
+  background: #fff;
+}
+
+.page-actions button:not(:disabled):hover {
+  background: #e6ebf0;
+}
+
+.page-actions button[data-testid='delete-page']:not(:disabled):hover {
+  color: #fff;
+  border-color: #b23a3a;
+  background: #b23a3a;
+}
+
+.add-pages {
+  display: block;
+  width: 132px;
+  height: 64px;
+  margin: 0 8px 0 auto;
+  border: 2px dashed #aab6c2;
+  border-radius: 6px;
+  font-size: 24px;
+  color: #566573;
+  background: none;
+}
+
+.add-pages:hover {
+  color: #2460c8;
+  border-color: #2460c8;
+}
+
+.thumbnail {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  border: 0;
+  background: none;
+}
+
+.thumbnail-page {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  outline: 1px solid #c3ccd5;
+  background: #fff;
+}
+
+.thumbnail-canvas,
+.thumbnail-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.thumbnail.current .thumbnail-page {
+  outline: 2px solid #2460c8;
+}
+
+.thumbnail-number {
+  margin-top: 6px;
+  min-width: 22px;
+  padding: 1px 6px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #3d4c5a;
+}
+
+.thumbnail.current .thumbnail-number {
+  color: #fff;
+  background: #2460c8;
+}
+
+/* Document */
+
+.document-area {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.document-scroll {
+  height: 100%;
+  overflow: auto;
+  /* The bar appearing must not change the width that pages fit to. */
+  scrollbar-gutter: stable;
+  background: #dbe3eb;
+}
+
+.page-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.page {
+  --scale-round-x: 1px;
+  --scale-round-y: 1px;
+  position: relative;
+  flex: none;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(30 45 60 / 0.25);
+}
+
+/* After zooming out, the old text layer is too big until the new one is ready. Sticking
+   out of the page, it would bring a scrollbar and move the document for a moment. */
+.page-text {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+}
+
+/* The panels of a focused field may reach over the next page. */
+.page:has([data-field-focused='true']) {
+  z-index: 5;
+}
+
+.page.placing,
+.page.placing .textLayer :is(span, br) {
+  cursor: crosshair;
+}
+
+.page.placing .textLayer {
+  pointer-events: none;
+}
+
+/* The source PDF's own form */
+
+.form-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.page.placing .form-layer * {
+  pointer-events: none;
+}
+
+/* Solid, so the field as drawn in the PDF does not show through under the edited value. */
+.form-widget {
+  position: absolute;
+  background: #dde8f7;
+}
+
+.form-layer:not(.static) .form-widget {
+  pointer-events: auto;
+}
+
+.form-control-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.form-control-box input[type='text'],
+.form-control-box textarea,
+.form-control-box select {
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 2px;
+  border: 0;
+  outline: 0;
+  resize: none;
+  font-family: 'Liberation Sans', sans-serif;
+  color: #000;
+  background: transparent;
+}
+
+.form-control-box input[type='text']:focus,
+.form-control-box textarea:focus,
+.form-control-box select:focus {
+  outline: 1px solid #2460c8;
+}
+
+.form-control-box input[type='checkbox'],
+.form-control-box input[type='radio'] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.form-value {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 0 1px;
+  box-sizing: border-box;
+  font-family: 'Liberation Sans', sans-serif;
+  white-space: pre;
+  color: #000;
+}
+
+.form-value.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 8px;
+}
+
+/* Fields */
+
+.field-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.field-layer.static {
+  overflow: hidden;
+}
+
+.field {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.field-layer.static .field {
+  pointer-events: none;
+}
+
+.field[data-field-focused='true'] {
+  z-index: 2;
+  outline: 1px solid #2460c8;
+  outline-offset: 1px;
+}
+
+.field svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Everything here must match how the PDF draws text, see LINE_HEIGHT and the export. */
+.field-text {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  overflow: hidden;
+  resize: none;
+  font-family: 'Liberation Sans', sans-serif;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  text-rendering: geometricPrecision;
+  line-height: 1.2;
+  letter-spacing: normal;
+  white-space: pre;
+  color: #000;
+  background: transparent;
+}
+
+.field-text::placeholder {
+  color: #8a99a8;
+}
+
+.field-checkbox {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.field-signature,
+.field-picture {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.field-picture input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.field-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  color: #8a99a8;
+  background: #eef1f4;
+}
+
+.field-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.field-image.fill {
+  object-fit: fill;
+}
+
+.field-resize {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  z-index: 4;
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
+  border: 2px solid #2460c8;
+  border-radius: 2px;
+  background: #fff;
+  cursor: se-resize;
+  touch-action: none;
+}
+
+.comb-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.comb-cells {
+  display: flex;
+  height: 100%;
+}
+
+/* Everything here must match how the PDF draws text, see LINE_HEIGHT and the export. */
+.comb-cell {
+  flex: none;
+  box-sizing: border-box;
+  font-family: 'Roboto Mono', monospace;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  text-rendering: geometricPrecision;
+  line-height: 1.2;
+  text-align: center;
+  white-space: pre;
+  color: #000;
+  cursor: text;
+  box-shadow: inset -1px 0 0 #d5dce3;
+}
+
+.field-layer.static .comb-cell {
+  box-shadow: none;
+}
+
+.comb-cell.current {
+  background: rgb(36 96 200 / 0.18);
+}
+
+.field-panel {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(30 45 60 / 0.4);
+}
+
+.field-panel button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1;
+  background: none;
+}
+
+.field-panel button:hover {
+  background: #e6ebf0;
+}
+
+.field-panel button.active {
+  color: #fff;
+  background: #2460c8;
+}
+
+.field-panel button.danger {
+  color: #b23a3a;
+}
+
+.field-panel button.grab {
+  cursor: move;
+  touch-action: none;
+}
+
+/*
+ * The two panels must never cover each other, even beside a tiny field. The side
+ * panel ends level with the field's bottom, and the bottom panel starts below that.
+ */
+.field-panel.side {
+  bottom: 0;
+  left: calc(100% + 6px);
+}
+
+.field.side-panel-left .field-panel.side {
+  left: auto;
+  right: calc(100% + 6px);
+}
+
+.field-panel.bottom {
+  top: calc(100% + 6px);
+  left: 0;
+  align-items: center;
+}
+
+.field.bottom-panel-right .field-panel.bottom {
+  left: auto;
+  right: 0;
+}
+
+/* At the foot of a page the bottom panel goes above the field, clear of the side panel. */
+.field.bottom-panel-above .field-panel.bottom {
+  top: auto;
+  bottom: calc(100% + 30px);
+}
+
+/* A field as wide as the page has no side at all: the panel shares the row with the other one. */
+.field.side-panel-inline .field-panel.side {
+  top: calc(100% + 6px);
+  bottom: auto;
+  left: auto;
+  right: 0;
+}
+
+.field.side-panel-inline.bottom-panel-above .field-panel.side {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.field.side-panel-inline .field-panel.bottom {
+  left: 0;
+  right: auto;
+}
+
+.field.side-panel-inline.bottom-panel-above .field-panel.bottom {
+  bottom: calc(100% + 6px);
+}
+
+.field-panel-label {
+  min-width: 18px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.background-swatch {
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin: auto;
+  border: 1px solid #8a99a8;
+  background: #fff;
+}
+
+.background-swatch.transparent {
+  background: repeating-conic-gradient(#c3ccd5 0 25%, #fff 0 50%) 0 0 / 7px 7px;
+}
+
+.page-canvas,
+.page-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.tools .zoom-controls button {
+  width: 36px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+}
+
+.zoom-controls button:not(:disabled):hover {
+  background: #e6ebf0;
+}
+
+.zoom-controls output {
+  min-width: 48px;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Signature dialog */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(20 30 40 / 0.45);
+}
+
+.dialog {
+  width: min(640px, 90vw);
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 6px 24px rgb(20 30 40 / 0.35);
+}
+
+.dialog-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.dialog-tabs button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+}
+
+.dialog-tabs button[aria-selected='true'] {
+  color: #173f87;
+  background: #e6eefa;
+}
+
+.dialog-tabs .dialog-close {
+  margin-left: auto;
+}
+
+.signature-canvas {
+  display: block;
+  width: 100%;
+  height: 220px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  background: #fff;
+  touch-action: none;
+}
+
+.signature-name {
+  display: block;
+  width: 100%;
+  height: 120px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  font-family: 'Caveat', cursive;
+  font-size: 56px;
+}
+
+.signature-name::placeholder {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 18px;
+}
+
+.dialog-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.dialog-text {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.dialog-actions button {
+  padding: 8px 14px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.dialog-actions button.danger {
+  margin-right: auto;
+  color: #b23a3a;
+  border-color: #b23a3a;
+}
+
+.dialog-actions button.primary {
+  border-color: #2460c8;
+  color: #fff;
+  background: #2460c8;
+}
+
+/* Notices */
+
+.notices {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 20;
+  width: min(560px, 90vw);
+  transform: translateX(-50%);
+}
+
+.notices p {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #fff;
+  background: #8c2f2f;
+}
+
+.notices button {
+  border: 0;
+  background: none;
+}
+
+/* Language */
+
+.language-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: #5a6876;
+}
+
+.language-picker select {
+  height: 28px;
+  font: 13px 'Segoe UI', system-ui, sans-serif;
+}
+
+.empty-state-settings {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 170px;
+}
+
+/* On a low window the panel scrolls rather than hiding its last controls. */
+.tools {
+  overflow-y: auto;
+}
+
+.panel-settings {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Password */
+
+.password-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.password-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #b23a3a;
+}
+
+.password-keep {
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.password-keep small {
+  display: block;
+  font-size: 12px;
+  color: #5a6876;
+}
+
+/* Thumbnail menu */
+
+.thumbnail-menu,
+.thumbnail-submenu {
+  z-index: 15;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.thumbnail-menu {
+  position: fixed;
+}
+
+.thumbnail-submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+}
+
+.menu-parent {
+  position: relative;
+}
+
+.thumbnail-menu button {
+  width: 100%;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  border: 0;
+  text-align: left;
+  background: none;
+}
+
+.thumbnail-menu button:hover:not(:disabled) {
+  background: #e6eefa;
+}
+
+.thumbnail-menu button.danger:not(:disabled) {
+  color: #b23a3a;
+}
+
+/* Editing the text of the page */
+
+.text-cover {
+  position: absolute;
+  background: #fff;
+}
+
+.editable-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.editable-line {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  outline: 1px dashed rgb(36 96 200 / 0.35);
+  pointer-events: auto;
+  cursor: text;
+  background: none;
+}
+
+.editable-line:hover {
+  outline: 1px solid #2460c8;
+  background: rgb(36 96 200 / 0.12);
+}
+
+.edit-scope {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.tools .edit-scope button {
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.tools .edit-scope button.active {
+  border: 2px solid #2460c8;
+  padding: 3px 7px;
+  color: #173f87;
+  background: #e6eefa;
+}
+
+/* The font of a text field */
+
+.font-tool {
+  position: relative;
+}
+
+.font-tool-icon {
+  font-family: 'Tinos', serif;
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+.font-tool-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 3;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgb(20 35 50 / 0.25);
+}
+
+.font-tool-panel select {
+  width: 130px;
+  height: 28px;
+  font: 13px 'Segoe UI', system-ui, sans-serif;
+}
+
+.font-tool-panel input[type='color'] {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #aab6c2;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+
+.bottom-panel-above .font-tool-panel {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+/* Lines shown while a dragged field lines up with its neighbours. */
+
+.snap-guide {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  background: #d6336c;
+}
+
+.snap-guide.vertical {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.snap-guide.horizontal {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+/* Printing: only the pages prepared for it reach the paper. */
+
+.print-root {
+  display: none;
+}
+
+@media print {
+  html,
+  body {
+    height: auto;
+    overflow: visible;
+    background: #fff;
+  }
+
+  body > :not(.print-root) {
+    display: none !important;
+  }
+
+  .print-root {
+    display: block;
+  }
+
+  .print-page {
+    overflow: hidden;
+    break-after: page;
+    break-inside: avoid;
+  }
+
+  .print-page:last-child {
+    break-after: auto;
+  }
+
+  .print-page img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}

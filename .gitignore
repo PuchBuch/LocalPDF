@@ -1,0 +1,13 @@
+node_modules/
+out/
+release/
+test-results/
+playwright-report/
+*.log
+
+# Copied from node_modules by scripts/copy-pdfjs-assets.mjs.
+src/renderer/public/pdfjs/
+src/renderer/public/ocr/
+
+# Personal documents used for manual checks. Never commit them.
+samples/private/

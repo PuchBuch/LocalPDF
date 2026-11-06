@@ -1,0 +1,141 @@
+import type { Messages } from './ru'
+
+const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
+
+export const pl: Messages = {
+  appName: 'LocalPDF',
+  language: 'Język',
+  ocrLanguage: 'Język rozpoznawania tekstu',
+  dialogs: {
+    unsavedMessage: 'Zapisać zmiany przed zamknięciem?',
+    unsavedDetail: 'Jeśli ich nie zapiszesz, zostaną utracone.',
+    save: 'Zapisz',
+    dontSave: 'Nie zapisuj',
+    cancel: 'Anuluj',
+    incomingMessage: 'Otworzyć {names}?',
+    incomingDetail: 'Otwarty jest inny dokument.',
+    add: 'Dodaj do dokumentu',
+    replace: 'Otwórz zamiast niego',
+    filesFilter: 'PDF i obrazy'
+  },
+  selectFile: 'Wybierz plik',
+  dropHint: 'lub przeciągnij tutaj plik PDF albo obraz',
+  dropOverlay: 'Upuść plik, aby go dodać',
+  opening: 'Otwieranie pliku…',
+  newFile: 'Nowy plik',
+  download: 'Pobierz',
+  saving: 'Proszę czekać…',
+  savedAs: (name) => `Zapisano: ${name}`,
+  saveFailed: 'Nie udało się zapisać pliku. Być może jest otwarty w innym programie. Spróbuj innej nazwy lub innego folderu.',
+  moreOptions: 'Inne formy wyjścia',
+  print: 'Drukuj',
+  printFailed: 'Nie udało się wysłać dokumentu do drukarki.',
+  copyMarkdown: 'Kopiuj tekst jako Markdown',
+  saveMarkdown: 'Zapisz tekst jako Markdown',
+  extractFailed: 'Nie udało się wyodrębnić tekstu dokumentu.',
+  copied: 'Tekst skopiowano do schowka',
+  password: {
+    title: 'Ten dokument jest chroniony hasłem',
+    placeholder: 'Hasło',
+    wrong: 'Nieprawidłowe hasło. Spróbuj ponownie.',
+    keep: 'Zachowaj hasło',
+    keepOn: 'Zapisany plik pozostanie chroniony tym hasłem',
+    keepOff: 'Zapisany plik nie będzie chroniony',
+    unlock: 'Otwórz',
+    cancel: 'Anuluj'
+  },
+  thumbnailMenu: {
+    copyContent: 'Kopiuj tekst',
+    recognize: 'Rozpoznaj tekst',
+    findFields: 'Znajdź pola',
+    thisPage: 'Ta strona',
+    allPages: 'Wszystkie strony',
+    clearFields: (count) => (count === 1 ? 'Wyczyść pole (1)' : `Wyczyść pola${countSuffix(count)}`),
+    deleteFields: (count) => (count === 1 ? 'Usuń pole (1)' : `Usuń pola${countSuffix(count)}`)
+  },
+  textLeftInFile: (pages) =>
+    `Uwaga: na stronie ${pages} nie udało się całkowicie usunąć zastąpionego tekstu z pliku. Nie jest widoczny, ale programy mogą go znaleźć.`,
+  imageLeftInFile: (pages) =>
+    `Uwaga: na stronie ${pages} pod zastąpionym tekstem znajduje się obraz. Jest zakryty, ale pozostaje w pliku i można wyodrębnić jego zawartość.`,
+  ocr: {
+    starting: 'Uruchamianie rozpoznawania tekstu…',
+    progress: (page, total) => `Rozpoznawanie strony ${page} z ${total}…`,
+    done: (words) => `Rozpoznane słowa: ${words}`,
+    nothingToRead: 'Te strony zawierają już tekst, nie ma czego rozpoznawać',
+    noWords: 'Nie znaleziono tekstu. Skan może być zbyt blady lub strona może nie zawierać tekstu.',
+    failed: 'Nie udało się rozpoznać tekstu.'
+  },
+  detect: {
+    found: (count) => `Znalezione pola: ${count}`,
+    none: 'Nie znaleziono pól do wypełnienia',
+    failed: 'Nie udało się wyszukać pól.'
+  },
+  moveHint: 'Przytrzymaj Shift, aby wyłączyć wyrównywanie',
+  editScope: { line: 'Wiersz', word: 'Słowo', label: 'Co edytować' },
+  font: {
+    title: 'Czcionka',
+    family: 'Krój pisma',
+    bold: 'Pogrubienie',
+    italic: 'Kursywa',
+    color: 'Kolor tekstu',
+    boldIcon: 'P',
+    italicIcon: 'K',
+    families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }
+  },
+  recovery: {
+    title: 'Znaleziono niezapisany dokument',
+    details: (names, time) => `${names}. Ostatnia zmiana: ${time}.`,
+    restore: 'Przywróć',
+    discard: 'Usuń',
+    failed: 'Nie udało się przywrócić dokumentu.'
+  },
+  missingCharacters: (characters) => `Do pliku nie trafiły znaki, których brak w czcionce: ${characters}`,
+  zoomIn: 'Powiększ',
+  zoomOut: 'Pomniejsz',
+  close: 'Zamknij',
+  undo: 'Cofnij',
+  redo: 'Ponów',
+  addPages: 'Dodaj strony',
+  deletePage: 'Usuń stronę',
+  rotatePage: 'Obróć w prawo',
+  movePageUp: 'Przenieś wyżej',
+  movePageDown: 'Przenieś niżej',
+  tools: {
+    cursor: { label: 'Kursor', hint: 'Kursor: zaznaczaj tekst i pola w dokumencie' },
+    edit: { label: 'Edytuj tekst', hint: 'Edytuj tekst: kliknij wiersz lub słowo dokumentu i zmień je' },
+    text: { label: 'Tekst', hint: 'Tekst: kliknij stronę, aby dodać pole' },
+    checkbox: { label: 'Znacznik', hint: 'Znacznik: kliknij stronę, a następnie wybierz ptaszek, krzyżyk lub kropkę' },
+    signature: { label: 'Podpis', hint: 'Podpis: kliknij stronę, aby dodać pole' },
+    picture: { label: 'Obraz', hint: 'Obraz: kliknij stronę, aby dodać pole' },
+    comb: { label: 'Tekst w kratkach', hint: 'Tekst w kratkach: kliknij stronę, aby dodać pole' }
+  },
+  signature: {
+    title: 'Podpis',
+    tabDraw: 'Narysuj',
+    tabType: 'Wpisz',
+    clear: 'Wyczyść',
+    finish: 'Gotowe',
+    namePlaceholder: 'Wpisz imię i nazwisko'
+  },
+  choosePicture: 'Wybierz obraz',
+  pictureUnsupported: (name) => `Nie dodano „${name}”: to pole przyjmuje JPEG, PNG, WebP i GIF.`,
+  spacingSmaller: 'Węższe kratki',
+  spacingLarger: 'Szersze kratki',
+  resizeHint: 'Przytrzymaj Shift, aby odblokować proporcje',
+  fieldCopy: 'Kopiuj pole',
+  fieldDelete: 'Usuń pole',
+  fieldMove: 'Przeciągnij pole',
+  fieldBackground: 'Tło: przezroczyste lub białe',
+  fontSmaller: 'Zmniejsz czcionkę',
+  fontLarger: 'Powiększ czcionkę',
+  checkbox: 'Ptaszek',
+  checkboxMarks: { tick: 'Ptaszek', cross: 'Krzyżyk', dot: 'Kropka' },
+  pasteHint: 'Kliknij dowolną stronę, aby wkleić pole. Esc anuluje',
+  pageOf: (page, total) => `Strona ${page} z ${total}`,
+  zoomPercent: (zoom) => `${Math.round(zoom * 100)}%`,
+  goToPage: (page) => `Przejdź do strony ${page}`,
+  fileUnreadable: (name) => `Nie udało się otworzyć „${name}”. Plik jest uszkodzony lub jego format nie jest obsługiwany.`,
+  filePassword: (name) => `Nie udało się usunąć ochrony pliku „${name}”.`,
+  fileHeic: (name) => `Nie otwarto „${name}”: format HEIC nie jest jeszcze obsługiwany. Zapisz zdjęcie jako JPEG.`,
+  fileUnsupported: (name) => `Nie otwarto „${name}”: obsługiwane są PDF, JPEG, PNG, WebP i GIF.`
+}

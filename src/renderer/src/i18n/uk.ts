@@ -1,0 +1,141 @@
+import type { Messages } from './ru'
+
+const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
+
+export const uk: Messages = {
+  appName: 'LocalPDF',
+  language: 'Мова',
+  ocrLanguage: 'Мова розпізнавання тексту',
+  dialogs: {
+    unsavedMessage: 'Зберегти зміни перед закриттям?',
+    unsavedDetail: 'Якщо не зберегти, їх буде втрачено.',
+    save: 'Зберегти',
+    dontSave: 'Не зберігати',
+    cancel: 'Скасувати',
+    incomingMessage: 'Відкрити {names}?',
+    incomingDetail: 'Зараз відкрито інший документ.',
+    add: 'Додати до документа',
+    replace: 'Відкрити замість нього',
+    filesFilter: 'PDF і зображення'
+  },
+  selectFile: 'Вибрати файл',
+  dropHint: 'або перетягніть сюди PDF чи зображення',
+  dropOverlay: 'Відпустіть файл, щоб додати його',
+  opening: 'Відкриваю файл…',
+  newFile: 'Новий файл',
+  download: 'Завантажити',
+  saving: 'Зачекайте…',
+  savedAs: (name) => `Збережено: ${name}`,
+  saveFailed: 'Не вдалося зберегти файл. Можливо, його відкрито в іншій програмі. Спробуйте іншу назву або теку.',
+  moreOptions: 'Інші способи виведення',
+  print: 'Друк',
+  printFailed: 'Не вдалося надіслати документ на друк.',
+  copyMarkdown: 'Скопіювати текст як Markdown',
+  saveMarkdown: 'Зберегти текст як Markdown',
+  extractFailed: 'Не вдалося витягти текст документа.',
+  copied: 'Текст скопійовано до буфера обміну',
+  password: {
+    title: 'Документ захищено паролем',
+    placeholder: 'Пароль',
+    wrong: 'Неправильний пароль. Спробуйте ще раз.',
+    keep: 'Зберегти пароль',
+    keepOn: 'Збережений файл залишиться захищеним цим паролем',
+    keepOff: 'Збережений файл не матиме захисту',
+    unlock: 'Відкрити',
+    cancel: 'Скасувати'
+  },
+  thumbnailMenu: {
+    copyContent: 'Скопіювати текст',
+    recognize: 'Розпізнати текст',
+    findFields: 'Знайти поля',
+    thisPage: 'Ця сторінка',
+    allPages: 'Усі сторінки',
+    clearFields: (count) => (count === 1 ? 'Очистити поле (1)' : `Очистити поля${countSuffix(count)}`),
+    deleteFields: (count) => (count === 1 ? 'Видалити поле (1)' : `Видалити поля${countSuffix(count)}`)
+  },
+  textLeftInFile: (pages) =>
+    `Увага: на сторінці ${pages} замінений текст не вдалося повністю видалити з файлу. Його не видно, але програмами його можна знайти.`,
+  imageLeftInFile: (pages) =>
+    `Увага: на сторінці ${pages} під заміненим текстом є зображення. Його закрито, але воно залишилося у файлі, і його вміст можна витягти.`,
+  ocr: {
+    starting: 'Запускаю розпізнавання…',
+    progress: (page, total) => `Розпізнаю сторінку ${page} з ${total}…`,
+    done: (words) => `Розпізнано слів: ${words}`,
+    nothingToRead: 'На цих сторінках уже є текст, розпізнавати нічого',
+    noWords: 'Текст не знайдено. Можливо, скан надто блідий або на сторінці немає тексту.',
+    failed: 'Не вдалося розпізнати текст.'
+  },
+  detect: {
+    found: (count) => `Знайдено полів: ${count}`,
+    none: 'Полів для заповнення не знайдено',
+    failed: 'Не вдалося знайти поля.'
+  },
+  moveHint: 'Утримуйте Shift, щоб вимкнути вирівнювання',
+  editScope: { line: 'Рядок', word: 'Слово', label: 'Що редагувати' },
+  font: {
+    title: 'Шрифт',
+    family: 'Гарнітура',
+    bold: 'Жирний',
+    italic: 'Курсив',
+    color: 'Колір тексту',
+    boldIcon: 'Ж',
+    italicIcon: 'К',
+    families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }
+  },
+  recovery: {
+    title: 'Знайдено незбережений документ',
+    details: (names, time) => `${names}. Остання зміна: ${time}.`,
+    restore: 'Відновити',
+    discard: 'Видалити',
+    failed: 'Не вдалося відновити документ.'
+  },
+  missingCharacters: (characters) => `До файлу не потрапили символи, яких немає у шрифті: ${characters}`,
+  zoomIn: 'Збільшити',
+  zoomOut: 'Зменшити',
+  close: 'Закрити',
+  undo: 'Скасувати',
+  redo: 'Повторити',
+  addPages: 'Додати сторінки',
+  deletePage: 'Видалити сторінку',
+  rotatePage: 'Повернути за годинниковою стрілкою',
+  movePageUp: 'Перемістити вище',
+  movePageDown: 'Перемістити нижче',
+  tools: {
+    cursor: { label: 'Курсор', hint: 'Курсор: виділяйте текст і вибирайте поля в документі' },
+    edit: { label: 'Редагувати текст', hint: 'Редагувати текст: натисніть на рядок або слово документа і змініть їх' },
+    text: { label: 'Текст', hint: 'Текст: натисніть на сторінку, щоб додати поле' },
+    checkbox: { label: 'Позначка', hint: 'Позначка: натисніть на сторінку, потім виберіть галочку, хрестик або крапку' },
+    signature: { label: 'Підпис', hint: 'Підпис: натисніть на сторінку, щоб додати поле' },
+    picture: { label: 'Зображення', hint: 'Зображення: натисніть на сторінку, щоб додати поле' },
+    comb: { label: 'Текст у клітинках', hint: 'Текст у клітинках: натисніть на сторінку, щоб додати поле' }
+  },
+  signature: {
+    title: 'Підпис',
+    tabDraw: 'Намалювати',
+    tabType: 'Надрукувати',
+    clear: 'Очистити',
+    finish: 'Готово',
+    namePlaceholder: 'Введіть ім’я'
+  },
+  choosePicture: 'Вибрати зображення',
+  pictureUnsupported: (name) => `«${name}» не додано: це поле приймає JPEG, PNG, WebP і GIF.`,
+  spacingSmaller: 'Вужчі клітинки',
+  spacingLarger: 'Ширші клітинки',
+  resizeHint: 'Утримуйте Shift, щоб зняти фіксацію пропорцій',
+  fieldCopy: 'Копіювати поле',
+  fieldDelete: 'Видалити поле',
+  fieldMove: 'Перетягнути поле',
+  fieldBackground: 'Фон: прозорий або білий',
+  fontSmaller: 'Зменшити шрифт',
+  fontLarger: 'Збільшити шрифт',
+  checkbox: 'Галочка',
+  checkboxMarks: { tick: 'Галочка', cross: 'Хрестик', dot: 'Крапка' },
+  pasteHint: 'Натисніть на будь-яку сторінку, щоб вставити поле. Esc — скасування',
+  pageOf: (page, total) => `Сторінка ${page} з ${total}`,
+  zoomPercent: (zoom) => `${Math.round(zoom * 100)} %`,
+  goToPage: (page) => `Перейти до сторінки ${page}`,
+  fileUnreadable: (name) => `Не вдалося відкрити «${name}». Файл пошкоджено або його формат не підтримується.`,
+  filePassword: (name) => `Не вдалося зняти захист із «${name}».`,
+  fileHeic: (name) => `«${name}» не відкрито: формат HEIC поки не підтримується. Збережіть фото як JPEG.`,
+  fileUnsupported: (name) => `«${name}» не відкрито: підтримуються PDF, JPEG, PNG, WebP і GIF.`
+}

@@ -1,0 +1,24 @@
+appId: local.localpdf.app
+productName: LocalPDF
+directories:
+  output: release
+# Everything the app needs is bundled into out/ by electron-vite.
+files:
+  - out/**
+  - package.json
+  - '!node_modules/**'
+extraResources:
+  - from: THIRD_PARTY_NOTICES.md
+    to: THIRD_PARTY_NOTICES.md
+npmRebuild: false
+win:
+  target: nsis
+  icon: build/icon.png
+  signExecutable: false
+nsis:
+  oneClick: true
+  perMachine: false
+fileAssociations:
+  - ext: pdf
+    name: PDF Document
+    role: Editor
