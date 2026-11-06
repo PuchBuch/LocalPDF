@@ -12,7 +12,9 @@
     "dist": "electron-vite build && electron-builder --win --publish never",
     "postinstall": "node node_modules/electron/install.js && node scripts/copy-pdfjs-assets.mjs",
     "predev": "node scripts/copy-pdfjs-assets.mjs",
-    "test:e2e": "electron-vite build && playwright test"
+    "test:e2e": "electron-vite build && playwright test",
+    "build:extension": "node scripts/build-extension.mjs",
+    "test:extension": "node scripts/build-extension.mjs && playwright test --config playwright.extension.config.ts"
   },
   "author": "PuchBuch",
   "dependencies": {
@@ -44,6 +46,7 @@
     "@tesseract.js-data/rus": "1.0.0",
     "@tesseract.js-data/spa": "1.0.0",
     "@tesseract.js-data/ukr": "1.0.0",
+    "@types/chrome": "0.0.300",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

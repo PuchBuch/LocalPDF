@@ -66,6 +66,11 @@ jobs:
       - name: Interface tests, on the installed app
         run: npx playwright test
 
+      - name: Chrome extension, in headless Chromium
+        run: |
+          npx playwright install chromium
+          npm run test:extension
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

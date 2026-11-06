@@ -26,6 +26,17 @@ Windows may warn that the publisher is unknown, because the installer is not sig
 
 To open PDFs with a double-click, right-click a PDF, then **Open with**, **Choose another app**, **LocalPDF**, **Always**.
 
+## Chrome extension
+
+The same editor also runs as a Chrome extension. It asks for no permissions and allows no outside connections. It is not in the Chrome Web Store yet. To try it, run `npm run build:extension`, open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked** and pick the `out-extension` folder.
+
+It differs from the Windows app in a few ways:
+
+- PDFs cannot be opened with a double-click. Use the extension's button in the toolbar, then choose a file.
+- The crash recovery copy lies unencrypted in your browser profile. Documents opened with a password are never stored there.
+- Printing uses the browser's dialog, and the app cannot tell whether you printed or cancelled.
+- It is tested in Chromium only, not in Edge or other browsers.
+
 ## Known limits
 
 - **Pictures and scans:** text on a picture cannot be cut out. It is only covered and stays in the file, and the app warns you. For scans with confidential data, print to PDF instead and check the result.
@@ -50,6 +61,8 @@ npm test           # tests of the core and export
 npm run test:e2e   # interface tests: app windows open on the screen
 npm run typecheck
 npm run dist       # the installer, in release/
+npm run build:extension  # the Chrome extension, in out-extension/ and as a zip in release/
+npm run test:extension   # builds it and tests it in headless Chromium: no windows open
 ```
 
 If Electron crashes with `Cannot read properties of undefined (reading 'isPackaged')`, your terminal has `ELECTRON_RUN_AS_NODE` set. Clear it: `Remove-Item Env:\ELECTRON_RUN_AS_NODE`.
@@ -58,7 +71,8 @@ If Electron crashes with `Cannot read properties of undefined (reading 'isPackag
 - `src/export`: building the final PDF.
 - `src/main`, `src/preload`: the Electron process and a narrow bridge to the interface.
 - `src/renderer`: the React interface. Texts are in `src/renderer/src/i18n`.
-- `tests`, `e2e`: tests. Documents for manual checks go in `samples/private/`, which git ignores.
+- `src/extension`: the same interface as a Chrome extension, with browser APIs in place of the Electron bridge.
+- `tests`, `e2e`, `e2e-extension`: tests. Documents for manual checks go in `samples/private/`, which git ignores.
 
 Tinos, Carlito and Cousine are embedded whole rather than as a subset, because cutting them down loses most of their letters while the text still reads fine to software. Check any new font in pixels, as `tests/word-and-font.test.ts` does.
 
