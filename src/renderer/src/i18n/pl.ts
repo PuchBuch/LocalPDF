@@ -70,6 +70,7 @@ export const pl: Messages = {
     none: 'Nie znaleziono pól do wypełnienia',
     failed: 'Nie udało się wyszukać pól.'
   },
+  formNotPrinted: 'Uwaga: formularza z tego pliku nie udało się wtopić w strony, więc wpisane wartości nie zostały zapisane. Spróbuj wpisać je jako zwykły tekst.',
   moveHint: 'Przytrzymaj Shift, aby wyłączyć wyrównywanie',
   editScope: { line: 'Wiersz', word: 'Słowo', label: 'Co edytować' },
   font: {

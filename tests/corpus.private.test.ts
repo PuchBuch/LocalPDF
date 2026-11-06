@@ -8,7 +8,7 @@ import type { EditorDocument, PageRef, TextField } from '../src/core/model'
 import { fieldForLine, type TextLine } from '../src/core/textLines'
 import { buildPdf, type ExportFonts } from '../src/export/buildPdf'
 import { pagesWithLeftoverText, pageTextLines, type ContentPage } from '../src/export/extractContent'
-import { decryptPdf, looksEncrypted } from '../src/export/qpdf'
+import { decryptPdf, looksEncrypted, rewritePdf } from '../src/export/qpdf'
 import { loadFonts, openPdf, renderPage, singlePageDocument } from './helpers'
 
 /**
@@ -19,6 +19,8 @@ import { loadFonts, openPdf, renderPage, singlePageDocument } from './helpers'
 const FOLDER = process.env['LOCALPDF_CORPUS']
 const OUT = process.env['LOCALPDF_CORPUS_OUT'] ?? resolve(__dirname, '../samples/private/out/corpus.jsonl')
 const WASM = createRequire(import.meta.url).resolve('@neslinesli93/qpdf-wasm/dist/qpdf.wasm')
+
+const repair = (bytes: Uint8Array) => rewritePdf(WASM, bytes)
 
 const MAX_PAGES = 3
 const STEP_TIMEOUT_MS = 30_000
@@ -114,7 +116,7 @@ async function checkFile(file: string, fonts: ExportFonts): Promise<Report> {
   // Saved without any change, a document must stay what it was.
   let output: Uint8Array
   try {
-    output = (await withTimeout(buildPdf(document, fonts))).bytes
+    output = (await withTimeout(buildPdf(document, fonts, { repair }))).bytes
   } catch (error) {
     report.exportError = message(error)
     return report
@@ -149,7 +151,7 @@ async function checkFile(file: string, fonts: ExportFonts): Promise<Report> {
   const field: TextField = { ...fieldForLine('f', target), value: '' }
   const edited = singlePageDocument(bytes, [field])
   try {
-    const { bytes: withoutFields } = await withTimeout(buildPdf(edited, fonts, { withoutFields: true }))
+    const { bytes: withoutFields } = await withTimeout(buildPdf(edited, fonts, { withoutFields: true, repair }))
     const reread = await openPdf(withoutFields)
     report.leftover =
       (

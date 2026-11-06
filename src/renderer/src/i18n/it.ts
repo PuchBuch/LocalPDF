@@ -70,6 +70,7 @@ export const it: Messages = {
     none: 'Nessun campo da compilare trovato',
     failed: 'Impossibile cercare i campi.'
   },
+  formNotPrinted: 'Attenzione: il modulo di questo file non è stato integrato nelle pagine, quindi i valori inseriti non sono stati salvati. Prova a inserirli come testo normale.',
   moveHint: 'Tieni premuto Maiusc per disattivare l’allineamento',
   editScope: { line: 'Riga', word: 'Parola', label: 'Cosa modificare' },
   font: {

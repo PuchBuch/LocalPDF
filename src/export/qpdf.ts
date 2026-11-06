@@ -41,6 +41,11 @@ export function decryptPdf(wasmLocation: string, bytes: Uint8Array, password: st
   return convert(wasmLocation, [`--password=${password}`, '--decrypt'], bytes)
 }
 
+/** The same PDF written anew in plain form, or null if even qpdf cannot make sense of it. */
+export function rewritePdf(wasmLocation: string, bytes: Uint8Array): Promise<Uint8Array | null> {
+  return convert(wasmLocation, [], bytes)
+}
+
 /** The PDF protected by a password, with AES-256. */
 export async function encryptPdf(wasmLocation: string, bytes: Uint8Array, password: string): Promise<Uint8Array> {
   const output = await convert(

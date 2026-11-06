@@ -4,6 +4,7 @@ import { extractMarkdown } from '../../export/extractContent'
 import { t } from './i18n'
 import { getPdfPage } from './render/pdfjs'
 import { printPdf } from './render/printPdf'
+import { repairPdf } from './render/protection'
 import { loadExportFonts } from './render/textMetrics'
 import { addNotice, reportMissingCharacters, useEditor } from './store'
 
@@ -24,7 +25,7 @@ export function printDocument(): Promise<void> {
   return whileBusy(t.printFailed, async () => {
     const { document } = useEditor.getState()
     if (!document) return
-    const { bytes, missingCharacters } = await buildPdf(document, await loadExportFonts())
+    const { bytes, missingCharacters } = await buildPdf(document, await loadExportFonts(), { repair: repairPdf })
     const result = await printPdf(bytes)
     if (result === 'failed') addNotice(t.printFailed)
     if (result === 'printed') reportMissingCharacters(missingCharacters)

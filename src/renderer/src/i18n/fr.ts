@@ -71,6 +71,7 @@ export const fr: Messages = {
     none: 'Aucun champ à remplir n’a été trouvé',
     failed: 'La recherche des champs a échoué.'
   },
+  formNotPrinted: 'Attention : le formulaire de ce fichier n’a pas pu être intégré aux pages, les valeurs saisies n’ont donc pas été enregistrées. Essayez de les saisir comme du texte ordinaire.',
   moveHint: 'Maintenez Maj pour désactiver l’alignement',
   editScope: { line: 'Ligne', word: 'Mot', label: 'Que modifier' },
   font: {

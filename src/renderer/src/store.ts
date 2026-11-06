@@ -60,7 +60,7 @@ import { DEFAULT_LOCALE, t, type Locale } from './i18n'
 import { imageSize, prepareImage } from './render/imageFile'
 import { lineAppearance, wordAppearance } from './render/lineAppearance'
 import { closeAllPdfs, getPdfPage, loadPdf, openPdf } from './render/pdfjs'
-import { protectPdf, unlockPdf } from './render/protection'
+import { protectPdf, repairPdf, unlockPdf } from './render/protection'
 import { loadExportFonts, measureText } from './render/textMetrics'
 
 declare global {
@@ -776,7 +776,7 @@ export async function addPictureFromFile(fieldId: string, file: File): Promise<v
  */
 async function reportWhatStaysInTheFile(document: EditorDocument, imagesUnderCovers: number[]): Promise<void> {
   if (!document.pages.some((page) => coversOf(page.fields).length > 0)) return
-  const { bytes } = await buildPdf(document, await loadExportFonts(), { withoutFields: true })
+  const { bytes } = await buildPdf(document, await loadExportFonts(), { withoutFields: true, repair: repairPdf })
   const pdf = await openPdf(bytes)
   try {
     const getPage = async (index: number) => (await pdf.getPage(index + 1)) as unknown as ContentPage
@@ -797,8 +797,11 @@ export async function saveDocument(): Promise<boolean> {
   useEditor.setState({ saving: true, statusNote: null })
   try {
     const fonts = await loadExportFonts()
-    const { bytes, missingCharacters, imagesUnderCovers } = await buildPdf(document, fonts)
+    const { bytes, missingCharacters, imagesUnderCovers, formsNotPrinted } = await buildPdf(document, fonts, {
+      repair: repairPdf
+    })
     await reportWhatStaysInTheFile(document, imagesUnderCovers)
+    if (formsNotPrinted) addNotice(t.formNotPrinted)
     const name = exportFileName(document.sources[firstPage.sourceId]!.name)
     const output = outputPassword ? await protectPdf(bytes, outputPassword) : bytes
     const result = await window.localpdf.saveFile(name, output)

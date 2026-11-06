@@ -71,6 +71,7 @@ export const de: Messages = {
     none: 'Keine auszufüllenden Felder gefunden',
     failed: 'Die Felder konnten nicht gesucht werden.'
   },
+  formNotPrinted: 'Achtung: Das Formular dieser Datei konnte nicht in die Seiten übernommen werden, daher wurden die eingetragenen Werte nicht gespeichert. Tragen Sie sie stattdessen als normalen Text ein.',
   moveHint: 'Halten Sie die Umschalttaste gedrückt, um das Ausrichten abzuschalten',
   editScope: { line: 'Zeile', word: 'Wort', label: 'Was bearbeiten' },
   font: {

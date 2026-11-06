@@ -70,6 +70,7 @@ export const es: Messages = {
     none: 'No se encontraron campos para rellenar',
     failed: 'No se pudieron buscar los campos.'
   },
+  formNotPrinted: 'Atención: el formulario de este archivo no se pudo integrar en las páginas, por lo que los valores introducidos no se guardaron. Pruebe a escribirlos como texto normal.',
   moveHint: 'Mantenga pulsada Mayús para desactivar la alineación',
   editScope: { line: 'Línea', word: 'Palabra', label: 'Qué editar' },
   font: {

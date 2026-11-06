@@ -1,8 +1,14 @@
 import {
+  PDFArray,
   PDFCheckBox,
+  PDFDict,
   PDFDocument,
   PDFDropdown,
+  PDFInvalidObject,
+  PDFName,
+  PDFObjectCopier,
   PDFOptionList,
+  PDFPage,
   PDFRadioGroup,
   PDFRef,
   PDFTextField,
@@ -10,14 +16,13 @@ import {
   rgb,
   type PDFField,
   type PDFFont,
-  type PDFImage,
-  type PDFPage
+  type PDFImage
 } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import { CROSS_PATH, DOT_PATH, LINE_HEIGHT, MARK_BASE_SIZE, MARK_STROKE_WIDTH, TICK_PATH } from '../core/fields'
 import { DEFAULT_FAMILY, faceOf, familyInfo, type FontFace, type FontFamily } from '../core/fonts'
 import { automaticFontSize, turnRect } from '../core/forms'
-import { displayedSize, displayToPdf, normalizeRotation, type Rect, type Size } from '../core/geometry'
+import { displayedSize, displayToPdf, normalizeRotation, visibleBox, type Rect, type Size } from '../core/geometry'
 import { dropUnreachableObjects, removeTextInAreas } from './removeText'
 import { safeFontkit } from './safeFontkit'
 import { coversOf, isCovered } from '../core/textLines'
@@ -53,6 +58,15 @@ export interface ExportResult {
   missingCharacters: MissingCharacter[]
   /** Numbers of the pages where an image under replaced text stays in the file. */
   imagesUnderCovers: number[]
+  /** A form could not be printed into its pages, so values entered in it are not in the file. */
+  formsNotPrinted: boolean
+}
+
+export interface BuildOptions {
+  /** Without the added fields, to check what is left of the page itself. */
+  withoutFields?: boolean
+  /** Writes a PDF anew in plain form, for files the library cannot read properly. */
+  repair?: (bytes: Uint8Array) => Promise<Uint8Array | null>
 }
 
 export { LINE_HEIGHT }
@@ -122,7 +136,7 @@ class ExportContext {
 export async function buildPdf(
   document: EditorDocument,
   fonts: ExportFonts,
-  options: { withoutFields?: boolean } = {}
+  options: BuildOptions = {}
 ): Promise<ExportResult> {
   const output = await PDFDocument.create()
   output.registerFontkit(safeFontkit)
@@ -130,7 +144,8 @@ export async function buildPdf(
   output.setCreator('LocalPDF')
 
   const context = new ExportContext(output, document, fonts)
-  const copiedPages = await copySourcePages(document, output, fonts)
+  const copiedSources = await copySourcePages(document, output, fonts, options.repair)
+  const { pages: copiedPages, formsNotPrinted } = copiedSources
 
   const imagesUnderCovers: number[] = []
   for (const [index, pageRef] of document.pages.entries()) {
@@ -143,11 +158,16 @@ export async function buildPdf(
     page.setRotation(degrees(rotation))
     output.addPage(page)
 
-    const target: PageTarget = { page, box: page.getCropBox(), rotation }
+    const target: PageTarget = { page, box: visibleBox(page.getCropBox(), page.getMediaBox()), rotation }
     const covers = coversOf(pageRef.fields)
     // First the old text leaves the file, while the page is still only its source content.
-    const removal = removeTextInAreas(output, page, covers.map((cover) => toUserSpace(target, cover)))
-    if (removal.imageUnderArea) imagesUnderCovers.push(pageNumber)
+    try {
+      const removal = removeTextInAreas(output, page, covers.map((cover) => toUserSpace(target, cover)))
+      if (removal.imageUnderArea) imagesUnderCovers.push(pageNumber)
+    } catch (error) {
+      // Content that cannot be read cannot be cut. The check of the finished file reports it.
+      console.error(error)
+    }
     if (options.withoutFields) continue
 
     if (pageRef.ocr) await drawRecognizedText(context, target, pageRef, sizeBeforeEditing(target, pageRef.rotation))
@@ -162,7 +182,8 @@ export async function buildPdf(
   return {
     bytes: await output.save(),
     missingCharacters: context.missingCharacters,
-    imagesUnderCovers
+    imagesUnderCovers,
+    formsNotPrinted
   }
 }
 
@@ -210,37 +231,106 @@ function toUserSpace({ box, rotation }: PageTarget, area: Rect): Rect {
 async function copySourcePages(
   document: EditorDocument,
   output: PDFDocument,
-  fonts: ExportFonts
-): Promise<Map<string, PDFPage[]>> {
+  fonts: ExportFonts,
+  repair: BuildOptions['repair']
+): Promise<{ pages: Map<string, PDFPage[]>; formsNotPrinted: boolean }> {
   const copied = new Map<string, PDFPage[]>()
   const usedSourceIds = new Set(document.pages.map((page) => page.sourceId))
+  let formsNotPrinted = false
 
   for (const sourceId of usedSourceIds) {
     const source = document.sources[sourceId]
     if (!source) throw new Error(`Unknown source: ${sourceId}`)
+    const values = document.formValues[sourceId] ?? {}
 
     // Forms are flattened source by source, so fields with the same name in
     // different files cannot collide when their pages meet in one document.
-    const flattened = await flattenSource(source.bytes, document.formValues[sourceId] ?? {}, fonts)
-    const refs = document.pages.filter((page) => page.sourceId === sourceId)
-    const pages = await output.copyPages(
-      flattened,
-      refs.map((page) => page.pageIndex)
-    )
-    refs.forEach((ref, index) => {
+    let flattened: PDFDocument
+    try {
+      flattened = await flattenSource(await loadSource(source.bytes, repair), values, fonts)
+    } catch (error) {
+      // A form that cannot be printed into its pages must not stop the document being saved.
+      console.error(error)
+      flattened = await loadSource(source.bytes, repair)
+      if (Object.keys(values).length > 0) formsNotPrinted = true
+    }
+
+    // One copier for all of a source: what the layers refer to must be what the pages use.
+    const copier = PDFObjectCopier.for(flattened.context, output.context)
+    const sourcePages = flattened.getPages()
+    for (const ref of document.pages.filter((page) => page.sourceId === sourceId)) {
+      const sourcePage = sourcePages[ref.pageIndex]
+      if (!sourcePage) throw new Error(`Page not found in source: ${sourceId}:${ref.pageIndex}`)
+      const node = copier.copy(sourcePage.node)
+      const page = PDFPage.of(node, output.context.register(node), output)
       const key = `${sourceId}:${ref.pageIndex}`
-      copied.set(key, [...(copied.get(key) ?? []), pages[index]!])
-    })
+      copied.set(key, [...(copied.get(key) ?? []), page])
+    }
+    copyLayers(flattened, output, copier)
   }
-  return copied
+  return { pages: copied, formsNotPrinted }
+}
+
+const OC_PROPERTIES = PDFName.of('OCProperties')
+
+/**
+ * Layers switched off must stay off. The settings live in the document's catalog, not
+ * on its pages, so without them all that was hidden would appear in the saved file.
+ */
+function copyLayers(source: PDFDocument, output: PDFDocument, copier: PDFObjectCopier): void {
+  const settings = source.catalog.lookup(OC_PROPERTIES)
+  if (!(settings instanceof PDFDict)) return
+  const copy = copier.copy(settings)
+  const existing = output.catalog.lookup(OC_PROPERTIES)
+  if (!(existing instanceof PDFDict)) {
+    output.catalog.set(OC_PROPERTIES, copy)
+    return
+  }
+  // Merged documents: the layers of the next one join those of the first, as they were set.
+  appendTo(existing, copy, PDFName.of('OCGs'))
+  const defaults = existing.lookup(PDFName.of('D'))
+  const newDefaults = copy.lookup(PDFName.of('D'))
+  if (defaults instanceof PDFDict && newDefaults instanceof PDFDict) appendTo(defaults, newDefaults, PDFName.of('OFF'))
+}
+
+function appendTo(target: PDFDict, source: PDFDict, key: PDFName): void {
+  const items = source.lookup(key)
+  if (!(items instanceof PDFArray)) return
+  const existing = target.lookup(key)
+  if (existing instanceof PDFArray) for (const item of items.asArray()) existing.push(item)
+  else target.set(key, items)
+}
+
+/**
+ * Opens a source for copying. Some files use forms of PDF that the library reads wrongly
+ * or not at all, which would lose text silently. Those go through qpdf, which writes them
+ * anew in plain form, and are read again.
+ */
+async function loadSource(bytes: Uint8Array, repair: BuildOptions['repair']): Promise<PDFDocument> {
+  let failure: unknown
+  try {
+    const document = await PDFDocument.load(bytes)
+    document.getPages()
+    const unreadable = document.context
+      .enumerateIndirectObjects()
+      .some(([, object]) => object instanceof PDFInvalidObject)
+    if (!unreadable || !repair) return document
+  } catch (error) {
+    failure = error
+  }
+  const repaired = await repair?.(bytes)
+  if (!repaired) {
+    if (failure) throw failure
+    return PDFDocument.load(bytes)
+  }
+  return PDFDocument.load(repaired)
 }
 
 async function flattenSource(
-  bytes: Uint8Array,
+  document: PDFDocument,
   values: Record<string, FormValue>,
   fonts: ExportFonts
 ): Promise<PDFDocument> {
-  const document = await PDFDocument.load(bytes)
   const form = document.getForm()
   const fields = form.getFields()
   if (fields.length === 0) return document

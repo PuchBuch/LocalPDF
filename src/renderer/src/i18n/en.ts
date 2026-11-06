@@ -70,6 +70,7 @@ export const en: Messages = {
     none: 'No fields to fill in were found',
     failed: 'Fields could not be searched for.'
   },
+  formNotPrinted: 'Warning: the form of this file could not be printed into its pages, so the values entered in its fields were not saved. Try entering them as ordinary text.',
   moveHint: 'Hold Shift to turn alignment off',
   editScope: { line: 'Line', word: 'Word', label: 'What to edit' },
   font: {

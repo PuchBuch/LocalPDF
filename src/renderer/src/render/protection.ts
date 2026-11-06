@@ -1,6 +1,6 @@
 import qpdfWasmUrl from '@neslinesli93/qpdf-wasm/dist/qpdf.wasm?url'
 import { classifyLoadError } from '../../../core/loadError'
-import { decryptPdf, encryptPdf } from '../../../export/qpdf'
+import { decryptPdf, encryptPdf, rewritePdf } from '../../../export/qpdf'
 import { openPdf } from './pdfjs'
 
 export type UnlockResult = { status: 'ok'; bytes: Uint8Array } | { status: 'wrong-password' } | { status: 'failed' }
@@ -20,6 +20,11 @@ export async function unlockPdf(bytes: Uint8Array, password: string): Promise<Un
   const plain = await decryptPdf(qpdfWasmUrl, bytes, password)
   if (plain) return { status: 'ok', bytes: plain }
   return (await isWrongPassword(bytes, password)) ? { status: 'wrong-password' } : { status: 'failed' }
+}
+
+/** For saving files the PDF library cannot read properly as they are. */
+export function repairPdf(bytes: Uint8Array): Promise<Uint8Array | null> {
+  return rewritePdf(qpdfWasmUrl, bytes)
 }
 
 export function protectPdf(bytes: Uint8Array, password: string): Promise<Uint8Array> {
