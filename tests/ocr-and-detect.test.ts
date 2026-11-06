@@ -46,6 +46,33 @@ describe('detectSpots', () => {
     expect(checkBoxes).toEqual([])
   })
 
+  it('does not take a rule across the page for a line to write on', () => {
+    const page = canvas()
+    page.line(40, 300, 515)
+    expect(page.spots().lines).toEqual([])
+  })
+
+  it('sees a line broken into pieces as what it is', () => {
+    const page = canvas()
+    page.line(40, 300, 150)
+    page.line(191, 300, 150)
+    page.line(342, 300, 213)
+    expect(page.spots().lines).toEqual([])
+
+    const short = canvas()
+    short.line(100, 300, 80)
+    short.line(181, 300, 80)
+    expect(short.spots().lines).toHaveLength(1)
+    expect(short.spots().lines[0]!.width).toBeCloseTo(161, 0)
+  })
+
+  it('keeps two separate lines on one row apart', () => {
+    const page = canvas()
+    page.line(60, 300, 100)
+    page.line(300, 300, 100)
+    expect(page.spots().lines).toHaveLength(2)
+  })
+
   it('does not take a short dash or a line with text on it', () => {
     const page = canvas()
     page.line(100, 200, 25)

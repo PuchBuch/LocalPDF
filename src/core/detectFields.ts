@@ -5,6 +5,9 @@ import type { CheckboxField, Field, TextField } from './model'
 /** Sizes are in points, the picture is scanned in pixels. */
 const MIN_LINE_LENGTH = 40
 const MAX_LINE_THICKNESS = 2.5
+const MAX_LINE_SHARE = 0.7
+/** Pieces of a line this close together are one line. */
+const LINE_BREAK = 3
 const MIN_SPACE_ABOVE_LINE = 9
 const MIN_CHECKBOX = 6
 const MAX_CHECKBOX = 22
@@ -169,8 +172,24 @@ export function detectSpots(mask: Uint8Array, width: number, height: number, sca
   const wallLength = Math.round(MIN_CHECKBOX * scale)
   const hasWall = (x: number, y: number) =>
     verticalWall(x, y - wallLength, y - 1) || verticalWall(x, y + 1, y + wallLength)
-  for (const segment of segments) {
-    if (used.has(segment) || segment.length < MIN_LINE_LENGTH * scale || inBox(segment)) continue
+  // Crossing marks and rendering can break one line into pieces, which would each look short.
+  const pieces = segments.filter((segment) => !used.has(segment)).sort((a, b) => a.y - b.y || a.x - b.x)
+  const whole: Segment[] = []
+  for (const piece of pieces) {
+    const line = whole.find(
+      (other) =>
+        Math.abs(other.y - piece.y) <= scale &&
+        piece.x >= other.x &&
+        piece.x - (other.x + other.length) <= LINE_BREAK * scale
+    )
+    if (line) line.length = Math.max(line.length, piece.x + piece.length - line.x)
+    else whole.push({ ...piece })
+  }
+
+  for (const segment of whole) {
+    if (segment.length < MIN_LINE_LENGTH * scale || inBox(segment)) continue
+    // Across nearly the whole page, a line divides the page more often than it is written on.
+    if (segment.length > width * MAX_LINE_SHARE) continue
     if (hasWall(segment.x, segment.y) || hasWall(segment.x + segment.length - 1, segment.y)) continue
     const room = Math.round(MIN_SPACE_ABOVE_LINE * scale)
     const gap = Math.ceil(scale)

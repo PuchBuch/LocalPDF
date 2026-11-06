@@ -1,0 +1,74 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      - name: Tests of the core and export
+        run: npm test
+
+      - name: Build the installer
+        run: npm run dist
+
+      # A clean machine, as a first-time user has: this is what the developer's own computer cannot show.
+      - name: Install it silently
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem release -Filter 'LocalPDF Setup *.exe' | Select-Object -First 1
+          Start-Process -FilePath $installer.FullName -ArgumentList '/S' -Wait
+          $exe = Join-Path $env:LOCALAPPDATA 'Programs\localpdf\LocalPDF.exe'
+          if (-not (Test-Path $exe)) { throw "Not installed at $exe" }
+          "LOCALPDF_E2E_EXE=$exe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Check that .pdf files are registered for it
+        shell: pwsh
+        run: |
+          $classes = 'HKCU:\Software\Classes'
+          $progIds = Get-Item "$classes\.pdf\OpenWithProgids" -ErrorAction SilentlyContinue
+          $command = Get-ChildItem $classes |
+            Where-Object { $_.PSChildName -match 'PDF' } |
+            ForEach-Object { Get-ItemProperty "$($_.PSPath)\shell\open\command" -ErrorAction SilentlyContinue } |
+            Where-Object { $_.'(default)' -match 'LocalPDF.exe' }
+          if (-not $command) { throw 'No open command for PDF files points at LocalPDF' }
+          "Open command: $($command.'(default)')"
+          "Registered progIds: $($progIds.Property -join ', ')"
+
+      - name: Add a printer that writes to a file
+        shell: pwsh
+        run: |
+          $path = Join-Path $env:RUNNER_TEMP 'printed.pdf'
+          Add-PrinterPort -Name $path
+          Add-Printer -Name 'LocalPDF Test' -DriverName 'Microsoft Print To PDF' -PortName $path
+          "LOCALPDF_E2E_PRINTER=LocalPDF Test" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "LOCALPDF_E2E_PRINTED=$path" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Interface tests, on the installed app
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results
+          path: test-results
+          retention-days: 7
