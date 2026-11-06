@@ -28,6 +28,7 @@ export const fr: Messages = {
   savedAs: (name) => `Enregistré : ${name}`,
   saveFailed:
     'Le fichier n’a pas pu être enregistré. Il est peut-être ouvert dans un autre programme. Essayez un autre nom ou un autre dossier.',
+  exportFailed: 'Ce fichier n’a pas pu être réenregistré : sa structure interne est trop inhabituelle ou il est endommagé. Le fichier d’origine n’a pas été modifié.',
   moreOptions: 'Autres sorties',
   print: 'Imprimer',
   printFailed: 'Le document n’a pas pu être envoyé à l’imprimante.',

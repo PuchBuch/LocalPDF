@@ -205,6 +205,66 @@ describe('cutting one word out of a line', () => {
   })
 })
 
+describe('the rest of a page whose content is rewritten', () => {
+  it('keeps every byte of other text, including those Windows-1252 would change', async () => {
+    // Bytes 0x80 to 0x9F are where a "latin1" decoder quietly changes characters.
+    const special = Array.from({ length: 32 }, (_, index) => 0x80 + index).filter((byte) => byte !== 0x8d && byte !== 0x8f)
+    const raw = String.fromCharCode(...special)
+    const content = `BT /F1 14 Tf 60 700 Td (SECRET) Tj ET BT /F1 14 Tf 60 400 Td (${raw}) Tj ET`
+    const document = await PDFDocument.load(await handWrittenPdf(''))
+    document
+      .getPage(0)
+      .node.set(
+        PDFName.of('Contents'),
+        document.context.register(document.context.flateStream(Uint8Array.from(content, (char) => char.charCodeAt(0))))
+      )
+    const before = await document.save()
+
+    const edited = await PDFDocument.load(before)
+    const { removed } = removeTextInAreas(edited, edited.getPage(0), [{ x: 50, y: 690, width: 200, height: 30 }])
+    expect(removed).toBe(6)
+    const after = await edited.save()
+
+    const stream = (await PDFDocument.load(after)).getPage(0).node.Contents() as PDFRawStream
+    const bytes = Array.from(decodePDFRawStream(stream).decode())
+    const rawBytes = Array.from(raw, (char) => char.charCodeAt(0))
+    const at = bytes.findIndex((_, index) => rawBytes.every((value, offset) => bytes[index + offset] === value))
+    expect(at, 'the bytes, unchanged and in order').toBeGreaterThan(0)
+
+    // And so the page looks the same.
+    const a = await renderPage(before)
+    const b = await renderPage(after)
+    for (let x = 60; x < 400; x += 2) {
+      for (let y = 842 - 412; y < 842 - 396; y += 2) expect(b.colorAt(x, y)).toEqual(a.colorAt(x, y))
+    }
+  })
+
+  it('keeps the look of a page with accented letters in a simple font', async () => {
+    const document = await PDFDocument.create()
+    const font = await document.embedFont(StandardFonts.Helvetica)
+    const page = document.addPage([595, 842])
+    page.drawText('SECRET', { x: 60, y: 700, font, size: 14 })
+    page.drawText('Déjà vu – “quotes” … and € sign', { x: 60, y: 400, font, size: 14 })
+    const source = await document.save()
+    const { output } = await replaceLine(source, 'SECRET', '')
+    const a = await renderPage(source)
+    const b = await renderPage(output)
+    for (let x = 60; x < 300; x += 1) {
+      for (let y = 842 - 412; y < 842 - 396; y += 1) expect(b.colorAt(x, y)).toEqual(a.colorAt(x, y))
+    }
+  })
+
+  it('does not flood the page by cutting text that is a stencil for a fill', async () => {
+    const source = await handWrittenPdf('q BT /F1 40 Tf 7 Tr 60 700 Td (SECRET) Tj ET 0 0 1 rg 0 0 595 842 re f Q')
+    const document = await PDFDocument.load(source)
+    const { removed } = removeTextInAreas(document, document.getPage(0), [{ x: 50, y: 690, width: 300, height: 50 }])
+    expect(removed).toBe(0)
+    const page = await renderPage(await document.save())
+    // Away from the letters the page is still white.
+    expect(page.colorAt(300, 400)).toEqual([255, 255, 255])
+  })
+})
+
 describe('text written in every way a file can', () => {
   const area = { x: 50, y: 690, width: 200, height: 30 }
 

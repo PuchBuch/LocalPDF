@@ -795,6 +795,8 @@ export async function saveDocument(): Promise<boolean> {
   if (!document || !firstPage) return false
 
   useEditor.setState({ saving: true, statusNote: null })
+  // Until the PDF is built, a failure lies in the document and not in where it is written.
+  let built = false
   try {
     const fonts = await loadExportFonts()
     const { bytes, missingCharacters, imagesUnderCovers, formsNotPrinted } = await buildPdf(document, fonts, {
@@ -802,6 +804,7 @@ export async function saveDocument(): Promise<boolean> {
     })
     await reportWhatStaysInTheFile(document, imagesUnderCovers)
     if (formsNotPrinted) addNotice(t.formNotPrinted)
+    built = true
     const name = exportFileName(document.sources[firstPage.sourceId]!.name)
     const output = outputPassword ? await protectPdf(bytes, outputPassword) : bytes
     const result = await window.localpdf.saveFile(name, output)
@@ -814,7 +817,7 @@ export async function saveDocument(): Promise<boolean> {
     return true
   } catch (error) {
     console.error(error)
-    addNotice(t.saveFailed)
+    addNotice(built ? t.saveFailed : t.exportFailed)
     return false
   } finally {
     useEditor.setState({ saving: false })

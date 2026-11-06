@@ -27,6 +27,7 @@ export const it: Messages = {
   saving: 'Attendi…',
   savedAs: (name) => `Salvato: ${name}`,
   saveFailed: 'Impossibile salvare il file. Forse è aperto in un altro programma. Prova con un altro nome o un’altra cartella.',
+  exportFailed: 'Impossibile salvare di nuovo questo file: la sua struttura interna è troppo insolita o è danneggiato. Il file originale non è stato modificato.',
   moreOptions: 'Altre uscite',
   print: 'Stampa',
   printFailed: 'Impossibile inviare il documento alla stampante.',

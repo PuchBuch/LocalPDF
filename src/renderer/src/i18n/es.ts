@@ -27,6 +27,7 @@ export const es: Messages = {
   saving: 'Espere…',
   savedAs: (name) => `Guardado: ${name}`,
   saveFailed: 'No se pudo guardar el archivo. Puede que esté abierto en otro programa. Pruebe con otro nombre o carpeta.',
+  exportFailed: 'No se pudo volver a guardar este archivo: su estructura interna es demasiado inusual o está dañado. El archivo original no ha cambiado.',
   moreOptions: 'Otras salidas',
   print: 'Imprimir',
   printFailed: 'No se pudo enviar el documento a la impresora.',

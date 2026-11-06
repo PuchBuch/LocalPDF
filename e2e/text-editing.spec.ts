@@ -447,6 +447,8 @@ test.describe('keeping the look of the line', () => {
       color: 'rgb(0, 0, 200)'
     })
 
+    // On a small screen the panels of the focused field can lie over the next line.
+    await page.getByTestId('tool-edit').click()
     await line('Plain line').click()
     const plain = page.getByTestId('field-input').nth(1)
     await expect(plain).toHaveValue('Plain line')

@@ -23,6 +23,7 @@ const SIDE_PANEL_WIDTH = 62
 const BOTTOM_PANEL_WIDTH = 180
 const COMB_BOTTOM_PANEL_WIDTH = 240
 const BOTTOM_PANEL_HEIGHT = 36
+const SIDE_PANEL_HEIGHT = 30
 
 const PICTURE_ACCEPT = '.jpg,.jpeg,.png,.webp,.gif'
 
@@ -188,7 +189,8 @@ function FieldView({ field, scale, page, fields, onGuides }: FieldViewProps) {
     'field',
     noRoomOnRight ? (noRoomOnLeft ? 'side-panel-inline' : 'side-panel-left') : '',
     leftPx + bottomPanelWidth > pageWidthPx ? 'bottom-panel-right' : '',
-    bottomPx + BOTTOM_PANEL_HEIGHT > pageHeightPx ? 'bottom-panel-above' : ''
+    bottomPx + BOTTOM_PANEL_HEIGHT > pageHeightPx ? 'bottom-panel-above' : '',
+    bottomPx < SIDE_PANEL_HEIGHT ? 'side-panel-down' : ''
   ].join(' ')
 
   return (

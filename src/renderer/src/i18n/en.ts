@@ -27,6 +27,7 @@ export const en: Messages = {
   saving: 'Please wait…',
   savedAs: (name) => `Saved: ${name}`,
   saveFailed: 'The file could not be saved. It may be open in another program. Try another name or folder.',
+  exportFailed: 'This file could not be saved again: its inner structure is too unusual, or it is damaged. The original file has not changed.',
   moreOptions: 'Other outputs',
   print: 'Print',
   printFailed: 'The document could not be sent to the printer.',

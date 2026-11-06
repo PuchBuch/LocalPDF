@@ -304,7 +304,11 @@ interface TextState {
   horizontalScale: number
   leading: number
   rise: number
+  renderMode: number
 }
+
+/** From this text rendering mode on, text also clips what is drawn after it. */
+const FIRST_CLIPPING_MODE = 4
 
 const hexOf = (bytes: number[]) => `<${bytes.map((byte) => byte.toString(16).padStart(2, '0')).join('')}>`
 const round = (value: number) => String(Math.round(value * 10000) / 10000)
@@ -344,7 +348,8 @@ class ContentRewriter {
       wordSpacing: 0,
       horizontalScale: 1,
       leading: 0,
-      rise: 0
+      rise: 0,
+      renderMode: 0
     }
     const stack: TextState[] = []
     let textMatrix: Matrix = IDENTITY
@@ -364,7 +369,10 @@ class ContentRewriter {
 
     /** Walks shown text, returns what should be shown instead if anything was cut out. */
     const show = (items: Operand[]): Operand[] | null => {
-      const { font, fontSize, charSpacing, wordSpacing, horizontalScale, rise, ctm } = state
+      const { font, fontSize, charSpacing, wordSpacing, horizontalScale, rise, ctm, renderMode } = state
+      // Text that clips is a stencil for what follows. Without it, a fill floods the whole
+      // page. It stays, and the check of the finished file reports it as not removed.
+      const mayCut = renderMode < FIRST_CLIPPING_MODE
       const output: Operand[] = []
       let keptBytes: number[] = []
       let cut = false
@@ -389,7 +397,7 @@ class ContentRewriter {
 
           const glyph = multiply(multiply([fontSize * horizontalScale, 0, 0, fontSize, 0, rise], textMatrix), ctm)
           const middle = apply(glyph, width / 2, GLYPH_MIDDLE)
-          if (this.areas.some((area) => inside(middle, area))) {
+          if (mayCut && this.areas.some((area) => inside(middle, area))) {
             flush()
             // A gap as wide as the glyph, so that the rest of the line stays where it is.
             output.push({ kind: 'number', value: (-advance / (fontSize * horizontalScale || 1)) * 1000 })
@@ -474,6 +482,9 @@ class ContentRewriter {
           break
         case 'Ts':
           state = { ...state, rise: numberAt(operands, count - 1) }
+          break
+        case 'Tr':
+          state = { ...state, renderMode: numberAt(operands, count - 1) }
           break
         case 'Td':
           nextLine(numberAt(operands, count - 2), numberAt(operands, count - 1))
@@ -605,9 +616,23 @@ function latin1Bytes(text: string): Uint8Array {
   return bytes
 }
 
+/**
+ * One character per byte, whatever the byte. TextDecoder cannot do this: its "latin1" is
+ * really Windows-1252, which turns bytes 0x80 to 0x9F into other characters, so writing
+ * them back would change the letters of the text on the page.
+ */
+function byteString(bytes: Uint8Array): string {
+  const CHUNK = 8192
+  let text = ''
+  for (let start = 0; start < bytes.length; start += CHUNK) {
+    text += String.fromCharCode(...bytes.subarray(start, start + CHUNK))
+  }
+  return text
+}
+
 function contentOf(stream: PDFStream): string {
   const bytes = stream instanceof PDFRawStream ? decodePDFRawStream(stream).decode() : stream.getContents()
-  return new TextDecoder('latin1').decode(bytes)
+  return byteString(bytes)
 }
 
 function pageStreams(page: PDFPage): PDFStream[] {

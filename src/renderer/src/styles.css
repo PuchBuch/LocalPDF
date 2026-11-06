@@ -788,6 +788,16 @@ button.primary {
   right: 0;
 }
 
+/* At the head of a page the side panel hangs down from the field, and the bottom panel clears it. */
+.field.side-panel-down .field-panel.side {
+  top: 0;
+  bottom: auto;
+}
+
+.field.side-panel-down .field-panel.bottom {
+  top: max(calc(100% + 6px), 36px);
+}
+
 /* At the foot of a page the bottom panel goes above the field, clear of the side panel. */
 .field.bottom-panel-above .field-panel.bottom {
   top: auto;

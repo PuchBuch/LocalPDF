@@ -28,6 +28,7 @@ export const de: Messages = {
   savedAs: (name) => `Gespeichert: ${name}`,
   saveFailed:
     'Die Datei konnte nicht gespeichert werden. Vielleicht ist sie in einem anderen Programm geöffnet. Versuchen Sie einen anderen Namen oder Ordner.',
+  exportFailed: 'Diese Datei konnte nicht neu gespeichert werden: Ihr innerer Aufbau ist zu ungewöhnlich oder sie ist beschädigt. Die Originaldatei wurde nicht verändert.',
   moreOptions: 'Weitere Ausgaben',
   print: 'Drucken',
   printFailed: 'Das Dokument konnte nicht an den Drucker gesendet werden.',

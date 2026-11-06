@@ -27,6 +27,7 @@ export const pl: Messages = {
   saving: 'Proszę czekać…',
   savedAs: (name) => `Zapisano: ${name}`,
   saveFailed: 'Nie udało się zapisać pliku. Być może jest otwarty w innym programie. Spróbuj innej nazwy lub innego folderu.',
+  exportFailed: 'Nie udało się ponownie zapisać tego pliku: jego wewnętrzna struktura jest zbyt nietypowa lub jest uszkodzony. Oryginalny plik nie został zmieniony.',
   moreOptions: 'Inne formy wyjścia',
   print: 'Drukuj',
   printFailed: 'Nie udało się wysłać dokumentu do drukarki.',
