@@ -2,8 +2,8 @@
 import { execFileSync } from 'node:child_process'
 import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { createCanvas, loadImage } from '@napi-rs/canvas'
 import { build } from 'vite'
+import { renderIcon } from './make-icons.mjs'
 
 const OUT = resolve('out-extension')
 const ICON_SIZES = [16, 32, 48, 128]
@@ -34,12 +34,7 @@ await writeFile(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
 await copyFile('src/extension/background.js', join(OUT, 'background.js'))
 
 await mkdir(join(OUT, 'icons'), { recursive: true })
-const icon = await loadImage('build/icon.png')
-for (const size of ICON_SIZES) {
-  const canvas = createCanvas(size, size)
-  canvas.getContext('2d').drawImage(icon, 0, 0, size, size)
-  await writeFile(join(OUT, 'icons', `${size}.png`), canvas.toBuffer('image/png'))
-}
+for (const size of ICON_SIZES) await writeFile(join(OUT, 'icons', `${size}.png`), await renderIcon(size))
 
 await mkdir('release', { recursive: true })
 const archive = resolve('release', `LocalPDF-extension-${version}.zip`)

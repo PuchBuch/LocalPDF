@@ -13,7 +13,7 @@ extraResources:
 npmRebuild: false
 win:
   target: nsis
-  icon: build/icon.png
+  icon: build/icon.ico
   signExecutable: false
 nsis:
   oneClick: true
