@@ -81,11 +81,11 @@ function askChoice(message: string, detail: string, buttons: string[]): Promise<
   })
 }
 
-function chooseFiles(): Promise<OpenedFile[]> {
+function chooseFiles(single = false): Promise<OpenedFile[]> {
   return new Promise((done) => {
     const input = document.createElement('input')
     input.type = 'file'
-    input.multiple = true
+    input.multiple = !single
     input.accept = '.pdf,.jpg,.jpeg,.png,.webp,.gif'
     input.addEventListener('cancel', () => done([]))
     input.addEventListener('change', () => {

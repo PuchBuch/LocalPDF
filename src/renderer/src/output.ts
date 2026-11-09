@@ -21,11 +21,13 @@ export async function whileBusy(failure: string, work: () => Promise<void>): Pro
   }
 }
 
-export function printDocument(): Promise<void> {
+/** Prints the whole document, or just one of its pages. */
+export function printDocument(pageId?: string): Promise<void> {
   return whileBusy(t.printFailed, async () => {
     const { document } = useEditor.getState()
     if (!document) return
-    const { bytes, missingCharacters } = await buildPdf(document, await loadExportFonts(), { repair: repairPdf })
+    const chosen = pageId ? { ...document, pages: document.pages.filter((page) => page.id === pageId) } : document
+    const { bytes, missingCharacters } = await buildPdf(chosen, await loadExportFonts(), { repair: repairPdf })
     const result = await printPdf(bytes)
     if (result === 'failed') addNotice(t.printFailed)
     if (result === 'printed') reportMissingCharacters(missingCharacters)

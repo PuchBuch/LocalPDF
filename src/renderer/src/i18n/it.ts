@@ -52,7 +52,22 @@ export const it: Messages = {
     thisPage: 'Questa pagina',
     allPages: 'Tutte le pagine',
     clearFields: (count) => (count === 1 ? 'Svuota il campo (1)' : `Svuota i campi${countSuffix(count)}`),
-    deleteFields: (count) => (count === 1 ? 'Elimina il campo (1)' : `Elimina i campi${countSuffix(count)}`)
+    deleteFields: (count) => (count === 1 ? 'Elimina il campo (1)' : `Elimina i campi${countSuffix(count)}`),
+    printPage: 'Stampa questa pagina',
+    replacePage: 'Sostituisci con una scansione o una foto…'
+  },
+  scan: {
+    title: 'Prepara la pagina',
+    found: 'Foglio trovato. Regola gli angoli se serve.',
+    notFound: 'Nessun foglio trovato: trascina gli angoli sui bordi del foglio.',
+    whiten: 'Rendi bianco lo sfondo',
+    wholePicture: 'Immagine intera',
+    use: 'Fatto',
+    cancel: 'Annulla',
+    corner: 'Angolo del foglio',
+    preparing: 'Preparazione della pagina…',
+    done: 'Pagina sostituita',
+    failed: 'Non è stato possibile sostituire la pagina.'
   },
   textLeftInFile: (pages) =>
     `Attenzione: a pagina ${pages} il testo sostituito non è stato rimosso del tutto dal file. Non si vede, ma i programmi possono trovarlo.`,

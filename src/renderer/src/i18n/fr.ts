@@ -53,7 +53,22 @@ export const fr: Messages = {
     thisPage: 'Cette page',
     allPages: 'Toutes les pages',
     clearFields: (count) => (count === 1 ? 'Vider le champ (1)' : `Vider les champs${countSuffix(count)}`),
-    deleteFields: (count) => (count === 1 ? 'Supprimer le champ (1)' : `Supprimer les champs${countSuffix(count)}`)
+    deleteFields: (count) => (count === 1 ? 'Supprimer le champ (1)' : `Supprimer les champs${countSuffix(count)}`),
+    printPage: 'Imprimer cette page',
+    replacePage: 'Remplacer par un scan ou une photo…'
+  },
+  scan: {
+    title: 'Préparer la page',
+    found: 'Feuille trouvée. Ajustez les coins si besoin.',
+    notFound: 'Aucune feuille trouvée : faites glisser les coins vers les bords de la feuille.',
+    whiten: 'Rendre le fond blanc',
+    wholePicture: 'Image entière',
+    use: 'Terminé',
+    cancel: 'Annuler',
+    corner: 'Coin de la feuille',
+    preparing: 'Préparation de la page…',
+    done: 'Page remplacée',
+    failed: 'La page n’a pas pu être remplacée.'
   },
   textLeftInFile: (pages) =>
     `Attention : à la page ${pages}, le texte remplacé n’a pas pu être entièrement retiré du fichier. Il n’est pas visible, mais des logiciels peuvent le retrouver.`,

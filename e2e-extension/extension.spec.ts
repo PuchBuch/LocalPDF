@@ -345,6 +345,154 @@ test('still copies where the clipboard interface is refused', async () => {
   await expect(page.getByTestId('saved-note')).toHaveText('Text copied to the clipboard')
 })
 
+test.describe('a page signed by hand', () => {
+  /** A phone photo of a printed sheet lying turned on a dark table, with a shadow across it. */
+  async function photoOfSheet(name: string): Promise<string> {
+    const canvas = createCanvas(1600, 1200)
+    const drawing = canvas.getContext('2d')
+    drawing.fillStyle = '#4a3a2b'
+    drawing.fillRect(0, 0, 1600, 1200)
+    drawing.save()
+    drawing.translate(800, 600)
+    drawing.rotate((8 * Math.PI) / 180)
+    drawing.translate(-370, -523)
+    const shade = drawing.createLinearGradient(0, 0, 740, 0)
+    shade.addColorStop(0, '#a9a7a1')
+    shade.addColorStop(1, '#f0eee8')
+    drawing.fillStyle = shade
+    drawing.fillRect(0, 0, 740, 1046)
+    drawing.fillStyle = '#151515'
+    drawing.font = '34px sans-serif'
+    drawing.fillText('Date: 9.11.2026', 70, 800)
+    drawing.strokeStyle = '#1d3fa8'
+    drawing.lineWidth = 6
+    drawing.beginPath()
+    drawing.moveTo(380, 820)
+    drawing.bezierCurveTo(440, 740, 520, 880, 640, 790)
+    drawing.stroke()
+    drawing.restore()
+    const path = join(directory, name)
+    await writeFile(path, canvas.toBuffer('image/jpeg', 92))
+    return path
+  }
+
+  async function replaceThirdPage(path: string): Promise<void> {
+    await page.getByTestId('page-thumbnail').nth(2).click({ button: 'right' })
+    const chooser = page.waitForEvent('filechooser')
+    await page.getByTestId('replace-page').click()
+    const fileChooser = await chooser
+    expect(fileChooser.isMultiple()).toBe(false)
+    await fileChooser.setFiles(path)
+  }
+
+  async function pagesOf(bytes: Uint8Array): Promise<{ width: number; height: number; text: string }[]> {
+    const pdf = await getDocument({ data: bytes.slice(), verbosity: 0 }).promise
+    const result = []
+    for (let number = 1; number <= pdf.numPages; number++) {
+      const pdfPage = await pdf.getPage(number)
+      const { width, height } = pdfPage.getViewport({ scale: 1 })
+      const { items } = await pdfPage.getTextContent()
+      result.push({ width, height, text: items.flatMap((item) => ('str' in item ? [item.str] : [])).join(' ') })
+    }
+    return result
+  }
+
+  test('puts the straightened photo of the signed sheet in place of the last page', async () => {
+    test.setTimeout(90_000)
+    await launch()
+    await open(await writePdf('form.pdf', 'One', 'Two', 'Sign here'))
+    await replaceThirdPage(await photoOfSheet('signed.jpg'))
+
+    await expect(page.getByTestId('scan-dialog')).toBeVisible()
+    await expect(page.getByTestId('scan-hint')).toHaveText('Sheet found. Adjust the corners if needed.')
+    await expect(page.getByTestId('scan-whiten')).toBeChecked()
+    await page.screenshot({ path: join(OUT, 'scan-dialog.png') })
+    await page.getByTestId('scan-use').click()
+    await expect(page.getByTestId('saved-note')).toHaveText('Page replaced', { timeout: 30_000 })
+    await expect(pages()).toHaveCount(3)
+    await page.screenshot({ path: join(OUT, 'scan-replaced.png') })
+
+    await answerSavePicker('signed.pdf')
+    await page.getByTestId('download').click()
+    await expect(page.getByTestId('saved-note')).toHaveText('Saved: signed.pdf')
+    const bytes = await savedBytes()
+    expect(bytes.length).toBeLessThan(1_000_000)
+    const saved = await pagesOf(bytes)
+    expect(saved.map((each) => each.text)).toEqual(['One', 'Two', ''])
+    // A sheet close to A4 becomes an A4 page.
+    expect(saved[2]!.width).toBeCloseTo(595, 0)
+    expect(saved[2]!.height).toBeCloseTo(842, 0)
+    expect(outsideRequests).toEqual([])
+  })
+
+  test('takes a scan whole, where the paper fills the picture', async () => {
+    await launch()
+    await open(await writePdf('form.pdf', 'One', 'Two', 'Sign here'))
+    const canvas = createCanvas(1240, 1754)
+    const drawing = canvas.getContext('2d')
+    drawing.fillStyle = '#fdfdfd'
+    drawing.fillRect(0, 0, 1240, 1754)
+    drawing.fillStyle = '#111'
+    drawing.font = '40px sans-serif'
+    drawing.fillText('Signed', 120, 1400)
+    const scan = join(directory, 'scan.png')
+    await writeFile(scan, canvas.toBuffer('image/png'))
+
+    await replaceThirdPage(scan)
+    await expect(page.getByTestId('scan-hint')).toHaveText('No sheet found: drag the corners to the edges of the sheet.')
+    await page.getByTestId('scan-use').click()
+    await expect(page.getByTestId('saved-note')).toHaveText('Page replaced', { timeout: 30_000 })
+    await expect(pages()).toHaveCount(3)
+  })
+
+  test('changes nothing when the dialog is cancelled, and the replacement can be undone', async () => {
+    await launch()
+    await open(await writePdf('form.pdf', 'One', 'Two', 'Sign here'))
+    const photo = await photoOfSheet('cancel.jpg')
+    await replaceThirdPage(photo)
+    await page.getByTestId('scan-cancel').click()
+    await expect(page.getByTestId('scan-dialog')).toHaveCount(0)
+    await page.getByTestId('page-thumbnail').nth(2).click()
+    await expect(pages().nth(2).locator('.textLayer')).toContainText('Sign here')
+
+    await replaceThirdPage(photo)
+    await page.getByTestId('scan-use').click()
+    await expect(page.getByTestId('saved-note')).toHaveText('Page replaced', { timeout: 30_000 })
+    await page.getByTestId('page-thumbnail').nth(2).click()
+    await expect(pages().nth(2).locator('.textLayer')).not.toContainText('Sign here')
+    await page.keyboard.press('Control+z')
+    await expect(pages()).toHaveCount(3)
+    await page.getByTestId('page-thumbnail').nth(2).click()
+    await expect(pages().nth(2).locator('.textLayer')).toContainText('Sign here')
+  })
+
+  test('puts a scanned PDF in place of a page without asking', async () => {
+    await launch()
+    await open(await writePdf('form.pdf', 'One', 'Two', 'Sign here'))
+    await replaceThirdPage(await writePdf('scanned.pdf', 'Scanned and signed'))
+    await page.getByTestId('page-thumbnail').nth(2).click()
+    await expect(pages().nth(2).locator('.textLayer')).toContainText('Scanned and signed')
+    await expect(pages()).toHaveCount(3)
+    await expect(page.getByTestId('scan-dialog')).toHaveCount(0)
+  })
+
+  test('prints just the page to sign', async () => {
+    await launch()
+    await open(await writePdf('form.pdf', 'One', 'Two', 'Sign here'))
+    await page.evaluate(() => {
+      const record = window as unknown as { printedPages?: number; print: () => void }
+      record.print = () => {
+        record.printedPages = document.querySelectorAll('.print-root .print-page img').length
+      }
+    })
+    await page.getByTestId('page-thumbnail').nth(2).click({ button: 'right' })
+    await page.getByTestId('print-page').click()
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { printedPages?: number }).printedPages))
+      .toBe(1)
+  })
+})
+
 test('the toolbar button opens the editor, and then brings back its tab instead of a second one', async () => {
   await launch()
   await page.close()

@@ -14,6 +14,7 @@ A PDF editor for Windows that keeps your documents on your computer. Files are n
 - **Find fields:** adds empty fields at blank lines and boxes.
 - **Recognize text in scans (OCR):** offline, in eight languages. Saved files can be searched.
 - **Manage pages:** delete, rotate, reorder, and merge PDFs and pictures.
+- **Pages signed by hand:** print a single page, sign it, then put a scan or a phone photo of it in its place. A photo is straightened, cropped to the sheet and cleaned up.
 - **Passwords:** opens protected PDFs, and can keep the protection when saving.
 - **Also:** print, extract text as Markdown, recovery after a crash.
 - **Languages:** English, Deutsch, Français, Español, Italiano, Polski, Українська, Русский.

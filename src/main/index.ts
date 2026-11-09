@@ -176,10 +176,10 @@ ipcMain.on('app:set-dialog-texts', (_event, texts: DialogTexts) => {
   dialogTexts = texts
 })
 
-ipcMain.handle('files:choose', async (event) => {
+ipcMain.handle('files:choose', async (event, single?: boolean) => {
   const win = BrowserWindow.fromWebContents(event.sender)
   const options: Electron.OpenDialogOptions = {
-    properties: ['openFile', 'multiSelections'],
+    properties: single === true ? ['openFile'] : ['openFile', 'multiSelections'],
     filters: [{ name: dialogTexts.filesFilter, extensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'gif'] }]
   }
   const result = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options)

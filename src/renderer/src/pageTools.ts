@@ -1,14 +1,17 @@
 import { detectSpots, fieldsForSpots } from '../../core/detectFields'
 import { turnRect } from '../../core/forms'
 import { displayedSize, normalizeRotation, type Rect } from '../../core/geometry'
+import { fileKind } from '../../core/loadError'
 import type { Field, OcrWord, PageRef } from '../../core/model'
+import { findPaperCorners, wholePicture } from '../../core/scan'
 import { pageHasText, type ContentPage } from '../../export/extractContent'
 import { t } from './i18n'
 import { whileBusy } from './output'
 import { getPdfPage } from './render/pdfjs'
 import { recognizePage, startOcr } from './render/recognize'
+import { preparedScan, readScanPicture, type ScanPicture } from './render/scanImage'
 import { measureText } from './render/textMetrics'
-import { addNotice, useEditor } from './store'
+import { addNotice, askScan, replacePageWithFile, useEditor } from './store'
 
 /** Pixels per point of the picture fields are looked for in. */
 const DETECT_SCALE = 2
@@ -70,6 +73,48 @@ async function pageMask(page: PageRef): Promise<{ mask: Uint8Array; width: numbe
     if ((data[offset]! + data[offset + 1]! + data[offset + 2]!) / 3 < DARK) mask[index] = 1
   }
   return { mask, width, height }
+}
+
+/**
+ * Puts a chosen file where a page was, such as the scan of a page signed by hand.
+ * A photo or a scanned picture first gets its sheet cut out, straightened and cleaned.
+ */
+export function replacePageWithChosenFile(pageId: string): Promise<void> {
+  return whileBusy(t.scan.failed, async () => {
+    const [file] = await window.localpdf.chooseFiles(true)
+    if (!file) return
+    const kind = fileKind(file.name)
+    if (kind === 'pdf' || kind === 'heic' || kind === 'other') {
+      await replacePageWithFile(pageId, file)
+      return
+    }
+
+    let picture: ScanPicture
+    try {
+      picture = await readScanPicture(kind, file.bytes)
+    } catch (error) {
+      console.error(error)
+      addNotice(t.fileUnreadable(file.name))
+      return
+    }
+    try {
+      const found = findPaperCorners(picture.preview)
+      const answer = await askScan({
+        name: file.name,
+        previewUrl: picture.previewUrl,
+        size: { width: picture.preview.width, height: picture.preview.height },
+        corners: found ?? wholePicture(picture.preview),
+        found: found !== null
+      })
+      if (!answer) return
+      useEditor.setState({ statusNote: t.scan.preparing })
+      const scan = await preparedScan(picture, answer.corners, answer.whiten)
+      const replaced = await replacePageWithFile(pageId, { name: file.name.replace(/\.[^.]*$/, '.jpg'), bytes: scan.bytes })
+      useEditor.setState({ statusNote: replaced ? t.scan.done : null })
+    } finally {
+      URL.revokeObjectURL(picture.previewUrl)
+    }
+  })
 }
 
 /** Adds blank fields where a page seems to ask for them, as one step to undo. */

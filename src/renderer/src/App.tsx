@@ -3,6 +3,7 @@ import { hasUnsavedChanges } from '../../core/history'
 import { MAX_ZOOM, MIN_ZOOM } from '../../core/zoom'
 import { PasswordDialog } from './editor/PasswordDialog'
 import { RecoveryDialog } from './editor/RecoveryDialog'
+import { ScanDialog } from './editor/ScanDialog'
 import { SignatureDialog } from './editor/SignatureDialog'
 import { DocumentView } from './editor/DocumentView'
 import { usePages } from './editor/displayedPages'
@@ -53,9 +54,10 @@ function useHistoryShortcuts(): void {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code !== 'KeyZ' || !(event.ctrlKey || event.metaKey) || event.altKey) return
-      const { undo, redo, signingFieldId } = useEditor.getState()
+      const { undo, redo, signingFieldId, scanRequest } = useEditor.getState()
       // The signature dialog has its own undo, and its name input the browser's.
-      if (signingFieldId) return
+      // Under the scan dialog, the page about to be replaced must stay where it is.
+      if (signingFieldId || scanRequest) return
       event.preventDefault()
       if (event.shiftKey) redo()
       else undo()
@@ -440,6 +442,7 @@ export function App() {
   const signingFieldId = useEditor((state) => state.signingFieldId)
   const recoveryOffer = useEditor((state) => state.recoveryOffer)
   const passwordRequest = useEditor((state) => state.passwordRequest)
+  const scanRequest = useEditor((state) => state.scanRequest)
   useHistoryShortcuts()
   useOutputShortcuts()
   useWindowTitle()
@@ -451,6 +454,7 @@ export function App() {
       {signingFieldId && <SignatureDialog fieldId={signingFieldId} />}
       {recoveryOffer && <RecoveryDialog savedAt={recoveryOffer.savedAt} names={recoveryOffer.names} />}
       {passwordRequest && <PasswordDialog name={passwordRequest.name} wrong={passwordRequest.wrong} />}
+      {scanRequest && <ScanDialog request={scanRequest} />}
       <ContextBanners />
       <Notices />
       {dragging && <div className="drop-overlay">{t.dropOverlay}</div>}

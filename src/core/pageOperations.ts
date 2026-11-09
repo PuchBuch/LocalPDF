@@ -1,12 +1,18 @@
 import { turnRect } from './forms'
 import { normalizeRotation, rotateRectClockwise, type Size } from './geometry'
-import type { EditorDocument } from './model'
+import type { EditorDocument, PageRef } from './model'
 
 /** Removes a page and its fields. A document always keeps at least one page. */
 export function deletePage(document: EditorDocument, pageId: string): void {
   if (document.pages.length <= 1) return
   const index = document.pages.findIndex((page) => page.id === pageId)
   if (index >= 0) document.pages.splice(index, 1)
+}
+
+/** Puts new pages where a page was, in its place in the order. The page's fields go with it. */
+export function replacePage(document: EditorDocument, pageId: string, pages: PageRef[]): void {
+  const index = document.pages.findIndex((page) => page.id === pageId)
+  if (index >= 0 && pages.length > 0) document.pages.splice(index, 1, ...pages)
 }
 
 /** Swaps a page with its neighbour. Moving past either end does nothing. */

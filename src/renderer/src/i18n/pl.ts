@@ -52,7 +52,22 @@ export const pl: Messages = {
     thisPage: 'Ta strona',
     allPages: 'Wszystkie strony',
     clearFields: (count) => (count === 1 ? 'Wyczyść pole (1)' : `Wyczyść pola${countSuffix(count)}`),
-    deleteFields: (count) => (count === 1 ? 'Usuń pole (1)' : `Usuń pola${countSuffix(count)}`)
+    deleteFields: (count) => (count === 1 ? 'Usuń pole (1)' : `Usuń pola${countSuffix(count)}`),
+    printPage: 'Drukuj tę stronę',
+    replacePage: 'Zastąp skanem lub zdjęciem…'
+  },
+  scan: {
+    title: 'Przygotowanie strony',
+    found: 'Znaleziono kartkę. W razie potrzeby popraw narożniki.',
+    notFound: 'Nie znaleziono kartki: przeciągnij narożniki do krawędzi kartki.',
+    whiten: 'Wybiel tło',
+    wholePicture: 'Całe zdjęcie',
+    use: 'Gotowe',
+    cancel: 'Anuluj',
+    corner: 'Narożnik kartki',
+    preparing: 'Przygotowywanie strony…',
+    done: 'Strona zastąpiona',
+    failed: 'Nie udało się zastąpić strony.'
   },
   textLeftInFile: (pages) =>
     `Uwaga: na stronie ${pages} nie udało się całkowicie usunąć zastąpionego tekstu z pliku. Nie jest widoczny, ale programy mogą go znaleźć.`,

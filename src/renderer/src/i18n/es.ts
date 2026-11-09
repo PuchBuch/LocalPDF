@@ -52,7 +52,22 @@ export const es: Messages = {
     thisPage: 'Esta página',
     allPages: 'Todas las páginas',
     clearFields: (count) => (count === 1 ? 'Vaciar el campo (1)' : `Vaciar los campos${countSuffix(count)}`),
-    deleteFields: (count) => (count === 1 ? 'Eliminar el campo (1)' : `Eliminar los campos${countSuffix(count)}`)
+    deleteFields: (count) => (count === 1 ? 'Eliminar el campo (1)' : `Eliminar los campos${countSuffix(count)}`),
+    printPage: 'Imprimir esta página',
+    replacePage: 'Sustituir por un escaneo o una foto…'
+  },
+  scan: {
+    title: 'Preparar la página',
+    found: 'Hoja encontrada. Ajuste las esquinas si hace falta.',
+    notFound: 'No se encontró la hoja: arrastre las esquinas a los bordes de la hoja.',
+    whiten: 'Poner el fondo blanco',
+    wholePicture: 'Imagen completa',
+    use: 'Listo',
+    cancel: 'Cancelar',
+    corner: 'Esquina de la hoja',
+    preparing: 'Preparando la página…',
+    done: 'Página sustituida',
+    failed: 'No se pudo sustituir la página.'
   },
   textLeftInFile: (pages) =>
     `Atención: en la página ${pages} el texto sustituido no se pudo quitar por completo del archivo. No se ve, pero se puede encontrar con programas.`,

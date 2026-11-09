@@ -50,7 +50,22 @@ export const ru = {
     thisPage: 'Эта страница',
     allPages: 'Все страницы',
     clearFields: (count: number) => (count === 1 ? 'Очистить поле (1)' : `Очистить поля${countSuffix(count)}`),
-    deleteFields: (count: number) => (count === 1 ? 'Удалить поле (1)' : `Удалить поля${countSuffix(count)}`)
+    deleteFields: (count: number) => (count === 1 ? 'Удалить поле (1)' : `Удалить поля${countSuffix(count)}`),
+    printPage: 'Напечатать страницу',
+    replacePage: 'Заменить сканом или фото…'
+  },
+  scan: {
+    title: 'Подготовка страницы',
+    found: 'Лист найден. Поправьте углы, если нужно.',
+    notFound: 'Лист не найден: перетащите углы к краям листа.',
+    whiten: 'Сделать фон белым',
+    wholePicture: 'Весь снимок',
+    use: 'Готово',
+    cancel: 'Отмена',
+    corner: 'Угол листа',
+    preparing: 'Подготовка страницы…',
+    done: 'Страница заменена',
+    failed: 'Не удалось заменить страницу.'
   },
   textLeftInFile: (pages: string) =>
     `Внимание: на странице ${pages} заменённый текст не удалось полностью удалить из файла. На вид его нет, но программами его можно найти.`,

@@ -52,7 +52,22 @@ export const en: Messages = {
     thisPage: 'This page',
     allPages: 'All pages',
     clearFields: (count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`),
-    deleteFields: (count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`)
+    deleteFields: (count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`),
+    printPage: 'Print this page',
+    replacePage: 'Replace with a scan or photo…'
+  },
+  scan: {
+    title: 'Prepare the page',
+    found: 'Sheet found. Adjust the corners if needed.',
+    notFound: 'No sheet found: drag the corners to the edges of the sheet.',
+    whiten: 'Make the background white',
+    wholePicture: 'Whole picture',
+    use: 'Done',
+    cancel: 'Cancel',
+    corner: 'Corner of the sheet',
+    preparing: 'Preparing the page…',
+    done: 'Page replaced',
+    failed: 'The page could not be replaced.'
   },
   textLeftInFile: (pages) =>
     `Warning: on page ${pages} the replaced text could not be fully removed from the file. It cannot be seen, but software can find it.`,

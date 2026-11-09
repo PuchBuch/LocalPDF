@@ -983,6 +983,64 @@ button.primary {
   background: #2460c8;
 }
 
+.dialog-actions button.secondary-left {
+  margin-right: auto;
+}
+
+/* Preparing a scan or photo as a page */
+
+.scan-dialog {
+  width: min(900px, 94vw);
+}
+
+.scan-frame {
+  position: relative;
+  margin: 12px auto 0;
+  touch-action: none;
+  user-select: none;
+}
+
+.scan-frame img,
+.scan-frame svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scan-frame img {
+  object-fit: fill;
+}
+
+.scan-frame polygon {
+  fill: rgb(36 96 200 / 0.12);
+  stroke: #2460c8;
+  stroke-width: 2;
+}
+
+.scan-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  padding: 0;
+  border: 3px solid #2460c8;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.85);
+  cursor: grab;
+}
+
+.scan-corner:focus-visible {
+  outline: 3px solid #f5a623;
+}
+
+.scan-whiten {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 /* Notices */
 
 .notices {

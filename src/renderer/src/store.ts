@@ -48,7 +48,8 @@ import type {
   PdfSource,
   TextStyle
 } from '../../core/model'
-import { deletePage, movePage, rotatePageClockwise } from '../../core/pageOperations'
+import { deletePage, movePage, replacePage, rotatePageClockwise } from '../../core/pageOperations'
+import type { Quad } from '../../core/scan'
 import { coversOf, fieldForLine, type LineAppearance, type PageTextRun, type TextLine, type TextWord } from '../../core/textLines'
 import { decreaseZoom, DEFAULT_ZOOM, increaseZoom } from '../../core/zoom'
 import { buildPdf } from '../../export/buildPdf'
@@ -116,6 +117,8 @@ interface EditorState {
   holdsProtectedContent: boolean
   /** A document left over from a crash, while the question of restoring it is open. */
   recoveryOffer: { savedAt: string; names: string[] } | null
+  /** A photo or scan waiting for its sheet to be chosen, before it becomes a page. */
+  scanRequest: ScanRequest | null
   pendingFiles: number
   notices: string[]
   openFiles: (files: OpenedFile[]) => Promise<void>
@@ -193,6 +196,36 @@ const NO_DOCUMENT = {
 export interface PasswordAnswer {
   password: string
   keep: boolean
+}
+
+export interface ScanRequest {
+  name: string
+  previewUrl: string
+  /** The picture as shown, in its own pixels. */
+  size: Size
+  /** The sheet as found, or the whole picture. */
+  corners: Quad
+  found: boolean
+}
+
+export interface ScanAnswer {
+  corners: Quad
+  whiten: boolean
+}
+
+let scanAnswered: ((answer: ScanAnswer | null) => void) | null = null
+
+export function askScan(request: ScanRequest): Promise<ScanAnswer | null> {
+  useEditor.setState({ scanRequest: request })
+  return new Promise((done) => {
+    scanAnswered = done
+  })
+}
+
+export function answerScan(answer: ScanAnswer | null): void {
+  useEditor.setState({ scanRequest: null })
+  scanAnswered?.(answer)
+  scanAnswered = null
 }
 
 let passwordAnswered: ((answer: PasswordAnswer | null) => void) | null = null
@@ -393,6 +426,7 @@ export const useEditor = create<EditorState>((set) => ({
   editScope: 'line',
   recoveryOffer: null,
   passwordRequest: null,
+  scanRequest: null,
   pendingFiles: 0,
   notices: [],
 
@@ -753,6 +787,36 @@ export async function restoreDocument(document: EditorDocument): Promise<void> {
     formWidgets,
     currentPageId: document.pages[0]?.id ?? null
   })
+}
+
+/**
+ * Puts the pages of a file where a page was, as one step to undo. False if the file
+ * could not be opened, which has then been said.
+ */
+export async function replacePageWithFile(pageId: string, file: OpenedFile): Promise<boolean> {
+  const rejection = rejectionNotice(file)
+  if (rejection) {
+    addNotice(rejection)
+    return false
+  }
+  const loaded = await loadFile(file).catch((error: unknown) => {
+    console.error(error)
+    addNotice(failureNotice(file, error))
+    return null
+  })
+  if (!loaded) return false
+  useEditor.setState((state) => ({
+    pageSizes: { ...state.pageSizes, ...loaded.sizes },
+    formWidgets: { ...state.formWidgets, ...loaded.widgets },
+    ...editDocument(state, (document) => {
+      document.sources[loaded.sourceId] = loaded.source
+      replacePage(document, pageId, loaded.pages)
+    })
+  }))
+  // The new page is shown, so that it can be checked straight away.
+  const first = loaded.pages[0]
+  if (first) useEditor.getState().goToPage(first.id)
+  return true
 }
 
 /** Puts a chosen image file into a picture field. */

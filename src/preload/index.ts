@@ -35,7 +35,8 @@ export interface DialogTexts {
 const api = {
   systemLocale: (): Promise<string> => ipcRenderer.invoke('app:system-locale'),
   setDialogTexts: (texts: DialogTexts): void => ipcRenderer.send('app:set-dialog-texts', texts),
-  chooseFiles: (): Promise<OpenedFile[]> => ipcRenderer.invoke('files:choose'),
+  /** Several files, or just one with `single`. */
+  chooseFiles: (single = false): Promise<OpenedFile[]> => ipcRenderer.invoke('files:choose', single),
   takeStartupFiles: (): Promise<OpenedFile[]> => ipcRenderer.invoke('files:take-startup'),
   onIncomingFiles: (listener: (files: OpenedFile[]) => void): void => {
     ipcRenderer.on('files:incoming', (_event, files: OpenedFile[]) => listener(files))

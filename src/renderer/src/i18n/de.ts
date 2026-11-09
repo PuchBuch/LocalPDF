@@ -53,7 +53,22 @@ export const de: Messages = {
     thisPage: 'Diese Seite',
     allPages: 'Alle Seiten',
     clearFields: (count) => (count === 1 ? 'Feld leeren (1)' : `Felder leeren${countSuffix(count)}`),
-    deleteFields: (count) => (count === 1 ? 'Feld löschen (1)' : `Felder löschen${countSuffix(count)}`)
+    deleteFields: (count) => (count === 1 ? 'Feld löschen (1)' : `Felder löschen${countSuffix(count)}`),
+    printPage: 'Diese Seite drucken',
+    replacePage: 'Durch Scan oder Foto ersetzen…'
+  },
+  scan: {
+    title: 'Seite vorbereiten',
+    found: 'Blatt gefunden. Passen Sie die Ecken bei Bedarf an.',
+    notFound: 'Kein Blatt gefunden: Ziehen Sie die Ecken an die Ränder des Blatts.',
+    whiten: 'Hintergrund weiß machen',
+    wholePicture: 'Ganzes Bild',
+    use: 'Fertig',
+    cancel: 'Abbrechen',
+    corner: 'Ecke des Blatts',
+    preparing: 'Seite wird vorbereitet…',
+    done: 'Seite ersetzt',
+    failed: 'Die Seite konnte nicht ersetzt werden.'
   },
   textLeftInFile: (pages) =>
     `Achtung: Auf Seite ${pages} konnte der ersetzte Text nicht vollständig aus der Datei entfernt werden. Er ist nicht zu sehen, kann aber mit Programmen gefunden werden.`,
