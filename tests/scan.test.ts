@@ -7,7 +7,7 @@ import {
   SCAN_LONG_SIDE,
   straighten,
   straightenedSize,
-  whitenPaper,
+  cleanPaper,
   type Pixels,
   type Quad
 } from '../src/core/scan'
@@ -179,37 +179,109 @@ describe('straightening the sheet', () => {
   })
 })
 
-describe('evening out the light', () => {
-  it('turns shaded paper white and keeps ink dark and coloured', () => {
-    const canvas = createCanvas(600, 800)
-    const context = canvas.getContext('2d')
-    const shade = context.createLinearGradient(0, 0, 600, 800)
-    shade.addColorStop(0, '#7a7874')
-    shade.addColorStop(1, '#e4e2dc')
-    context.fillStyle = shade
-    context.fillRect(0, 0, 600, 800)
-    context.fillStyle = '#1a1a1a'
-    context.fillRect(60, 100, 300, 6)
-    context.fillRect(300, 650, 240, 6)
-    // A blue signature in the darkest corner.
-    context.strokeStyle = '#1d3fa8'
-    context.lineWidth = 5
-    context.beginPath()
-    context.moveTo(40, 200)
-    context.bezierCurveTo(90, 140, 140, 260, 200, 190)
-    context.stroke()
-    const { data } = context.getImageData(0, 0, 600, 800)
-    const page = whitenPaper({ width: 600, height: 800, data: new Uint8ClampedArray(data) })
 
-    expect(grayAt(page, 30, 30)).toBeGreaterThan(240)
-    expect(grayAt(page, 560, 760)).toBeGreaterThan(240)
-    expect(grayAt(page, 300, 400)).toBeGreaterThan(240)
-    expect(grayAt(page, 200, 103)).toBeLessThan(70)
-    expect(grayAt(page, 400, 653)).toBeLessThan(70)
+/** Paper under warm lamp light with a shadow: black print, a thin grey line and a blue signature. */
+function warmPhotoOfPage(): Pixels {
+  const canvas = createCanvas(600, 800)
+  const context = canvas.getContext('2d')
+  const shade = context.createLinearGradient(0, 0, 600, 800)
+  shade.addColorStop(0, '#8a7a62')
+  shade.addColorStop(1, '#f0e2c8')
+  context.fillStyle = shade
+  context.fillRect(0, 0, 600, 800)
+  // Black print, as the warm light shows it: brownish.
+  context.fillStyle = '#3b3024'
+  context.fillRect(60, 100, 300, 6)
+  context.fillRect(300, 650, 240, 6)
+  // Thin print that came out pale.
+  context.fillStyle = '#9a8c76'
+  context.fillRect(60, 400, 300, 2)
+  context.strokeStyle = '#2a3f9a'
+  context.lineWidth = 5
+  context.beginPath()
+  context.moveTo(40, 200)
+  context.bezierCurveTo(90, 140, 140, 260, 200, 190)
+  context.stroke()
+  const { data } = context.getImageData(0, 0, 600, 800)
+  return { width: 600, height: 800, data: new Uint8ClampedArray(data) }
+}
 
-    const offset = (Math.round(193) * 600 + 200) * 4
-    const [red, green, blue] = [page.data[offset - 4 * 2]!, page.data[offset - 4 * 2 + 1]!, page.data[offset - 4 * 2 + 2]!]
+function colorAt(picture: Pixels, x: number, y: number): [number, number, number] {
+  const offset = (Math.round(y) * picture.width + Math.round(x)) * 4
+  return [picture.data[offset]!, picture.data[offset + 1]!, picture.data[offset + 2]!]
+}
+
+/** The darkest pixel of a small area, as a stroke there is at most this light. */
+function darkestIn(picture: Pixels, x: number, y: number, size = 4): [number, number, number] {
+  let darkest: [number, number, number] = [255, 255, 255]
+  for (let dy = -size; dy <= size; dy++) {
+    for (let dx = -size; dx <= size; dx++) {
+      const color = colorAt(picture, x + dx, y + dy)
+      if (color[0] + color[1] + color[2] < darkest[0] + darkest[1] + darkest[2]) darkest = color
+    }
+  }
+  return darkest
+}
+
+describe('cleaning the page', () => {
+  it('turns shaded, tinted paper white and print black, without a brown tint', () => {
+    const page = cleanPaper(warmPhotoOfPage(), 'color')
+    for (const [x, y] of [[30, 30], [560, 760], [300, 500]] as const) {
+      expect(Math.min(...colorAt(page, x, y))).toBeGreaterThan(240)
+    }
+    for (const [x, y] of [[200, 103], [400, 653]] as const) {
+      const [red, green, blue] = darkestIn(page, x, y)
+      expect(Math.max(red, green, blue)).toBeLessThan(60)
+      expect(Math.max(red, green, blue) - Math.min(red, green, blue)).toBeLessThan(12)
+    }
+    // Thin, pale print is made darker than it was against its paper.
+    expect(Math.max(...darkestIn(page, 200, 401, 2))).toBeLessThan(190)
+  })
+
+  it('keeps a blue signature blue in colour', () => {
+    const [red, green, blue] = darkestIn(cleanPaper(warmPhotoOfPage(), 'color'), 120, 205, 6)
     expect(blue).toBeGreaterThan(red + 40)
     expect(blue).toBeGreaterThan(green + 30)
+  })
+
+  it('makes everything grey in black and white', () => {
+    const page = cleanPaper(warmPhotoOfPage(), 'gray')
+    for (let offset = 0; offset < page.data.length; offset += 4 * 97) {
+      expect(page.data[offset]).toBe(page.data[offset + 1])
+      expect(page.data[offset + 1]).toBe(page.data[offset + 2])
+    }
+    expect(Math.max(...darkestIn(page, 120, 205, 6))).toBeLessThan(110)
+  })
+})
+
+describe('finding the sheet on a light table', () => {
+  it('finds the edges of white paper on a beige table, and takes a cut-off side from the photo', () => {
+    // The sheet runs off the top of the photo: its top side is the photo's edge.
+    const sheet: Quad = [
+      { x: 140, y: -40 },
+      { x: 620, y: -10 },
+      { x: 600, y: 590 },
+      { x: 110, y: 570 }
+    ]
+    const picture = photo(800, 640, (context) => {
+      context.fillStyle = '#d8d0bf'
+      context.fillRect(0, 0, 800, 640)
+      fillQuad(context, sheet, '#f6f6f3')
+      context.fillStyle = '#222'
+      context.font = '18px sans-serif'
+      for (let line = 0; line < 8; line++) context.fillText('Ich bestätige, dass die Angaben richtig sind.', 170, 80 + line * 34)
+      context.strokeStyle = '#333'
+      context.strokeRect(180, 380, 300, 60)
+    })
+    const found = findPaperCorners(picture)
+    expect(found).not.toBeNull()
+    const [topLeft, topRight, bottomRight, bottomLeft] = found!
+    expect(topLeft.y).toBeLessThan(6)
+    expect(topRight.y).toBeLessThan(6)
+    expect(gap(bottomRight, sheet[2])).toBeLessThan(10)
+    expect(gap(bottomLeft, sheet[3])).toBeLessThan(10)
+    // The left and right sides lean as the sheet does, and meet the top of the photo.
+    expect(Math.abs(topLeft.x - 137)).toBeLessThan(10)
+    expect(Math.abs(topRight.x - 617)).toBeLessThan(10)
   })
 })

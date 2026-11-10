@@ -108,7 +108,7 @@ export function replacePageWithChosenFile(pageId: string): Promise<void> {
       })
       if (!answer) return
       useEditor.setState({ statusNote: t.scan.preparing })
-      const scan = await preparedScan(picture, answer.corners, answer.whiten)
+      const scan = await preparedScan(picture, answer.corners, answer.look)
       const replaced = await replacePageWithFile(pageId, { name: file.name.replace(/\.[^.]*$/, '.jpg'), bytes: scan.bytes })
       useEditor.setState({ statusNote: replaced ? t.scan.done : null })
     } finally {

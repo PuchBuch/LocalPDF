@@ -50,6 +50,7 @@ import type {
 } from '../../core/model'
 import { deletePage, movePage, replacePage, rotatePageClockwise } from '../../core/pageOperations'
 import type { Quad } from '../../core/scan'
+import type { ScanLook } from './render/scanImage'
 import { coversOf, fieldForLine, type LineAppearance, type PageTextRun, type TextLine, type TextWord } from '../../core/textLines'
 import { decreaseZoom, DEFAULT_ZOOM, increaseZoom } from '../../core/zoom'
 import { buildPdf } from '../../export/buildPdf'
@@ -210,7 +211,7 @@ export interface ScanRequest {
 
 export interface ScanAnswer {
   corners: Quad
-  whiten: boolean
+  look: ScanLook
 }
 
 let scanAnswered: ((answer: ScanAnswer | null) => void) | null = null

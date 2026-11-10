@@ -405,7 +405,7 @@ test.describe('a page signed by hand', () => {
 
     await expect(page.getByTestId('scan-dialog')).toBeVisible()
     await expect(page.getByTestId('scan-hint')).toHaveText('Sheet found. Adjust the corners if needed.')
-    await expect(page.getByTestId('scan-whiten')).toBeChecked()
+    await expect(page.getByTestId('scan-look-color')).toBeChecked()
     await page.screenshot({ path: join(OUT, 'scan-dialog.png') })
     await page.getByTestId('scan-use').click()
     await expect(page.getByTestId('saved-note')).toHaveText('Page replaced', { timeout: 30_000 })

@@ -2,16 +2,18 @@ import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import type { Point } from '../../../core/geometry'
 import { wholePicture, type Quad } from '../../../core/scan'
 import { t } from '../i18n'
+import type { ScanLook } from '../render/scanImage'
 import { answerScan, type ScanRequest } from '../store'
 
 /** Share of the picture an arrow key moves a corner by. */
 const KEY_STEP = 0.005
+const LOOKS: ScanLook[] = ['color', 'gray', 'original']
 
 /** Shows a photo or scan with the corners of its sheet, which can be dragged into place. */
 export function ScanDialog({ request }: { request: ScanRequest }) {
   const { size } = request
   const [corners, setCorners] = useState<Quad>(request.corners)
-  const [whiten, setWhiten] = useState(true)
+  const [look, setLook] = useState<ScanLook>('color')
   const frame = useRef<HTMLDivElement>(null)
   const dragged = useRef<number | null>(null)
 
@@ -98,10 +100,21 @@ export function ScanDialog({ request }: { request: ScanRequest }) {
             />
           ))}
         </div>
-        <label className="scan-whiten">
-          <input type="checkbox" data-testid="scan-whiten" checked={whiten} onChange={(event) => setWhiten(event.target.checked)} />
-          {t.scan.whiten}
-        </label>
+        <fieldset className="scan-look">
+          <legend>{t.scan.lookLabel}</legend>
+          {LOOKS.map((choice) => (
+            <label key={choice}>
+              <input
+                type="radio"
+                name="scan-look"
+                data-testid={`scan-look-${choice}`}
+                checked={look === choice}
+                onChange={() => setLook(choice)}
+              />
+              {t.scan.looks[choice]}
+            </label>
+          ))}
+        </fieldset>
         <div className="dialog-actions">
           <button type="button" className="secondary-left" data-testid="scan-whole" onClick={() => setCorners(wholePicture(size))}>
             {t.scan.wholePicture}
@@ -109,7 +122,7 @@ export function ScanDialog({ request }: { request: ScanRequest }) {
           <button type="button" data-testid="scan-cancel" onClick={() => answerScan(null)}>
             {t.scan.cancel}
           </button>
-          <button type="button" className="primary" data-testid="scan-use" onClick={() => answerScan({ corners, whiten })}>
+          <button type="button" className="primary" data-testid="scan-use" onClick={() => answerScan({ corners, look })}>
             {t.scan.use}
           </button>
         </div>

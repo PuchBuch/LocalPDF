@@ -1,7 +1,10 @@
 import type { Size } from '../../../core/geometry'
 import type { FileKind } from '../../../core/loadError'
 import type { ImageAsset } from '../../../core/model'
-import { straighten, straightenedSize, whitenPaper, type Pixels, type Quad } from '../../../core/scan'
+import { cleanPaper, straighten, straightenedSize, type PaperLook, type Pixels, type Quad } from '../../../core/scan'
+
+/** How the page is made from the photo: cleaned in colour or grey, or as photographed. */
+export type ScanLook = PaperLook | 'original'
 
 /** A larger photo is shrunk first: more detail than this does not reach a 200 dpi page. */
 const MAX_PICTURE_SIDE = 4000
@@ -59,12 +62,12 @@ export async function readScanPicture(kind: FileKind, bytes: Uint8Array): Promis
 }
 
 /** The sheet cut out along the corners chosen on the preview, straightened, and made a JPEG. */
-export async function preparedScan(picture: ScanPicture, previewCorners: Quad, whiten: boolean): Promise<ImageAsset> {
+export async function preparedScan(picture: ScanPicture, previewCorners: Quad, look: ScanLook): Promise<ImageAsset> {
   const scale = picture.full.width / picture.preview.width
   const corners = previewCorners.map(({ x, y }) => ({ x: x * scale, y: y * scale })) as Quad
   // Even a picture taken whole is brought down to the page's resolution.
   let page = straighten(picture.full, corners, straightenedSize(corners))
-  if (whiten) page = whitenPaper(page)
+  if (look !== 'original') page = cleanPaper(page, look)
 
   const canvas = canvasOf(page.width, page.height)
   canvas.getContext('2d')!.putImageData(new ImageData(new Uint8ClampedArray(page.data), page.width, page.height), 0, 0)
