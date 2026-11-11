@@ -49,6 +49,7 @@ import type {
   TextStyle
 } from '../../core/model'
 import { deletePage, movePage, replacePage, rotatePageClockwise } from '../../core/pageOperations'
+import type { AppliedValue } from '../../core/aiBridge'
 import type { Quad } from '../../core/scan'
 import type { ScanLook } from './render/scanImage'
 import { coversOf, fieldForLine, type LineAppearance, type PageTextRun, type TextLine, type TextWord } from '../../core/textLines'
@@ -120,6 +121,8 @@ interface EditorState {
   recoveryOffer: { savedAt: string; names: string[] } | null
   /** A photo or scan waiting for its sheet to be chosen, before it becomes a page. */
   scanRequest: ScanRequest | null
+  /** Each field shows its number in reading order. */
+  showFieldNumbers: boolean
   pendingFiles: number
   notices: string[]
   openFiles: (files: OpenedFile[]) => Promise<void>
@@ -160,6 +163,8 @@ interface EditorState {
   toggleBackground: (fieldId: string) => void
   cycleCheckbox: (fieldId: string) => void
   setCheckboxValue: (fieldId: string, value: CheckboxField['value']) => void
+  /** Fills several fields as one step to undo, as an answer from an AI does. */
+  applyFieldValues: (values: AppliedValue[]) => void
   deleteField: (fieldId: string) => void
   copyField: (fieldId: string) => void
   cancelPaste: () => void
@@ -428,6 +433,7 @@ export const useEditor = create<EditorState>((set) => ({
   recoveryOffer: null,
   passwordRequest: null,
   scanRequest: null,
+  showFieldNumbers: false,
   pendingFiles: 0,
   notices: [],
 
@@ -692,6 +698,24 @@ export const useEditor = create<EditorState>((set) => ({
 
   setCheckboxValue: (fieldId, value) =>
     set((state) => editDocument(state, (document) => updateField(document, fieldId, { value } as Partial<Field>))),
+
+  applyFieldValues: (values) =>
+    set((state) => {
+      if (values.length === 0) return {}
+      // Text is sized to fit before the one step of history, so that one undo takes all of it back.
+      const changes = values.flatMap(({ target, value }): { fieldId: string; change: Partial<Field> }[] => {
+        if (target.kind !== 'added') return []
+        if (typeof value === 'boolean') return [{ fieldId: target.fieldId, change: { value: value ? 'tick' : null } as Partial<Field> }]
+        const fitted = refitted(state, target.fieldId, (field) => ({ ...field, value: String(value) }) as Field)
+        return fitted ? [{ fieldId: target.fieldId, change: fitted }] : []
+      })
+      return editDocument(state, (document) => {
+        for (const { fieldId, change } of changes) updateField(document, fieldId, change)
+        for (const { target, value } of values) {
+          if (target.kind === 'form') assignFormValue(document, target.sourceId, target.fieldName, value)
+        }
+      })
+    }),
 
   deleteField: (fieldId) => set((state) => editDocument(state, (document) => removeField(document, fieldId))),
 

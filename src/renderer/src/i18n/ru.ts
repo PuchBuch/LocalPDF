@@ -54,6 +54,38 @@ export const ru = {
     printPage: 'Напечатать страницу',
     replacePage: 'Заменить сканом или фото…'
   },
+  fieldsPanel: {
+    title: (count: number) => `Поля (${count})`,
+    showNumbers: 'Показать номера',
+    empty: 'В документе нет полей',
+    goTo: (number: number) => `Перейти к полю ${number}`,
+    types: { text: 'текст', checkbox: 'флажок', radio: 'выбор одного', choice: 'список', signature: 'подпись', picture: 'картинка', cells: 'текст в клетках' }
+  },
+  ai: {
+    copy: "Копировать форму для ИИ",
+    paste: "Вставить ответ ИИ",
+    copied: "Форма скопирована: вставьте её в чат с ИИ",
+    copyFailed: "Не удалось скопировать форму.",
+    instructions: "Заполни форму. Ответь только JSON вида {\"1\": \"…\", \"2\": true}, где ключ — номер поля. Для флажка — true или false, для выбора — один из перечисленных вариантов точно как написано. Поля, для которых нет данных, пропусти.\nПоля (номер | тип | имя | подпись рядом | варианты):",
+    dialogTitle: "Ответ ИИ",
+    dialogHint: "Вставьте ответ из чата с ИИ. Подойдёт и ответ с пояснениями: программа найдёт в нём JSON.",
+    placeholder: "{\"1\": \"…\", \"2\": true}",
+    fill: "Заполнить",
+    cancel: "Отмена",
+    close: "Закрыть",
+    summary: (filled: number, answered: number) => `Заполнено ${filled} из ${answered}`,
+    undoHint: "Всё заполненное отменяется одним Ctrl+Z.",
+    problems: {
+      empty: (_number: string, _got: string) => "Ответ пустой.",
+      notJson: (_number: string, _got: string) => "В ответе не найден JSON.",
+      notObject: (_number: string, _got: string) => "Ответ должен быть объектом JSON вида {\"1\": …}.",
+      unknownField: (number: string, _got: string) => `Поля ${number} нет — пропущено.`,
+      manualOnly: (number: string, _got: string) => `Поле ${number}: подпись и картинку можно добавить только вручную — пропущено.`,
+      expectedText: (number: string, got: string) => `Поле ${number}: ожидался текст, пришло ${got} — пропущено.`,
+      expectedBoolean: (number: string, got: string) => `Поле ${number}: ожидалась галочка (true или false), пришло ${got} — пропущено.`,
+      notAnOption: (number: string, got: string) => `Поле ${number}: такого варианта нет: ${got} — пропущено.`
+    }
+  },
   scan: {
     title: 'Подготовка страницы',
     found: 'Лист найден. Поправьте углы, если нужно.',

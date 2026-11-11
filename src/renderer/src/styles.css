@@ -987,6 +987,150 @@ button.primary {
   margin-right: auto;
 }
 
+/* Field numbers and the list of fields */
+
+.field-numbers {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.field-number {
+  position: absolute;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  transform: translate(-60%, -60%);
+  border-radius: 8px;
+  color: #fff;
+  background: #2460c8;
+  font: 600 10px/16px 'Segoe UI', system-ui, sans-serif;
+  text-align: center;
+  box-shadow: 0 0 0 1.5px #fff;
+}
+
+.fields-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.show-numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.fields-panel summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: #4a5866;
+}
+
+.fields-empty {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b7785;
+}
+
+.fields-list {
+  max-height: 240px;
+  margin: 4px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.fields-list button {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  text-align: left;
+  font-size: 12px;
+}
+
+.fields-list button:hover,
+.fields-list button:focus-visible {
+  background: #e6eefa;
+}
+
+.field-row-number {
+  min-width: 18px;
+  color: #2460c8;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.field-row-text {
+  min-width: 0;
+  display: flex;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.field-row-type {
+  color: #6b7785;
+}
+
+.field-row-name,
+.field-row-value {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.field-row-value {
+  color: #1b2433;
+}
+
+.ai-buttons {
+  display: grid;
+  gap: 6px;
+}
+
+.ai-buttons button {
+  padding: 6px 8px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+}
+
+.ai-answer {
+  display: block;
+  width: 100%;
+  height: 200px;
+  box-sizing: border-box;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  font-family: Consolas, 'Cascadia Mono', monospace;
+  font-size: 12px;
+}
+
+.ai-errors {
+  max-height: 220px;
+  margin: 8px 0 0;
+  padding-left: 20px;
+  overflow-y: auto;
+  color: #9a3a1e;
+}
+
+.ai-undo-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #6b7785;
+}
+
 /* Preparing a scan or photo as a page */
 
 .scan-dialog {

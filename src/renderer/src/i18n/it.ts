@@ -56,6 +56,38 @@ export const it: Messages = {
     printPage: 'Stampa questa pagina',
     replacePage: 'Sostituisci con una scansione o una foto…'
   },
+  fieldsPanel: {
+    title: (count) => `Campi (${count})`,
+    showNumbers: 'Mostra i numeri',
+    empty: 'Il documento non ha campi',
+    goTo: (number) => `Vai al campo ${number}`,
+    types: { text: 'testo', checkbox: 'casella', radio: 'opzione', choice: 'elenco', signature: 'firma', picture: 'immagine', cells: 'testo in caselle' }
+  },
+  ai: {
+    copy: "Copia il modulo per l’IA",
+    paste: "Incolla la risposta dell’IA",
+    copied: "Modulo copiato: incollalo in una chat di IA",
+    copyFailed: "Non è stato possibile copiare il modulo.",
+    instructions: "Compila il modulo. Rispondi solo con JSON come {\"1\": \"…\", \"2\": true}, dove ogni chiave è un numero di campo. Per una casella true o false, per una scelta una delle opzioni indicate, scritta esattamente. Salta i campi senza dati.\nCampi (numero | tipo | nome | etichetta accanto | opzioni):",
+    dialogTitle: "Risposta dell’IA",
+    dialogHint: "Incolla la risposta dalla chat di IA. Va bene anche una risposta con spiegazioni: il JSON viene trovato.",
+    placeholder: "{\"1\": \"…\", \"2\": true}",
+    fill: "Compila",
+    cancel: "Annulla",
+    close: "Chiudi",
+    summary: (filled, answered) => `Compilati: ${filled} su ${answered}`,
+    undoHint: "Ctrl+Z annulla tutto in una volta.",
+    problems: {
+      empty: () => "La risposta è vuota.",
+      notJson: () => "Nella risposta non c’è JSON.",
+      notObject: () => "La risposta deve essere un oggetto JSON come {\"1\": …}.",
+      unknownField: (number, _got) => `Il campo ${number} non esiste — saltato.`,
+      manualOnly: (number, _got) => `Campo ${number}: firma o immagine solo a mano — saltato.`,
+      expectedText: (number, got) => `Campo ${number}: atteso testo, ricevuto ${got} — saltato.`,
+      expectedBoolean: (number, got) => `Campo ${number}: attesa una spunta (true o false), ricevuto ${got} — saltato.`,
+      notAnOption: (number, got) => `Campo ${number}: questa opzione non esiste: ${got} — saltato.`
+    }
+  },
   scan: {
     title: 'Prepara la pagina',
     found: 'Foglio trovato. Regola gli angoli se serve.',

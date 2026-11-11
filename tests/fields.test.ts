@@ -15,12 +15,14 @@ import {
   newSignatureField,
   newTextField,
   nextCheckboxValue,
+  numberFields,
   placeField,
   removeField,
   resizeBox,
   scaleCombFont,
   updateField
 } from '../src/core/fields'
+import type { FormWidget } from '../src/core/forms'
 import { EMPTY_HISTORY, edit, undo } from '../src/core/history'
 import type { CombField, EditorDocument, ImageField, TextField } from '../src/core/model'
 
@@ -239,5 +241,98 @@ describe('exportFileName', () => {
     ['noextension', 'noextension-document.pdf']
   ])('%s becomes %s', (name, expected) => {
     expect(exportFileName(name)).toBe(expected)
+  })
+})
+
+describe('numbering the fields', () => {
+  const text = (id: string, x: number, y: number, value = ''): TextField => ({
+    ...newTextField(id),
+    x,
+    y,
+    width: 100,
+    height: 14,
+    value
+  })
+  const formText = (id: string, fieldName: string, x: number, y: number): FormWidget => ({
+    id,
+    fieldName,
+    rect: { x, y, width: 120, height: 16 },
+    kind: 'text',
+    initial: '',
+    multiline: false,
+    maxLength: null,
+    fontSize: 0,
+    align: 'left'
+  })
+  const radio = (id: string, x: number, y: number, buttonValue: string): FormWidget => ({
+    id,
+    fieldName: 'choice',
+    rect: { x, y, width: 12, height: 12 },
+    kind: 'radio',
+    initial: 'Off',
+    buttonValue
+  })
+  const sizes = { p1: PAGE, p2: PAGE }
+  const twoPages = (first: TextField[], second: TextField[] = []): EditorDocument => ({
+    sources: {},
+    formValues: {},
+    assets: {},
+    pages: [
+      { id: 'p1', sourceId: 's', pageIndex: 0, rotation: 0, fields: first },
+      { id: 'p2', sourceId: 's', pageIndex: 1, rotation: 0, fields: second }
+    ]
+  })
+  const order = (document: EditorDocument, widgets: Record<string, FormWidget[]> = {}) =>
+    numberFields(document, widgets, sizes).map((entry) =>
+      entry.target.kind === 'added' ? entry.target.fieldId : entry.target.fieldName
+    )
+
+  it('goes from the top down, and from left to right along a row', () => {
+    const document = twoPages([text('low', 50, 400), text('right', 300, 100), text('left', 50, 104), text('top', 200, 40)])
+    expect(order(document)).toEqual(['top', 'left', 'right', 'low'])
+    expect(numberFields(document, {}, sizes).map((entry) => entry.number)).toEqual([1, 2, 3, 4])
+  })
+
+  it('numbers page by page, in the order of the pages', () => {
+    const document = twoPages([text('a2', 50, 300)], [text('b1', 50, 50)])
+    expect(order(document)).toEqual(['a2', 'b1'])
+    document.pages.reverse()
+    expect(order(document)).toEqual(['b1', 'a2'])
+  })
+
+  it('gives the same numbers whatever order the fields were added in', () => {
+    const fields = [text('c', 50, 500), text('a', 50, 100), text('b', 300, 100)]
+    expect(order(twoPages(fields))).toEqual(order(twoPages([...fields].reverse())))
+  })
+
+  it('puts the form of the file and added fields in one order, with names and values', () => {
+    const document = twoPages([text('added', 50, 200, 'Berlin')])
+    document.formValues = { s: { Name: 'Anna' } }
+    const entries = numberFields(document, { p1: [formText('w1', 'Name', 50, 100), formText('w2', 'Street', 50, 300)] }, sizes)
+    expect(entries.map((entry) => [entry.number, entry.type, entry.name, entry.value])).toEqual([
+      [1, 'text', 'Name', 'Anna'],
+      [2, 'text', '', 'Berlin'],
+      [3, 'text', 'Street', '']
+    ])
+  })
+
+  it('gives a radio group one number, at its first button', () => {
+    const entries = numberFields(
+      twoPages([text('after', 50, 300)]),
+      { p1: [radio('r2', 200, 100, 'No'), radio('r1', 50, 100, 'Yes')] },
+      sizes
+    )
+    expect(entries).toHaveLength(2)
+    expect(entries[0]).toMatchObject({ number: 1, type: 'radio', name: 'choice', value: '' })
+    expect(entries[0]!.target).toMatchObject({ widgetId: 'r1' })
+  })
+
+  it('reads a turned page as it is shown', () => {
+    const document = twoPages([])
+    document.pages[0]!.rotation = 90
+    // Turned clockwise, what was at the bottom of the page comes to the left, and is read first.
+    const entries = numberFields(document, { p1: [formText('top', 'Top', 50, 50), formText('bottom', 'Bottom', 50, 700)] }, sizes)
+    expect(entries.map((entry) => entry.name)).toEqual(['Bottom', 'Top'])
+    expect(entries[0]!.box).toEqual({ x: 126, y: 50, width: 16, height: 120 })
   })
 })

@@ -57,6 +57,38 @@ export const de: Messages = {
     printPage: 'Diese Seite drucken',
     replacePage: 'Durch Scan oder Foto ersetzen…'
   },
+  fieldsPanel: {
+    title: (count) => `Felder (${count})`,
+    showNumbers: 'Nummern anzeigen',
+    empty: 'Das Dokument hat keine Felder',
+    goTo: (number) => `Zum Feld ${number}`,
+    types: { text: 'Text', checkbox: 'Kästchen', radio: 'Auswahl', choice: 'Liste', signature: 'Unterschrift', picture: 'Bild', cells: 'Text in Kästchen' }
+  },
+  ai: {
+    copy: "Formular für KI kopieren",
+    paste: "KI-Antwort einfügen",
+    copied: "Formular kopiert: in einen KI-Chat einfügen",
+    copyFailed: "Das Formular konnte nicht kopiert werden.",
+    instructions: "Fülle das Formular aus. Antworte nur mit JSON wie {\"1\": \"…\", \"2\": true}, wobei jeder Schlüssel eine Feldnummer ist. Für ein Kästchen true oder false, für eine Auswahl eine der genannten Optionen genau wie geschrieben. Felder ohne Angaben lässt du weg.\nFelder (Nummer | Typ | Name | Beschriftung daneben | Optionen):",
+    dialogTitle: "KI-Antwort",
+    dialogHint: "Fügen Sie die Antwort aus dem KI-Chat ein. Auch eine Antwort mit Erklärungen geht: Das JSON darin wird gefunden.",
+    placeholder: "{\"1\": \"…\", \"2\": true}",
+    fill: "Ausfüllen",
+    cancel: "Abbrechen",
+    close: "Schließen",
+    summary: (filled, answered) => `Ausgefüllt: ${filled} von ${answered}`,
+    undoHint: "Strg+Z macht alles auf einmal rückgängig.",
+    problems: {
+      empty: () => "Die Antwort ist leer.",
+      notJson: () => "In der Antwort wurde kein JSON gefunden.",
+      notObject: () => "Die Antwort muss ein JSON-Objekt wie {\"1\": …} sein.",
+      unknownField: (number, _got) => `Feld ${number} gibt es nicht — übersprungen.`,
+      manualOnly: (number, _got) => `Feld ${number}: Unterschrift oder Bild nur von Hand — übersprungen.`,
+      expectedText: (number, got) => `Feld ${number}: Text erwartet, erhalten ${got} — übersprungen.`,
+      expectedBoolean: (number, got) => `Feld ${number}: Häkchen erwartet (true oder false), erhalten ${got} — übersprungen.`,
+      notAnOption: (number, got) => `Feld ${number}: diese Option gibt es nicht: ${got} — übersprungen.`
+    }
+  },
   scan: {
     title: 'Seite vorbereiten',
     found: 'Blatt gefunden. Passen Sie die Ecken bei Bedarf an.',

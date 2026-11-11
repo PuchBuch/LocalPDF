@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { hasUnsavedChanges } from '../../core/history'
 import { MAX_ZOOM, MIN_ZOOM } from '../../core/zoom'
 import { PasswordDialog } from './editor/PasswordDialog'
+import { FieldsPanel } from './editor/FieldNumbers'
 import { RecoveryDialog } from './editor/RecoveryDialog'
 import { ScanDialog } from './editor/ScanDialog'
 import { SignatureDialog } from './editor/SignatureDialog'
@@ -399,6 +400,7 @@ function Workspace({ pageCount }: { pageCount: number }) {
           </button>
         </div>
         <ToolPicker />
+        <FieldsPanel />
         <p className="page-counter" data-testid="page-counter">
           {t.pageOf(currentNumber, pageCount)}
         </p>

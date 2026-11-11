@@ -29,6 +29,7 @@ export const FormLayer = memo(function FormLayer({ page, scale, readOnly = false
             className="form-widget"
             data-testid={readOnly ? undefined : 'form-widget'}
             data-field-name={widget.fieldName}
+            data-widget-id={widget.id}
             style={{ left: box.x * scale, top: box.y * scale, width: box.width * scale, height: box.height * scale }}
           >
             {/* The control turns with the page, as its value will once printed. */}

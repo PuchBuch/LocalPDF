@@ -56,6 +56,38 @@ export const en: Messages = {
     printPage: 'Print this page',
     replacePage: 'Replace with a scan or photo…'
   },
+  fieldsPanel: {
+    title: (count) => `Fields (${count})`,
+    showNumbers: 'Show numbers',
+    empty: 'The document has no fields',
+    goTo: (number) => `Go to field ${number}`,
+    types: { text: 'text', checkbox: 'checkbox', radio: 'option', choice: 'list', signature: 'signature', picture: 'picture', cells: 'text in cells' }
+  },
+  ai: {
+    copy: "Copy form for AI",
+    paste: "Paste AI answer",
+    copied: "Form copied: paste it into an AI chat",
+    copyFailed: "The form could not be copied.",
+    instructions: "Fill in the form. Answer with JSON only, like {\"1\": \"…\", \"2\": true}, where each key is a field number. For a checkbox give true or false, for a choice one of the listed options exactly as written. Skip fields you have no data for.\nFields (number | type | name | label next to it | options):",
+    dialogTitle: "AI answer",
+    dialogHint: "Paste the answer from the AI chat. An answer with explanations works too: the JSON in it is found.",
+    placeholder: "{\"1\": \"…\", \"2\": true}",
+    fill: "Fill in",
+    cancel: "Cancel",
+    close: "Close",
+    summary: (filled, answered) => `Filled ${filled} of ${answered}`,
+    undoHint: "Ctrl+Z undoes all of it at once.",
+    problems: {
+      empty: () => "The answer is empty.",
+      notJson: () => "No JSON was found in the answer.",
+      notObject: () => "The answer must be a JSON object like {\"1\": …}.",
+      unknownField: (number, _got) => `There is no field ${number} — skipped.`,
+      manualOnly: (number, _got) => `Field ${number}: a signature or picture can only be added by hand — skipped.`,
+      expectedText: (number, got) => `Field ${number}: text was expected, got ${got} — skipped.`,
+      expectedBoolean: (number, got) => `Field ${number}: a tick was expected (true or false), got ${got} — skipped.`,
+      notAnOption: (number, got) => `Field ${number}: there is no such option: ${got} — skipped.`
+    }
+  },
   scan: {
     title: 'Prepare the page',
     found: 'Sheet found. Adjust the corners if needed.',

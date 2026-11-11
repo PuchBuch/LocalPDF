@@ -57,6 +57,38 @@ export const fr: Messages = {
     printPage: 'Imprimer cette page',
     replacePage: 'Remplacer par un scan ou une photo…'
   },
+  fieldsPanel: {
+    title: (count) => `Champs (${count})`,
+    showNumbers: 'Afficher les numéros',
+    empty: 'Le document n’a pas de champs',
+    goTo: (number) => `Aller au champ ${number}`,
+    types: { text: 'texte', checkbox: 'case', radio: 'option', choice: 'liste', signature: 'signature', picture: 'image', cells: 'texte en cases' }
+  },
+  ai: {
+    copy: "Copier le formulaire pour l’IA",
+    paste: "Coller la réponse de l’IA",
+    copied: "Formulaire copié : collez-le dans un chat d’IA",
+    copyFailed: "Le formulaire n’a pas pu être copié.",
+    instructions: "Remplis le formulaire. Réponds uniquement en JSON, comme {\"1\": \"…\", \"2\": true}, où chaque clé est un numéro de champ. Pour une case, true ou false ; pour un choix, une des options indiquées, écrite exactement. Ignore les champs sans données.\nChamps (numéro | type | nom | libellé à côté | options) :",
+    dialogTitle: "Réponse de l’IA",
+    dialogHint: "Collez la réponse du chat d’IA. Une réponse avec des explications convient aussi : le JSON est retrouvé.",
+    placeholder: "{\"1\": \"…\", \"2\": true}",
+    fill: "Remplir",
+    cancel: "Annuler",
+    close: "Fermer",
+    summary: (filled, answered) => `Remplis : ${filled} sur ${answered}`,
+    undoHint: "Ctrl+Z annule tout d’un coup.",
+    problems: {
+      empty: () => "La réponse est vide.",
+      notJson: () => "Aucun JSON trouvé dans la réponse.",
+      notObject: () => "La réponse doit être un objet JSON comme {\"1\": …}.",
+      unknownField: (number, _got) => `Le champ ${number} n’existe pas — ignoré.`,
+      manualOnly: (number, _got) => `Champ ${number} : signature ou image seulement à la main — ignoré.`,
+      expectedText: (number, got) => `Champ ${number} : texte attendu, reçu ${got} — ignoré.`,
+      expectedBoolean: (number, got) => `Champ ${number} : case attendue (true ou false), reçu ${got} — ignoré.`,
+      notAnOption: (number, got) => `Champ ${number} : cette option n’existe pas : ${got} — ignoré.`
+    }
+  },
   scan: {
     title: 'Préparer la page',
     found: 'Feuille trouvée. Ajustez les coins si besoin.',

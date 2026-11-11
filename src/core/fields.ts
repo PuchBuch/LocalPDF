@@ -1,5 +1,6 @@
 import type { Point, Rect, Size } from './geometry'
-import type { CheckboxField, CombField, EditorDocument, Field, ImageField, TextField, TextStyle } from './model'
+import { currentFormValue, turnRect, type FormWidget } from './forms'
+import type { CheckboxField, CombField, EditorDocument, Field, FormValue, ImageField, TextField, TextStyle } from './model'
 
 /** Text fields use this line height on screen and in the PDF. */
 export const LINE_HEIGHT = 1.2
@@ -216,4 +217,138 @@ export function clearFieldValue(field: Field): Field {
 /** The name offered when saving: report.pdf becomes report-document.pdf. */
 export function exportFileName(sourceName: string, extension: 'pdf' | 'md' = 'pdf'): string {
   return `${sourceName.replace(/\.[^.]+$/, '')}-document.${extension}`
+}
+
+/** What a numbered field is, as people would call it. */
+export type NumberedFieldType = 'text' | 'checkbox' | 'radio' | 'choice' | 'signature' | 'picture' | 'cells'
+
+/** A field the editor added, or a field of the file's own form, found by its name in its file. */
+export type NumberedTarget =
+  | { kind: 'added'; fieldId: string }
+  | { kind: 'form'; sourceId: string; fieldName: string; widgetId: string }
+
+export interface NumberedField {
+  number: number
+  pageId: string
+  target: NumberedTarget
+  type: NumberedFieldType
+  /** The form field's own name; empty for a field added in the editor. */
+  name: string
+  /** The value as text: what is typed or chosen, a mark for a box, empty when there is none. */
+  value: string
+  /** Where it is on the page as shown, in points. */
+  box: Rect
+  /** What a radio group or a list can be set to. */
+  options?: string[]
+  /** A list where several options can be chosen. */
+  multiple?: boolean
+}
+
+const MARK_TEXT: Record<'tick' | 'cross' | 'dot', string> = { tick: '✓', cross: '✗', dot: '•' }
+
+function addedEntry(field: Field): Omit<NumberedField, 'number' | 'pageId' | 'box'> {
+  const target = { kind: 'added' as const, fieldId: field.id }
+  switch (field.type) {
+    case 'TEXT':
+      return { target, type: 'text', name: '', value: field.value }
+    case 'COMB_TEXT':
+      return { target, type: 'cells', name: '', value: field.value }
+    case 'CHECKBOX':
+      return { target, type: 'checkbox', name: '', value: field.value ? MARK_TEXT[field.value] : '' }
+    case 'SIGNATURE':
+      return { target, type: 'signature', name: '', value: field.assetId ? '✓' : '' }
+    case 'PICTURE':
+      return { target, type: 'picture', name: '', value: field.assetId ? '✓' : '' }
+  }
+}
+
+function formEntry(widget: FormWidget, sourceId: string, value: FormValue): Omit<NumberedField, 'number' | 'pageId' | 'box'> {
+  const target = { kind: 'form' as const, sourceId, fieldName: widget.fieldName, widgetId: widget.id }
+  const choices = widget.kind === 'dropdown' || widget.kind === 'list' ? { options: widget.options, multiple: widget.multiple } : {}
+  const shown = Array.isArray(value) ? value.join(', ') : typeof value === 'boolean' ? (value ? '✓' : '') : value
+  const type: NumberedFieldType =
+    widget.kind === 'text' ? 'text' : widget.kind === 'checkbox' ? 'checkbox' : widget.kind === 'radio' ? 'radio' : 'choice'
+  // A radio group holds the chosen button's value; "Off" means none is chosen.
+  return { target, type, name: widget.fieldName, value: widget.kind === 'radio' && shown === 'Off' ? '' : shown, ...choices }
+}
+
+/**
+ * Orders boxes as they are read: from the top down, and boxes about level with each other
+ * from left to right. A box joins a row when its middle lies within the height of the row's first box.
+ */
+function inReadingOrder<T extends { box: Rect; key: string }>(items: T[]): T[] {
+  const byTop = [...items].sort((a, b) => a.box.y - b.box.y || a.box.x - b.box.x || a.key.localeCompare(b.key))
+  const ordered: T[] = []
+  let row: T[] = []
+  let rowTop = 0
+  let rowBottom = 0
+  const closeRow = () => ordered.push(...row.sort((a, b) => a.box.x - b.box.x || a.box.y - b.box.y || a.key.localeCompare(b.key)))
+  for (const item of byTop) {
+    const middle = item.box.y + item.box.height / 2
+    if (row.length > 0 && middle >= rowTop && middle <= rowBottom) {
+      row.push(item)
+      continue
+    }
+    closeRow()
+    row = [item]
+    rowTop = item.box.y
+    rowBottom = item.box.y + item.box.height
+  }
+  closeRow()
+  return ordered
+}
+
+/**
+ * Numbers every field of the document 1…N in reading order: page by page, then from the
+ * top down and from left to right, on the page as it is shown. The same fields in the same
+ * places always get the same numbers. All the buttons of a radio group, and every widget of
+ * one form field, share the number of the first one read.
+ */
+export function numberFields(
+  document: EditorDocument,
+  formWidgets: Record<string, FormWidget[]>,
+  pageSizes: Record<string, Size>
+): NumberedField[] {
+  const numbered: NumberedField[] = []
+  const formFieldsSeen = new Set<string>()
+  // A radio group can be set to the value of any of its buttons, wherever they are.
+  const radioOptions = new Map<string, string[]>()
+  for (const page of document.pages) {
+    for (const widget of formWidgets[page.id] ?? []) {
+      if (widget.kind !== 'radio') continue
+      const options = radioOptions.get(`\u0000`) ?? []
+      if (!options.includes(widget.buttonValue)) options.push(widget.buttonValue)
+      radioOptions.set(`\u0000`, options)
+    }
+  }
+  for (const page of document.pages) {
+    const size = pageSizes[page.id]
+    const items: (Omit<NumberedField, 'number'> & { key: string })[] = page.fields.map((field) => ({
+      ...addedEntry(field),
+      pageId: page.id,
+      box: { x: field.x, y: field.y, width: field.width, height: field.height },
+      key: `added:${field.id}`
+    }))
+    if (size) {
+      for (const widget of formWidgets[page.id] ?? []) {
+        const value = currentFormValue(widget, document.formValues[page.sourceId])
+        items.push({
+          ...formEntry(widget, page.sourceId, value),
+          pageId: page.id,
+          box: turnRect(widget.rect, size, page.rotation),
+          key: `form:${widget.fieldName}:${widget.id}`
+        })
+      }
+    }
+    for (const { key, ...item } of inReadingOrder(items)) {
+      if (item.target.kind === 'form') {
+        const formField = `${item.target.sourceId}\u0000${item.target.fieldName}`
+        if (formFieldsSeen.has(formField)) continue
+        formFieldsSeen.add(formField)
+      }
+      const options = item.target.kind === 'form' && item.type === 'radio' ? radioOptions.get(`\u0000`) : undefined
+      numbered.push({ ...item, ...(options ? { options } : {}), number: numbered.length + 1 })
+    }
+  }
+  return numbered
 }

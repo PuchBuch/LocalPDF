@@ -493,6 +493,113 @@ test.describe('a page signed by hand', () => {
   })
 })
 
+test.describe('field numbers', () => {
+  /** A form with three text fields, given out of reading order. */
+  async function threeFieldForm(): Promise<string> {
+    const document = await PDFDocument.create()
+    const formPage = document.addPage([595, 842])
+    const form = document.getForm()
+    for (const [name, x, y] of [['Street', 60, 500], ['Name', 60, 700], ['City', 320, 700]] as const) {
+      form.createTextField(name).addToPage(formPage, { x, y, width: 200, height: 22 })
+    }
+    const path = join(directory, 'numbered.pdf')
+    await writeFile(path, await document.save())
+    return path
+  }
+
+  test('shows numbers in reading order when switched on, and the list goes to a field', async () => {
+    await launch()
+    await open(await threeFieldForm())
+    await expect(page.getByTestId('field-number')).toHaveCount(0)
+    await expect(page.getByTestId('show-field-numbers')).not.toBeChecked()
+
+    await page.getByTestId('show-field-numbers').check()
+    await expect(page.getByTestId('field-number')).toHaveText(['1', '2', '3'])
+    const badgeNear = async (number: number, fieldName: string) => {
+      const badge = (await page.getByTestId('field-number').nth(number - 1).boundingBox())!
+      const field = (await page.locator(`[data-field-name="${fieldName}"]`).boundingBox())!
+      expect(Math.abs(badge.x + badge.width / 2 - field.x)).toBeLessThan(12)
+      expect(Math.abs(badge.y + badge.height / 2 - field.y)).toBeLessThan(12)
+    }
+    await badgeNear(1, 'Name')
+    await badgeNear(2, 'City')
+    await badgeNear(3, 'Street')
+
+    await page.getByTestId('fields-panel-toggle').click()
+    await expect(page.getByTestId('field-row')).toHaveCount(3)
+    await expect(page.getByTestId('field-row').nth(2)).toContainText('Street')
+    await page.getByTestId('field-row').nth(2).click()
+    await expect
+      .poll(() => page.evaluate(() => document.activeElement?.closest('[data-field-name]')?.getAttribute('data-field-name')))
+      .toBe('Street')
+    await page.keyboard.type('Hauptstraße 1')
+    await expect(page.getByTestId('field-row').nth(2)).toContainText('Hauptstraße 1')
+
+    await page.getByTestId('show-field-numbers').uncheck()
+    await expect(page.getByTestId('field-number')).toHaveCount(0)
+  })
+
+  test('numbers added fields too, and a click in the list puts the cursor in them', async () => {
+    await launch()
+    await open(await writePdf('added.pdf', 'One'))
+    await addText('Lower', 200, 500)
+    await addText('Upper', 200, 300)
+    await page.getByTestId('show-field-numbers').check()
+    await expect(page.getByTestId('field-number')).toHaveText(['1', '2'])
+    await page.getByTestId('fields-panel-toggle').click()
+    await expect(page.getByTestId('field-row').nth(0)).toContainText('Upper')
+    await page.getByTestId('field-row').nth(1).click()
+    await expect(page.locator('[data-testid="field-input"]:focus')).toHaveValue('Lower')
+  })
+})
+test('fills a form from an AI answer pasted in, reports what it skipped, and one undo takes it back', async () => {
+  await launch()
+  const document = await PDFDocument.create()
+  const font = await document.embedFont(StandardFonts.Helvetica)
+  const formPage = document.addPage([595, 842])
+  formPage.drawText('Vorname:', { x: 60, y: 706, font, size: 12 })
+  const form = document.getForm()
+  form.createTextField('Name').addToPage(formPage, { x: 150, y: 700, width: 150, height: 22 })
+  form.createCheckBox('Agree').addToPage(formPage, { x: 360, y: 703, width: 14, height: 14 })
+  form.createTextField('Street').addToPage(formPage, { x: 150, y: 500, width: 200, height: 22 })
+  const path = join(directory, 'ai.pdf')
+  await writeFile(path, await document.save())
+  await page.evaluate(() => {
+    const record = window as unknown as { copied?: string }
+    navigator.clipboard.writeText = async (value: string) => {
+      record.copied = value
+    }
+  })
+  await open(path)
+
+  await page.getByTestId('ai-copy').click()
+  await expect(page.getByTestId('saved-note')).toHaveText('Form copied: paste it into an AI chat')
+  const prompt = await page.evaluate(() => (window as unknown as { copied: string }).copied)
+  expect(prompt).toContain('1 | text | "Name" | label "Vorname:"')
+  expect(prompt).toContain('2 | checkbox | "Agree" | true/false')
+  expect(prompt).toContain('3 | text | "Street"')
+
+  await page.getByTestId('ai-paste').click()
+  await page
+    .getByTestId('ai-answer')
+    .fill('Sure:\n```json\n{"1": "Anna", "2": "yes", "3": "Hauptstraße 1", "9": "x"}\n```')
+  await page.getByTestId('ai-fill').click()
+  await expect(page.getByTestId('ai-summary')).toHaveText('Filled 2 of 4')
+  await expect(page.getByTestId('ai-error')).toHaveText([
+    'Field 2: a tick was expected (true or false), got yes — skipped.',
+    'There is no field 9 — skipped.'
+  ])
+  await page.getByTestId('ai-close').click()
+  const value = (name: string) => page.locator(`[data-field-name="${name}"] input`)
+  await expect(value('Name')).toHaveValue('Anna')
+  await expect(value('Street')).toHaveValue('Hauptstraße 1')
+  await expect(value('Agree')).not.toBeChecked()
+
+  await page.getByTestId('undo').click()
+  await expect(value('Name')).toHaveValue('')
+  await expect(value('Street')).toHaveValue('')
+  await expect(page.getByTestId('undo')).toBeDisabled()
+})
 test('the toolbar button opens the editor, and then brings back its tab instead of a second one', async () => {
   await launch()
   await page.close()

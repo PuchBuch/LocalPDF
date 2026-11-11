@@ -3,6 +3,7 @@ import { useEditor } from './store'
 
 const LOCALE_KEY = 'localpdf.locale'
 const OCR_LOCALE_KEY = 'localpdf.ocrLocale'
+const SHOW_NUMBERS_KEY = 'localpdf.showFieldNumbers'
 
 function remembered(key: string): string | null {
   try {
@@ -31,7 +32,11 @@ export async function loadLanguage(): Promise<void> {
   const locale = matchLocale(remembered(LOCALE_KEY)) ?? matchLocale(system) ?? DEFAULT_LOCALE
   setLocale(locale)
   sendDialogTexts()
-  useEditor.setState({ locale, ocrLocale: matchLocale(remembered(OCR_LOCALE_KEY)) ?? locale })
+  useEditor.setState({
+    locale,
+    ocrLocale: matchLocale(remembered(OCR_LOCALE_KEY)) ?? locale,
+    showFieldNumbers: remembered(SHOW_NUMBERS_KEY) === '1'
+  })
 }
 
 export function changeLanguage(locale: Locale): void {
@@ -43,6 +48,12 @@ export function changeLanguage(locale: Locale): void {
     // Until a language is chosen for recognition, it follows the one of the app.
     ocrLocale: remembered(OCR_LOCALE_KEY) ? state.ocrLocale : locale
   }))
+}
+
+/** Numbers on the fields are off until switched on, and then stay on. */
+export function changeShowFieldNumbers(show: boolean): void {
+  remember(SHOW_NUMBERS_KEY, show ? '1' : '0')
+  useEditor.setState({ showFieldNumbers: show })
 }
 
 export function changeOcrLanguage(locale: Locale): void {

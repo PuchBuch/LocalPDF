@@ -56,6 +56,38 @@ export const pl: Messages = {
     printPage: 'Drukuj tę stronę',
     replacePage: 'Zastąp skanem lub zdjęciem…'
   },
+  fieldsPanel: {
+    title: (count) => `Pola (${count})`,
+    showNumbers: 'Pokaż numery',
+    empty: 'Dokument nie ma pól',
+    goTo: (number) => `Przejdź do pola ${number}`,
+    types: { text: 'tekst', checkbox: 'pole wyboru', radio: 'opcja', choice: 'lista', signature: 'podpis', picture: 'obraz', cells: 'tekst w kratkach' }
+  },
+  ai: {
+    copy: "Kopiuj formularz dla AI",
+    paste: "Wklej odpowiedź AI",
+    copied: "Formularz skopiowany: wklej go do czatu z AI",
+    copyFailed: "Nie udało się skopiować formularza.",
+    instructions: "Wypełnij formularz. Odpowiedz tylko JSON-em jak {\"1\": \"…\", \"2\": true}, gdzie kluczem jest numer pola. Dla pola wyboru true lub false, dla wyboru jedna z podanych opcji dokładnie tak, jak napisano. Pomiń pola bez danych.\nPola (numer | typ | nazwa | etykieta obok | opcje):",
+    dialogTitle: "Odpowiedź AI",
+    dialogHint: "Wklej odpowiedź z czatu z AI. Odpowiedź z wyjaśnieniami też wystarczy: JSON zostanie znaleziony.",
+    placeholder: "{\"1\": \"…\", \"2\": true}",
+    fill: "Wypełnij",
+    cancel: "Anuluj",
+    close: "Zamknij",
+    summary: (filled, answered) => `Wypełniono ${filled} z ${answered}`,
+    undoHint: "Ctrl+Z cofa wszystko naraz.",
+    problems: {
+      empty: () => "Odpowiedź jest pusta.",
+      notJson: () => "W odpowiedzi nie znaleziono JSON-a.",
+      notObject: () => "Odpowiedź musi być obiektem JSON jak {\"1\": …}.",
+      unknownField: (number, _got) => `Nie ma pola ${number} — pominięto.`,
+      manualOnly: (number, _got) => `Pole ${number}: podpis lub obraz tylko ręcznie — pominięto.`,
+      expectedText: (number, got) => `Pole ${number}: oczekiwano tekstu, otrzymano ${got} — pominięto.`,
+      expectedBoolean: (number, got) => `Pole ${number}: oczekiwano zaznaczenia (true lub false), otrzymano ${got} — pominięto.`,
+      notAnOption: (number, got) => `Pole ${number}: nie ma takiej opcji: ${got} — pominięto.`
+    }
+  },
   scan: {
     title: 'Przygotowanie strony',
     found: 'Znaleziono kartkę. W razie potrzeby popraw narożniki.',
