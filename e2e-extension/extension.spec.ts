@@ -572,6 +572,7 @@ test('fills a form from an AI answer pasted in, reports what it skipped, and one
   })
   await open(path)
 
+  await page.getByTestId('fields-panel-toggle').click()
   await page.getByTestId('ai-copy').click()
   await expect(page.getByTestId('saved-note')).toHaveText('Form copied: paste it into an AI chat')
   const prompt = await page.evaluate(() => (window as unknown as { copied: string }).copied)
