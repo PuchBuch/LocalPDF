@@ -517,7 +517,7 @@ test.describe('field numbers', () => {
     await expect(page.getByTestId('field-number')).toHaveText(['1', '2', '3'])
     const badgeNear = async (number: number, fieldName: string) => {
       const badge = (await page.getByTestId('field-number').nth(number - 1).boundingBox())!
-      const field = (await page.locator(`[data-field-name="${fieldName}"]`).boundingBox())!
+      const field = (await pages().first().locator(`[data-field-name="${fieldName}"]`).boundingBox())!
       expect(Math.abs(badge.x + badge.width / 2 - field.x)).toBeLessThan(12)
       expect(Math.abs(badge.y + badge.height / 2 - field.y)).toBeLessThan(12)
     }
