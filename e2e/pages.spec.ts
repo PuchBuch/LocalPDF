@@ -277,8 +277,6 @@ test('adds a JPEG, a WebP and a GIF after a PDF', async () => {
   await page.getByTestId('add-pages').click()
   // Each picture is offered for preparing, one after the other.
   for (let picture = 0; picture < 3; picture++) await page.getByTestId('scan-as-is').click()
-  // Each picture is offered for preparing, one after the other.
-  for (let picture = 0; picture < 3; picture++) await page.getByTestId('scan-as-is').click()
 
   await expect(page.getByTestId('pdf-page')).toHaveCount(4)
   expect(await pageRatio(1)).toBeCloseTo(3 / 4, 1)
