@@ -1,0 +1,61 @@
+name: Release
+
+# Pushing a tag such as v0.9.0-beta.6 builds the installer and the extension on a clean
+# machine, checks that the installer installs, and puts it in a draft release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - run: npm install --no-audit --no-fund
+
+      - name: The tag matches the version
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          if ("v$version" -ne '${{ github.ref_name }}') { throw "package.json says $version" }
+
+      - run: npm run dist
+
+      - run: npm run build:extension
+
+      - name: Install it silently
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem release -Filter 'LocalPDF Setup *.exe' | Select-Object -First 1
+          Start-Process -FilePath $installer.FullName -ArgumentList '/S' -Wait
+          $exe = Join-Path $env:LOCALAPPDATA 'Programs\localpdf\LocalPDF.exe'
+          if (-not (Test-Path $exe)) { throw "Not installed at $exe" }
+
+      - name: Draft the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $installer = Get-ChildItem release -Filter 'LocalPDF Setup *.exe' | Select-Object -First 1
+          $named = Join-Path release ($installer.Name -replace ' ', '.')
+          Move-Item $installer.FullName $named
+          $hash = (Get-FileHash $named).Hash
+          "SHA-256 of the installer: ``$hash``" | Out-File notes.md -Encoding utf8
+          gh release create '${{ github.ref_name }}' $named --draft --prerelease --title "LocalPDF ${{ github.ref_name }}" --notes-file notes.md
+
+      # The extension is for the Chrome Web Store, not for the release page.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension
+          path: release/LocalPDF-extension-*.zip
+          retention-days: 30

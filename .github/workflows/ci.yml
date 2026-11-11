@@ -4,7 +4,13 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Work in progress is tested by starting this on its branch, often for one stage only.
   workflow_dispatch:
+    inputs:
+      only:
+        description: 'Run only the interface tests whose names match this (empty: all)'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -64,12 +70,24 @@ jobs:
           "LOCALPDF_E2E_PRINTED=$path" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Interface tests, on the installed app
-        run: npx playwright test
+        shell: pwsh
+        run: |
+          if ('${{ inputs.only }}') { npx playwright test -g '${{ inputs.only }}' --pass-with-no-tests } else { npx playwright test }
 
       - name: Chrome extension, in headless Chromium
+        shell: pwsh
         run: |
           npx playwright install chromium
-          npm run test:extension
+          npm run build:extension
+          if ('${{ inputs.only }}') { npx playwright test --config playwright.extension.config.ts -g '${{ inputs.only }}' --pass-with-no-tests } else { npx playwright test --config playwright.extension.config.ts }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-and-extension
+          path: |
+            release/*.exe
+            release/*.zip
+          retention-days: 7
 
       - uses: actions/upload-artifact@v4
         if: failure()
