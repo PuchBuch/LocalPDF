@@ -1,6 +1,6 @@
 {
   "name": "localpdf",
-  "version": "0.9.0-beta.6",
+  "version": "0.9.0-beta.7",
   "description": "A PDF editor for Windows that keeps your documents on your computer",
   "license": "MIT",
   "main": "out/main/index.js",
