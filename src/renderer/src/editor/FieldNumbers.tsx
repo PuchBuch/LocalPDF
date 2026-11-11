@@ -79,17 +79,18 @@ export function FieldsPanel() {
         />
         {t.fieldsPanel.showNumbers}
       </label>
-      <div className="ai-buttons">
-        <button type="button" data-testid="ai-copy" disabled={fields.length === 0} onClick={() => void copyFormForAi()}>
-          {t.ai.copy}
-        </button>
-        <button type="button" data-testid="ai-paste" disabled={fields.length === 0} onClick={() => setAnswering(true)}>
-          {t.ai.paste}
-        </button>
-      </div>
       {answering && <AiAnswerDialog onClose={() => setAnswering(false)} />}
+      {/* Folded by default, so that the panel still fits a small window. */}
       <details>
         <summary data-testid="fields-panel-toggle">{t.fieldsPanel.title(fields.length)}</summary>
+        <div className="ai-buttons">
+          <button type="button" data-testid="ai-copy" disabled={fields.length === 0} onClick={() => void copyFormForAi()}>
+            {t.ai.copy}
+          </button>
+          <button type="button" data-testid="ai-paste" disabled={fields.length === 0} onClick={() => setAnswering(true)}>
+            {t.ai.paste}
+          </button>
+        </div>
         {fields.length === 0 ? (
           <p className="fields-empty">{t.fieldsPanel.empty}</p>
         ) : (
