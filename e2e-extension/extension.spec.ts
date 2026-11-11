@@ -601,6 +601,19 @@ test('fills a form from an AI answer pasted in, reports what it skipped, and one
   await expect(value('Street')).toHaveValue('')
   await expect(page.getByTestId('undo')).toBeDisabled()
 })
+test('the buttons beside thumbnails of wide pages do not run into each other', async () => {
+  await launch()
+  const document = await PDFDocument.create()
+  for (let index = 0; index < 3; index++) document.addPage([842, 400])
+  const path = join(directory, 'wide.pdf')
+  await writeFile(path, await document.save())
+  await open(path)
+  const lastOfFirst = (await page.getByTestId('move-page-down').nth(0).boundingBox())!
+  const firstOfSecond = (await page.getByTestId('delete-page').nth(1).boundingBox())!
+  expect(firstOfSecond.y).toBeGreaterThanOrEqual(lastOfFirst.y + lastOfFirst.height)
+  const number = (await page.getByTestId('page-number').nth(0).boundingBox())!
+  expect(firstOfSecond.y).toBeGreaterThanOrEqual(number.y + number.height)
+})
 test('the toolbar button opens the editor, and then brings back its tab instead of a second one', async () => {
   await launch()
   await page.close()

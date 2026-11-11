@@ -14,6 +14,8 @@ const THUMBNAIL_WIDTH = 132
 /** Holds the page number under each thumbnail. */
 const THUMBNAIL_GAP = 36
 const OVERSCAN = 600
+/** The four page buttons beside a thumbnail: a wide page must not be lower than them. */
+const ACTIONS_HEIGHT = 4 * 24 + 3 * 4
 
 export function Thumbnails() {
   const pages = usePages()
@@ -24,7 +26,7 @@ export function Thumbnails() {
   const closeMenu = useCallback(() => setMenu(null), [])
 
   const container = useRef<HTMLDivElement>(null)
-  const layout =useMemo(() => computeLayout(sizes, THUMBNAIL_WIDTH, THUMBNAIL_GAP), [sizes])
+  const layout =useMemo(() => computeLayout(sizes, THUMBNAIL_WIDTH, THUMBNAIL_GAP, ACTIONS_HEIGHT), [sizes])
   const range = useVisibleRange(container, layout, OVERSCAN)
 
   const currentIndex = pages.findIndex((page) => page.id === currentPageId)
@@ -105,7 +107,7 @@ const Thumbnail = memo(function Thumbnail({
   const { goToPage, deletePage, rotatePage, movePage } = useEditor.getState()
 
   return (
-    <div className="thumbnail-item" style={{ height: height + THUMBNAIL_GAP }}>
+    <div className="thumbnail-item" style={{ height: Math.max(height, ACTIONS_HEIGHT) + THUMBNAIL_GAP }}>
       <div className="page-actions">
         <button
           type="button"

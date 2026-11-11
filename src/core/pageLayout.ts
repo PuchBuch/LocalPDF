@@ -12,8 +12,11 @@ export interface PageRange {
   last: number
 }
 
-/** A vertical strip of pages, all scaled to the same width. */
-export function computeLayout(pages: Size[], pageWidth: number, gap: number): PageLayout {
+/**
+ * A vertical strip of pages, all scaled to the same width. Each takes at least `minHeight`
+ * of the strip, for what stands beside it, even when the page itself is lower.
+ */
+export function computeLayout(pages: Size[], pageWidth: number, gap: number, minHeight = 0): PageLayout {
   const width = Math.max(1, Math.round(pageWidth))
   const widths: number[] = []
   const heights: number[] = []
@@ -24,7 +27,7 @@ export function computeLayout(pages: Size[], pageWidth: number, gap: number): Pa
     widths.push(width)
     heights.push(height)
     tops.push(y)
-    y += height + gap
+    y += Math.max(height, minHeight) + gap
   }
   return { widths, heights, tops, totalHeight: y }
 }
