@@ -214,9 +214,14 @@ export interface ScanRequest {
   found: boolean
 }
 
-export interface ScanAnswer {
-  corners: Quad
-  look: ScanLook
+/** The sheet and how to clean it, or the picture taken as it is. */
+export type ScanAnswer = { corners: Quad; look: ScanLook } | 'asIs'
+
+/** Readies a picture before it becomes pages; null leaves the file out. Set by the page tools. */
+let preparePhoto: (file: OpenedFile) => Promise<OpenedFile | null> = (file) => Promise.resolve(file)
+
+export function setPhotoPreparer(prepare: typeof preparePhoto): void {
+  preparePhoto = prepare
 }
 
 let scanAnswered: ((answer: ScanAnswer | null) => void) | null = null
@@ -451,7 +456,9 @@ export const useEditor = create<EditorState>((set) => ({
           continue
         }
         try {
-          const pages = await loadFile(file)
+          const prepared = await preparePhoto(file)
+          if (!prepared) continue
+          const pages = await loadFile(prepared)
           if (pages) loaded.push(pages)
         } catch (error) {
           notices.push(failureNotice(file, error))

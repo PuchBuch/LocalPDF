@@ -194,7 +194,11 @@ test('reads text in a scan offline, in the browser', async () => {
   const image = join(directory, 'scan.png')
   await writeFile(image, canvas.toBuffer('image/png'))
 
-  await open(image)
+  const chooser = page.waitForEvent('filechooser')
+  await page.getByTestId('select-file').click()
+  await (await chooser).setFiles(image)
+  await page.getByTestId('scan-as-is').click()
+  await expect(pages().first()).toBeVisible()
   await page.getByTestId('page-thumbnail').first().click({ button: 'right' })
   await page.getByTestId('recognize').click()
   await page.getByTestId('recognize-this').click()
@@ -474,6 +478,49 @@ test.describe('a page signed by hand', () => {
     await expect(pages().nth(2).locator('.textLayer')).toContainText('Scanned and signed')
     await expect(pages()).toHaveCount(3)
     await expect(page.getByTestId('scan-dialog')).toHaveCount(0)
+  })
+
+  async function choosePhoto(button: 'select-file' | 'add-pages', path: string): Promise<void> {
+    const chooser = page.waitForEvent('filechooser')
+    await page.getByTestId(button).click()
+    await (await chooser).setFiles(path)
+    await expect(page.getByTestId('scan-dialog')).toBeVisible()
+  }
+
+  test('prepares a photo opened as a new document, so it saves as a clean A4 PDF', async () => {
+    test.setTimeout(90_000)
+    await launch()
+    await choosePhoto('select-file', await photoOfSheet('new.jpg'))
+    await expect(page.getByTestId('scan-hint')).toHaveText('Sheet found. Adjust the corners if needed.')
+    await expect(page.getByTestId('scan-dialog')).toContainText('new.jpg')
+    await page.getByTestId('scan-use').click()
+    await expect(pages()).toHaveCount(1)
+
+    await answerSavePicker('new.pdf')
+    await page.getByTestId('download').click()
+    await expect(page.getByTestId('saved-note')).toHaveText('Saved: new.pdf')
+    const bytes = await savedBytes()
+    expect(bytes.length).toBeLessThan(800_000)
+    const [only] = await pagesOf(bytes)
+    expect(only!.width).toBeCloseTo(595, 0)
+    expect(only!.height).toBeCloseTo(842, 0)
+  })
+
+  test('opens a photo as it is, or leaves it out when cancelled', async () => {
+    await launch()
+    const photo = await photoOfSheet('plain.jpg')
+    await choosePhoto('select-file', photo)
+    await page.getByTestId('scan-as-is').click()
+    await expect(pages()).toHaveCount(1)
+    const box = (await pages().first().boundingBox())!
+    // Taken as it is, the page has the photo's own shape, 1600 × 1200.
+    expect(box.width / box.height).toBeCloseTo(4 / 3, 1)
+
+    await choosePhoto('add-pages', photo)
+    await page.getByTestId('scan-cancel').click()
+    await expect(page.getByTestId('scan-dialog')).toHaveCount(0)
+    await expect(pages()).toHaveCount(1)
+    await expect(page.getByTestId('notice')).toHaveCount(0)
   })
 
   test('prints just the page to sign', async () => {

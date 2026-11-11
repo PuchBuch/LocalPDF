@@ -234,6 +234,8 @@ test('adds pages to the end with the plus tile, as one undo step', async () => {
   await answerFileDialog(app, [first, second])
 
   await page.getByTestId('add-pages').click()
+  // Each picture is offered for preparing, one after the other.
+  for (let picture = 0; picture < 3; picture++) await page.getByTestId('scan-as-is').click()
 
   await expect(page.getByTestId('pdf-page')).toHaveCount(4)
   await expect.poll(pageOrder).toEqual(['One', 'Two', 'Three', 'Four'])
@@ -256,6 +258,7 @@ test('opens a PNG as a page with its proportions', async () => {
   await writeFile(path, twoColorCanvas(400, 200).toBuffer('image/png'))
   await answerFileDialog(app, [path])
   await page.getByTestId('select-file').click()
+  await page.getByTestId('scan-as-is').click()
 
   await expect(page.getByTestId('pdf-page')).toHaveCount(1)
   expect(await pageRatio(0)).toBeCloseTo(2, 1)
@@ -274,6 +277,8 @@ test('adds a JPEG, a WebP and a GIF after a PDF', async () => {
   await answerFileDialog(app, [jpeg, webp, gif])
 
   await page.getByTestId('add-pages').click()
+  // Each picture is offered for preparing, one after the other.
+  for (let picture = 0; picture < 3; picture++) await page.getByTestId('scan-as-is').click()
 
   await expect(page.getByTestId('pdf-page')).toHaveCount(4)
   expect(await pageRatio(1)).toBeCloseTo(3 / 4, 1)
@@ -297,6 +302,7 @@ test('stands a phone photo upright according to its EXIF orientation', async () 
   await answerFileDialog(app, [path])
 
   await page.getByTestId('select-file').click()
+  await page.getByTestId('scan-as-is').click()
 
   await expect(page.getByTestId('pdf-page')).toHaveCount(1)
   expect(await pageRatio(0)).toBeCloseTo(0.5, 1)

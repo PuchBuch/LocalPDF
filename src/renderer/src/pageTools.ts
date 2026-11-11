@@ -11,7 +11,8 @@ import { getPdfPage } from './render/pdfjs'
 import { recognizePage, startOcr } from './render/recognize'
 import { preparedScan, readScanPicture, type ScanPicture } from './render/scanImage'
 import { measureText } from './render/textMetrics'
-import { addNotice, askScan, replacePageWithFile, useEditor } from './store'
+import type { OpenedFile } from '../../preload'
+import { addNotice, askScan, replacePageWithFile, setPhotoPreparer, useEditor } from './store'
 
 /** Pixels per point of the picture fields are looked for in. */
 const DETECT_SCALE = 2
@@ -76,44 +77,54 @@ async function pageMask(page: PageRef): Promise<{ mask: Uint8Array; width: numbe
 }
 
 /**
- * Puts a chosen file where a page was, such as the scan of a page signed by hand.
- * A photo or a scanned picture first gets its sheet cut out, straightened and cleaned.
+ * Lets a photo or a picture of a scan be prepared as a page before it is used: its sheet
+ * cut out, straightened and cleaned, or taken as it is. Other files pass unchanged. Null
+ * when the person cancels, and the file is then left out.
  */
+export async function preparePhoto(file: OpenedFile): Promise<OpenedFile | null> {
+  const kind = fileKind(file.name)
+  if (kind === 'pdf' || kind === 'heic' || kind === 'other') return file
+
+  let picture: ScanPicture
+  try {
+    picture = await readScanPicture(kind, file.bytes)
+  } catch (error) {
+    // An unreadable picture goes on, to be reported where files are opened.
+    console.error(error)
+    return file
+  }
+  try {
+    const found = findPaperCorners(picture.preview)
+    const answer = await askScan({
+      name: file.name,
+      previewUrl: picture.previewUrl,
+      size: { width: picture.preview.width, height: picture.preview.height },
+      corners: found ?? wholePicture(picture.preview),
+      found: found !== null
+    })
+    if (answer === null) return null
+    if (answer === 'asIs') return file
+    useEditor.setState({ statusNote: t.scan.preparing })
+    const scan = await preparedScan(picture, answer.corners, answer.look)
+    useEditor.setState({ statusNote: null })
+    return { name: file.name.replace(/\.[^.]*$/, '.jpg'), bytes: scan.bytes }
+  } finally {
+    URL.revokeObjectURL(picture.previewUrl)
+  }
+}
+
+// Every way of opening a picture, by button, drop or command line, prepares it first.
+setPhotoPreparer(preparePhoto)
+
+/** Puts a chosen file where a page was, such as the scan of a page signed by hand. */
 export function replacePageWithChosenFile(pageId: string): Promise<void> {
   return whileBusy(t.scan.failed, async () => {
     const [file] = await window.localpdf.chooseFiles(true)
     if (!file) return
-    const kind = fileKind(file.name)
-    if (kind === 'pdf' || kind === 'heic' || kind === 'other') {
-      await replacePageWithFile(pageId, file)
-      return
-    }
-
-    let picture: ScanPicture
-    try {
-      picture = await readScanPicture(kind, file.bytes)
-    } catch (error) {
-      console.error(error)
-      addNotice(t.fileUnreadable(file.name))
-      return
-    }
-    try {
-      const found = findPaperCorners(picture.preview)
-      const answer = await askScan({
-        name: file.name,
-        previewUrl: picture.previewUrl,
-        size: { width: picture.preview.width, height: picture.preview.height },
-        corners: found ?? wholePicture(picture.preview),
-        found: found !== null
-      })
-      if (!answer) return
-      useEditor.setState({ statusNote: t.scan.preparing })
-      const scan = await preparedScan(picture, answer.corners, answer.look)
-      const replaced = await replacePageWithFile(pageId, { name: file.name.replace(/\.[^.]*$/, '.jpg'), bytes: scan.bytes })
-      useEditor.setState({ statusNote: replaced ? t.scan.done : null })
-    } finally {
-      URL.revokeObjectURL(picture.previewUrl)
-    }
+    const prepared = await preparePhoto(file)
+    if (!prepared) return
+    const replaced = await replacePageWithFile(pageId, prepared)
+    if (replaced && prepared !== file) useEditor.setState({ statusNote: t.scan.done })
   })
 }
 

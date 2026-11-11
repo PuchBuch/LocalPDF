@@ -1178,6 +1178,14 @@ button.primary {
   outline: 3px solid #f5a623;
 }
 
+.scan-name {
+  margin-left: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #6b7785;
+  overflow-wrap: anywhere;
+}
+
 .scan-look {
   display: flex;
   flex-wrap: wrap;

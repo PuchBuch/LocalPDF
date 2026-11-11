@@ -61,7 +61,9 @@ export function ScanDialog({ request }: { request: ScanRequest }) {
           if (event.key === 'Escape') answerScan(null)
         }}
       >
-        <h2 className="dialog-title">{t.scan.title}</h2>
+        <h2 className="dialog-title">
+          {t.scan.title} <span className="scan-name">{request.name}</span>
+        </h2>
         <p className="dialog-text" data-testid="scan-hint">
           {request.found ? t.scan.found : t.scan.notFound}
         </p>
@@ -118,6 +120,9 @@ export function ScanDialog({ request }: { request: ScanRequest }) {
         <div className="dialog-actions">
           <button type="button" className="secondary-left" data-testid="scan-whole" onClick={() => setCorners(wholePicture(size))}>
             {t.scan.wholePicture}
+          </button>
+          <button type="button" data-testid="scan-as-is" onClick={() => answerScan('asIs')}>
+            {t.scan.asIs}
           </button>
           <button type="button" data-testid="scan-cancel" onClick={() => answerScan(null)}>
             {t.scan.cancel}

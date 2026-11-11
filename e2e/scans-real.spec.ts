@@ -36,6 +36,7 @@ for (const [image, truth, language, limit] of [
       await page.getByTestId('select-file').waitFor()
       await answerFileDialog(app, [join(FOLDER, image)])
       await page.getByTestId('select-file').click()
+      await page.getByTestId('scan-as-is').click()
       await expect(page.getByTestId('pdf-page')).toHaveCount(1)
       await page.getByTestId('ocr-language').selectOption(language)
 
