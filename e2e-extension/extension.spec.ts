@@ -661,6 +661,34 @@ test('the buttons beside thumbnails of wide pages do not run into each other', a
   const number = (await page.getByTestId('page-number').nth(0).boundingBox())!
   expect(firstOfSecond.y).toBeGreaterThanOrEqual(number.y + number.height)
 })
+test('the font panel of a field by the edge of the view stays whole in the view', async () => {
+  await launch()
+  await open(await writePdf('edge.pdf', 'One'))
+  const view = (await page.locator('.document-scroll').boundingBox())!
+  const shownWhole = async () => {
+    const panel = (await page.getByTestId('font-tool-panel').boundingBox())!
+    expect(panel.x).toBeGreaterThanOrEqual(view.x)
+    expect(panel.x + panel.width).toBeLessThanOrEqual(view.x + view.width)
+    expect(panel.y).toBeGreaterThanOrEqual(view.y)
+    expect(panel.y + panel.height).toBeLessThanOrEqual(view.y + view.height)
+  }
+  // By the right edge of the page, which is the right edge of the view.
+  await addText('Right', 575, 300)
+  await page.getByTestId('field-input').click()
+  await page.getByTestId('font-tool').click()
+  await shownWhole()
+  await page.getByTestId('font-color').fill('#c03030')
+  await expect(page.getByTestId('field-input')).toHaveCSS('color', 'rgb(192, 48, 48)')
+
+  // By the bottom of the view, where it opens upwards.
+  await page.getByTestId('font-tool').click()
+  const box = (await pages().first().boundingBox())!
+  const bottom = Math.min(842, ((view.y + view.height - box.y) / box.height) * 842 - 20)
+  await addText('Low', 300, bottom)
+  await page.getByTestId('field-input').nth(1).click()
+  await page.getByTestId('font-tool').nth(1).click()
+  await shownWhole()
+})
 test('the toolbar button opens the editor, and then brings back its tab instead of a second one', async () => {
   await launch()
   await page.close()

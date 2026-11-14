@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState, type PointerEvent } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react'
 import {
   combCellCount,
   CROSS_PATH,
@@ -437,11 +437,36 @@ const fromHex = (hex: string): RgbColor => ({
   b: parseInt(hex.slice(5, 7), 16)
 })
 
+/** Space kept between the font panel and the edges of the view. */
+const PANEL_MARGIN = 8
+/** Between the panel and its button, as in the stylesheet. */
+const PANEL_GAP = 6
+
 /** The font of a text field: its family, bold, italic and colour. */
 function FontTool({ field }: { field: TextField }) {
   const [open, setOpen] = useState(false)
+  const [place, setPlace] = useState<{ shift: number; above: boolean }>({ shift: 0, above: false })
+  const panel = useRef<HTMLDivElement>(null)
   const { setTextStyle } = useEditor.getState()
   const style = field.style
+
+  // The document scrolls in its own area, which cuts off anything reaching past it: near the
+  // right or bottom edge of the view, the panel moves left or opens upwards to stay whole.
+  useLayoutEffect(() => {
+    const element = panel.current
+    const view = element?.closest('.document-scroll')
+    const anchor = element?.parentElement
+    if (!open || !element || !view || !anchor) return
+    // Measured from the button the panel hangs from, so the result does not depend on where it is now.
+    const button = anchor.getBoundingClientRect()
+    const bounds = view.getBoundingClientRect()
+    const { offsetWidth: width, offsetHeight: height } = element
+    const tooFarRight = Math.min(0, bounds.right - PANEL_MARGIN - (button.left + width))
+    const shift = Math.max(bounds.left + PANEL_MARGIN - button.left, tooFarRight)
+    const below = button.bottom + PANEL_GAP + height <= bounds.bottom - PANEL_MARGIN
+    const fitsAbove = button.top - PANEL_GAP - height >= bounds.top + PANEL_MARGIN
+    setPlace({ shift, above: !below && fitsAbove })
+  }, [open, field.x, field.y, field.width])
   // The panel keeps the caret in the text. These controls need the focus themselves to work.
   const letFocus = (event: { stopPropagation: () => void }) => event.stopPropagation()
 
@@ -459,7 +484,13 @@ function FontTool({ field }: { field: TextField }) {
         <span className="font-tool-icon">A</span>
       </button>
       {open && (
-        <div className="font-tool-panel" data-testid="font-tool-panel" onMouseDown={letFocus}>
+        <div
+          ref={panel}
+          className={place.above ? 'font-tool-panel above' : 'font-tool-panel'}
+          data-testid="font-tool-panel"
+          style={{ transform: place.shift ? `translateX(${place.shift}px)` : undefined }}
+          onMouseDown={letFocus}
+        >
           <select
             data-testid="font-family"
             aria-label={t.font.family}

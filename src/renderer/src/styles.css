@@ -1406,6 +1406,11 @@ button.primary {
   position: relative;
 }
 
+.font-tool-panel.above {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
 .font-tool-icon {
   font-family: 'Tinos', serif;
   font-size: 15px;
