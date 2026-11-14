@@ -686,7 +686,8 @@ test('the font panel of a field by the edge of the view stays whole in the view'
   const bottom = Math.min(842, ((view.y + view.height - box.y) / box.height) * 842 - 20)
   await addText('Low', 300, bottom)
   await page.getByTestId('field-input').nth(1).click()
-  await page.getByTestId('font-tool').nth(1).click()
+  // Only the field being edited shows its font button.
+  await page.getByTestId('font-tool').click()
   await shownWhole()
 })
 test('the toolbar button opens the editor, and then brings back its tab instead of a second one', async () => {
