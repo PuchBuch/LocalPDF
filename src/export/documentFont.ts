@@ -10,13 +10,18 @@ import type { DocumentFont } from '../core/model'
  */
 export function prepareDocumentFont(
   data: Uint8Array,
-  look: { bold: boolean; italic: boolean },
-  /** How wide the PDF says a space of this font is, as a share of the font size. */
-  spaceWidth?: number
+  look: {
+    bold: boolean
+    italic: boolean
+    /** The name the PDF gives the font, which beats the one inside it. */
+    name?: string
+    /** How wide the PDF says a space of this font is, as a share of the font size. */
+    spaceWidth?: number
+  }
 ): DocumentFont | null {
   try {
     const font = fontkit.create(data)
-    const name = plainFontName(font.fullName || font.familyName || font.postscriptName || '')
+    const name = plainFontName(look.name || font.fullName || font.familyName || font.postscriptName || '')
     if (hasTwinInApp(name)) return null
 
     const glyphs = new Map<number, number>()
@@ -32,7 +37,7 @@ export function prepareDocumentFont(
       }
     }
     if (glyphs.size === 0) return null
-    addSpaces(font, glyphs, spaceWidth)
+    addSpaces(font, glyphs, look.spaceWidth)
 
     return {
       name,
@@ -97,18 +102,13 @@ function addSpaces(font: ReturnType<typeof fontkit.create>, glyphs: Map<number, 
 }
 
 /**
- * How wide a font's space is, as the PDF gives it, from the viewer's font: the width of
- * the character code whose text is a space. Undefined where that is not known.
+ * How wide a font's space is, as the PDF gives it, from the viewer's font. Fonts of one
+ * byte per character keep the space at code 32. Undefined where that is not known.
  */
-export function spaceWidthOf(font: { toUnicode?: unknown; widths?: unknown }): number | undefined {
-  const map = (font.toUnicode as { _map?: Record<string, unknown> } | undefined)?._map
-  const widths = font.widths as Record<string, unknown> | undefined
-  if (!map || !widths) return undefined
-  for (const [code, text] of Object.entries(map)) {
-    const width = widths[code]
-    if (text === ' ' && typeof width === 'number' && width > 0) return width / 1000
-  }
-  return undefined
+export function spaceWidthOf(font: { composite?: boolean; widths?: unknown }): number | undefined {
+  if (font.composite !== false) return undefined
+  const width = (font.widths as Record<number, unknown> | undefined)?.[0x20]
+  return typeof width === 'number' && width > 0 ? width / 1000 : undefined
 }
 
 /** Runs of characters whose glyphs follow on as the characters do. */

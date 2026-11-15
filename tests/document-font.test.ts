@@ -46,7 +46,12 @@ async function viewerFont(bytes: Uint8Array): Promise<{ data: Uint8Array; loaded
   const item = content.items.find((candidate) => 'str' in candidate && candidate.str.trim() !== '')
   await page.getOperatorList()
   const fontName = (item as { fontName: string }).fontName
-  const font = page.commonObjs.get(fontName) as { data: Uint8Array; loadedName: string; widths?: unknown }
+  const font = page.commonObjs.get(fontName) as {
+    data: Uint8Array
+    loadedName: string
+    composite?: boolean
+    widths?: unknown
+  }
   return { data: font.data, loadedName: font.loadedName, spaceWidth: spaceWidthOf(font) }
 }
 
@@ -79,9 +84,7 @@ describe('prepareDocumentFont', () => {
 
   beforeAll(async () => {
     const { data, spaceWidth } = await viewerFont(await pageInCarlito())
-    // Carlito's space is 226 thousandths of the font size wide.
-    expect(spaceWidth).toBeCloseTo(0.226, 2)
-    font = prepareDocumentFont(data, { bold: false, italic: false }, spaceWidth)!
+    font = prepareDocumentFont(data, { bold: false, italic: false, spaceWidth })!
   })
 
   it('reads the font the viewer rebuilt from the page', () => {
@@ -98,8 +101,28 @@ describe('prepareDocumentFont', () => {
     expect(rebuilt.glyphForCodePoint('W'.codePointAt(0)!).id).not.toBe(0)
   })
 
+  it('finds the space again, which the viewer leaves out, at the width of Carlito’s', () => {
+    const rebuilt = fontkit.create(font.bytes)
+    const space = rebuilt.glyphForCodePoint(0x20)
+    expect(space.id).not.toBe(0)
+    expect(space.advanceWidth / rebuilt.unitsPerEm).toBeCloseTo(0.226, 2)
+    expect(rebuilt.glyphForCodePoint(0xa0).id).toBe(space.id)
+  })
+
   it('gives up a font it cannot read', () => {
     expect(prepareDocumentFont(new Uint8Array([1, 2, 3, 4]), { bold: false, italic: false })).toBeNull()
+  })
+
+  it('goes by the name the PDF gives a font', async () => {
+    const data = new Uint8Array(await readFile(join(FONT_DIR, 'Carlito-Regular.ttf')))
+    expect(prepareDocumentFont(data, { bold: false, italic: false, name: 'ABCDEF+Calibri' })?.name).toBe('Calibri')
+    expect(prepareDocumentFont(data, { bold: false, italic: false, name: 'ArialMT' })).toBeNull()
+  })
+
+  it('takes the width of a space from a font of one byte per character', () => {
+    expect(spaceWidthOf({ composite: false, widths: { 32: 250 } })).toBe(0.25)
+    expect(spaceWidthOf({ composite: true, widths: { 32: 250 } })).toBeUndefined()
+    expect(spaceWidthOf({ composite: false, widths: {} })).toBeUndefined()
   })
 
   it('leaves to the app a font it has a twin of, which the viewer may only have stood in for', async () => {

@@ -37,7 +37,7 @@ interface PdfFontInfo {
   isType3Font?: boolean
   missingFile?: boolean
   vertical?: boolean
-  toUnicode?: unknown
+  composite?: boolean
   widths?: unknown
 }
 
@@ -52,7 +52,7 @@ function documentFontOf(sourceId: string, font: PdfFontInfo | null): Promise<Lin
   if (!prepared) {
     const data = font.data
     prepared = (async () => {
-      const ready = prepareDocumentFont(data, fontLook(font), spaceWidthOf(font))
+      const ready = prepareDocumentFont(data, { ...fontLook(font), name: font.name, spaceWidth: spaceWidthOf(font) })
       if (!ready) return null
       await registerDocumentFont(id, ready)
       return { id, font: ready }
