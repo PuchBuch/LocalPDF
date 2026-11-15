@@ -22,6 +22,7 @@ import {
   scaleCombFont,
   updateField
 } from '../../core/fields'
+import { drawnStyle } from '../../core/fonts'
 import { displayedSize, type Point, type Rect, type Size } from '../../core/geometry'
 import {
   EMPTY_HISTORY,
@@ -61,6 +62,7 @@ import { looksEncrypted } from '../../export/qpdf'
 import type { LocalPdfApi, OpenedFile } from '../../preload'
 import { DEFAULT_LOCALE, t, type Locale } from './i18n'
 import { imageSize, prepareImage } from './render/imageFile'
+import { registerDocumentFonts } from './render/documentFonts'
 import { lineAppearance, wordAppearance } from './render/lineAppearance'
 import { closeAllPdfs, getPdfPage, loadPdf, openPdf } from './render/pdfjs'
 import { protectPdf, repairPdf, unlockPdf } from './render/protection'
@@ -123,6 +125,8 @@ interface EditorState {
   scanRequest: ScanRequest | null
   /** Each field shows its number in reading order. */
   showFieldNumbers: boolean
+  /** The text field waiting for a line of the page to take its look from. */
+  pickingStyleFor: string | null
   pendingFiles: number
   notices: string[]
   openFiles: (files: OpenedFile[]) => Promise<void>
@@ -143,6 +147,10 @@ interface EditorState {
   setEditScope: (scope: EditScope) => void
   /** Changes the look of a text field. A new colour joins the last one, as a picker sends many. */
   setTextStyle: (fieldId: string, change: Partial<TextStyle>) => void
+  /** Waits for a click on a line of the page, whose look the field then takes. Null stops waiting. */
+  pickStyle: (fieldId: string | null) => void
+  /** Gives a text field the look and size of a line of the page, as one step to undo. */
+  applyPickedStyle: (fieldId: string, appearance: LineAppearance, fontSize: number) => void
   focusField: (fieldId: string | null) => void
   typeText: (fieldId: string, value: string) => void
   moveField: (fieldId: string, box: Partial<Rect>) => void
@@ -195,6 +203,7 @@ const NO_DOCUMENT = {
   resizing: false,
   dragging: false,
   statusNote: null,
+  pickingStyleFor: null,
   outputPassword: null,
   holdsProtectedContent: false
 }
@@ -384,21 +393,36 @@ function currentPageSize(state: EditorState, pageId: string): Size | null {
 function insertField(state: EditorState, pageId: string, point: Point, field: Field): Partial<EditorState> {
   const page = currentPageSize(state, pageId)
   if (!page) return {}
-  const placed = placeField(sizedToContent(field, page), point, page)
+  const placed = placeField(sizedToContent(field, page, state.document?.fonts), point, page)
   return { ...editDocument(state, (document) => addField(document, pageId, placed)), focusedFieldId: placed.id }
 }
 
-function sizedToContent(field: Field, page: Size): Field {
-  if (field.type === 'TEXT') return fitTextField(field, measureText, page)
+function sizedToContent(field: Field, page: Size, fonts: EditorDocument['fonts']): Field {
+  if (field.type === 'TEXT') {
+    // Measured in the font that will draw it, which is not the document's where that lacks a letter.
+    const fitted = fitTextField({ ...field, style: drawnStyle(field.style, field.value, fonts) }, measureText, page)
+    return { ...fitted, style: field.style }
+  }
   if (field.type === 'COMB_TEXT') return fitCombField(field, page)
   return field
 }
 
 /** Applies a change to a text or comb field and sizes it to its new content. */
+/** The fonts of a document with the one a line of the page is drawn in. */
+function withFont(fonts: EditorDocument['fonts'], appearance: LineAppearance | undefined): EditorDocument['fonts'] {
+  return appearance?.font ? { ...fonts, [appearance.font.id]: appearance.font.font } : fonts
+}
+
+function addFont(document: EditorDocument, appearance: LineAppearance | undefined): void {
+  if (!appearance?.font) return
+  document.fonts ??= {}
+  document.fonts[appearance.font.id] ??= appearance.font.font
+}
+
 function refitted(state: EditorState, fieldId: string, change: (field: Field) => Field): Field | null {
   const found = state.document && findField(state.document, fieldId)
   const page = found && currentPageSize(state, found.pageId)
-  return found && page ? sizedToContent(change(found.field), page) : null
+  return found && page ? sizedToContent(change(found.field), page, state.document?.fonts) : null
 }
 
 function assignFormValue(document: EditorDocument, sourceId: string, fieldName: string, value: FormValue): void {
@@ -525,7 +549,7 @@ export const useEditor = create<EditorState>((set) => ({
       scrollRequest: { pageId, serial: (state.scrollRequest?.serial ?? 0) + 1 }
     })),
 
-  selectTool: (tool) => set({ activeTool: tool, clipboard: null, focusedFieldId: null }),
+  selectTool: (tool) => set({ activeTool: tool, clipboard: null, focusedFieldId: null, pickingStyleFor: null }),
 
   clickPage: (pageId, point) =>
     set((state) => {
@@ -546,16 +570,28 @@ export const useEditor = create<EditorState>((set) => ({
     set((state) => {
       const page = currentPageSize(state, pageId)
       if (!page) return {}
-      const field = sizedToContent(fieldForLine(crypto.randomUUID(), line, appearance), page)
-      return { ...editDocument(state, (document) => addField(document, pageId, field)), focusedFieldId: field.id }
+      const fonts = withFont(state.document?.fonts, appearance)
+      const field = sizedToContent(fieldForLine(crypto.randomUUID(), line, appearance), page, fonts)
+      const changes = editDocument(state, (document) => {
+        addFont(document, appearance)
+        addField(document, pageId, field)
+      })
+      return { ...changes, focusedFieldId: field.id }
     }),
 
   setEditScope: (editScope) => set({ editScope }),
 
   setTextStyle: (fieldId, change) =>
     set((state) => {
+      // Another family or face is a font of the app's own, the document's one has a single face.
+      const ownFont = change.useDocumentFont === undefined && (change.family ?? change.bold ?? change.italic) !== undefined
       const fitted = refitted(state, fieldId, (field) =>
-        field.type === 'TEXT' ? { ...field, style: { ...DEFAULT_TEXT_STYLE, ...field.style, ...change } } : field
+        field.type === 'TEXT'
+          ? {
+              ...field,
+              style: { ...DEFAULT_TEXT_STYLE, ...field.style, ...change, ...(ownFont ? { useDocumentFont: false } : {}) }
+            }
+          : field
       )
       if (!state.document || !fitted) return {}
       const key = `style:${fieldId}`
@@ -564,6 +600,29 @@ export const useEditor = create<EditorState>((set) => ({
       const next = edit(state.document, state.history, (document) => updateField(document, fieldId, fitted), { mergeWithLast })
       lastTyping = change.color !== undefined ? { fieldId: key, time: now } : null
       return fromVersioned(state, next)
+    }),
+
+  pickStyle: (pickingStyleFor) => set({ pickingStyleFor }),
+
+  applyPickedStyle: (fieldId, appearance, fontSize) =>
+    set((state) => {
+      const found = state.document && findField(state.document, fieldId)
+      const page = found && currentPageSize(state, found.pageId)
+      if (!state.document || !found || !page || found.field.type !== 'TEXT') return { pickingStyleFor: null }
+      const fitted = sizedToContent(
+        { ...found.field, fontSize, style: appearance.style },
+        page,
+        withFont(state.document.fonts, appearance)
+      )
+      lastTyping = null
+      return {
+        ...editDocument(state, (document) => {
+          addFont(document, appearance)
+          updateField(document, fieldId, fitted)
+        }),
+        pickingStyleFor: null,
+        focusedFieldId: fieldId
+      }
     }),
 
   focusField: (fieldId) =>
@@ -657,7 +716,7 @@ export const useEditor = create<EditorState>((set) => ({
       const page = state.document?.pages.find((candidate) => candidate.id === pageId)
       const size = currentPageSize(state, pageId)
       if (!page || !size) return {}
-      const cleared = page.fields.map((field) => sizedToContent(clearFieldValue(field), size))
+      const cleared = page.fields.map((field) => sizedToContent(clearFieldValue(field), size, state.document?.fonts))
       return editDocument(state, (document) => {
         for (const field of cleared) updateField(document, field.id, field)
       })
@@ -764,7 +823,7 @@ export async function startEditingLine(page: PageRef, line: TextLine): Promise<v
   readingLine = true
   try {
     const pdfPage = await getPdfPage(page.sourceId, page.pageIndex)
-    const appearance = await lineAppearance(pdfPage, line, page.rotation).catch((error: unknown) => {
+    const appearance = await lineAppearance(pdfPage, page.sourceId, line, page.rotation).catch((error: unknown) => {
       // Without its look the line can still be edited, as plain black text.
       console.error(error)
       return undefined
@@ -781,11 +840,28 @@ export async function startEditingWord(page: PageRef, word: TextWord): Promise<v
   readingLine = true
   try {
     const pdfPage = await getPdfPage(page.sourceId, page.pageIndex)
-    const read = await wordAppearance(pdfPage, word, page.rotation).catch((error: unknown) => {
+    const read = await wordAppearance(pdfPage, page.sourceId, word, page.rotation).catch((error: unknown) => {
       console.error(error)
       return { word, appearance: undefined }
     })
     useEditor.getState().editTextLine(page.id, read.word, read.appearance)
+  } finally {
+    readingLine = false
+  }
+}
+
+/** Gives the field waiting for it the look and size of a line of the page. */
+export async function pickStyleFromLine(page: PageRef, line: TextLine): Promise<void> {
+  const fieldId = useEditor.getState().pickingStyleFor
+  if (!fieldId || readingLine) return
+  readingLine = true
+  try {
+    const pdfPage = await getPdfPage(page.sourceId, page.pageIndex)
+    const appearance = await lineAppearance(pdfPage, page.sourceId, line, page.rotation)
+    useEditor.getState().applyPickedStyle(fieldId, appearance, line.height)
+  } catch (error) {
+    console.error(error)
+    useEditor.getState().pickStyle(null)
   } finally {
     readingLine = false
   }
@@ -802,6 +878,7 @@ export function reportMissingCharacters(missing: { character: string }[]): void 
 
 /** Brings back a document after a crash. No file holds its changes, so it counts as unsaved. */
 export async function restoreDocument(document: EditorDocument): Promise<void> {
+  await registerDocumentFonts(document.fonts)
   const pageSizes: Record<string, Size> = {}
   const formWidgets: Record<string, FormWidget[]> = {}
   for (const [sourceId, source] of Object.entries(document.sources)) {

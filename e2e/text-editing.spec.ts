@@ -3,6 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test, type ElectronApplication, type Page } from '@playwright/test'
+import fontkit from '@pdf-lib/fontkit'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { answerFileDialog, answerSaveDialog, canvasHasInk, expectSavedMatchesScreen, inkBox, launchApp, ROOT } from './harness'
@@ -499,4 +500,109 @@ test('on a real document', async () => {
   await page.getByTestId('tool-cursor').click()
   await page.screenshot({ path: join(OUT, 'edit-changed.png') })
   await expectRealDocumentSaved()
+})
+
+test.describe('the font of the document', () => {
+  const look = () =>
+    page.getByTestId('field-input').evaluate((element) => {
+      const { fontFamily, fontSize, color } = getComputedStyle(element)
+      return { fontFamily, fontSize, color }
+    })
+
+  /** A page with a large red line in Carlito, which the PDF carries, and a plain line in Helvetica. */
+  async function writeInCarlito(name: string, subset: boolean): Promise<string> {
+    const document = await PDFDocument.create()
+    document.registerFontkit(fontkit)
+    const carlito = await document.embedFont(await readFile(join(ROOT, 'src/renderer/public/fonts/Carlito-Regular.ttf')), {
+      subset
+    })
+    const helvetica = await document.embedFont(StandardFonts.Helvetica)
+    const pdfPage = document.addPage([595, 842])
+    pdfPage.drawText('Invoice for Anna', { x: 60, y: 760, font: carlito, size: 20, color: rgb(0.8, 0, 0) })
+    pdfPage.drawText('A plain line', { x: 60, y: 700, font: helvetica, size: 12 })
+    const path = join(directory, name)
+    await writeFile(path, await document.save())
+    return path
+  }
+
+  async function startEditing(path: string): Promise<void> {
+    await openDocument(path)
+    await page.getByTestId('tool-edit').click()
+    await expect(lines()).toHaveCount(2)
+  }
+
+  test('a line keeps the font the document carries, and the saved file has its text', async () => {
+    await startEditing(await writeInCarlito('carlito.pdf', false))
+    await line('Invoice for Anna').click()
+    await expect(page.getByTestId('field-input')).toHaveValue('Invoice for Anna')
+    await page.getByTestId('font-tool').click()
+    await expect(page.getByTestId('font-family')).toHaveValue('document')
+    await expect(page.getByTestId('font-family').locator('option').first()).toContainText('Carlito')
+    expect((await look()).fontFamily).toContain('LocalPDF document font')
+    await expect(page.getByTestId('font-replaced')).toHaveCount(0)
+
+    await page.getByTestId('field-input').fill('Invoice for Anna Berg')
+    await page.screenshot({ path: join(OUT, 'document-font.png') })
+    expect(await savedText('carlito-saved.pdf')).toContain('Invoice for Anna Berg')
+  })
+
+  test('the screen and the saved file agree in the font of the document', async () => {
+    await startEditing(await writeInCarlito('carlito-match.pdf', false))
+    await line('Invoice for Anna').click()
+    await page.getByTestId('field-input').fill('Invoice for Mark')
+    await expectSavedMatchesScreen(app, page, join(directory, 'carlito-match-saved.pdf'), { x: 40, y: 55, width: 400, height: 40 })
+  })
+
+  test('a letter the font lacks gives the text a font of the app, and says so', async () => {
+    await startEditing(await writeInCarlito('carlito-subset.pdf', true))
+    await line('Invoice for Anna').click()
+    await page.getByTestId('font-tool').click()
+    await expect(page.getByTestId('font-family')).toHaveValue('document')
+    await expect(page.getByTestId('font-replaced')).toHaveCount(0)
+
+    await page.getByTestId('field-input').fill('Invoice for Zoe')
+    await expect(page.getByTestId('font-replaced')).toBeVisible()
+    expect((await look()).fontFamily).not.toContain('LocalPDF document font')
+    expect(await savedText('carlito-subset-saved.pdf')).toContain('Invoice for Zoe')
+  })
+
+  test('another family or bold leaves the font of the document, which can be chosen again', async () => {
+    await startEditing(await writeInCarlito('carlito-choice.pdf', false))
+    await line('Invoice for Anna').click()
+    await page.getByTestId('font-tool').click()
+    await page.getByTestId('font-bold').click()
+    await expect(page.getByTestId('font-family')).not.toHaveValue('document')
+    await page.getByTestId('font-family').selectOption('document')
+    expect((await look()).fontFamily).toContain('LocalPDF document font')
+    await expect(page.getByTestId('font-bold')).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  test('the style picker gives a field the look and size of another line, as one step to undo', async () => {
+    await startEditing(await writeInCarlito('picker.pdf', false))
+    await line('A plain line').click()
+    await expect(page.getByTestId('font-size')).toHaveText('12')
+    await page.getByTestId('font-tool').click()
+    await page.getByTestId('font-pick').click()
+    await expect(page.getByTestId('style-source')).toHaveCount(2)
+
+    await line('Invoice for Anna').click()
+    await expect(page.getByTestId('style-source')).toHaveCount(0)
+    await expect(page.getByTestId('field-input')).toHaveValue('A plain line')
+    await expect(page.getByTestId('font-size')).toHaveText('20')
+    expect((await look()).color).toBe('rgb(204, 0, 0)')
+    expect((await look()).fontFamily).toContain('LocalPDF document font')
+
+    await page.getByTestId('undo').click()
+    await expect(page.getByTestId('font-size')).toHaveText('12')
+  })
+
+  test('Escape stops the style picker', async () => {
+    await startEditing(await writeInCarlito('picker-escape.pdf', false))
+    await line('A plain line').click()
+    await page.getByTestId('font-tool').click()
+    await page.getByTestId('font-pick').click()
+    await expect(page.getByTestId('style-source')).toHaveCount(2)
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('style-source')).toHaveCount(0)
+  })
 })

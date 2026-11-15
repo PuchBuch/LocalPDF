@@ -25,6 +25,7 @@ export const PageView = memo(function PageView({ page, width, height, pageWidth,
   const placing = useEditor((state) => state.activeTool !== 'cursor' || state.clipboard !== null)
   const editingText = useEditor((state) => state.activeTool === 'edit' && state.clipboard === null)
   const showNumbers = useEditor((state) => state.showFieldNumbers)
+  const picking = useEditor((state) => state.pickingStyleFor !== null)
   const scale = width / pageWidth
   const pageSize = useMemo(() => ({ width: pageWidth, height: pageHeight }), [pageWidth, pageHeight])
 
@@ -48,7 +49,9 @@ export const PageView = memo(function PageView({ page, width, height, pageWidth,
         <div className="textLayer" ref={textHost} />
       </div>
       <FormLayer page={page} scale={scale} />
-      {editingText && active && <EditableLines page={page} scale={scale} fields={page.fields} />}
+      {(editingText || picking) && active && (
+        <EditableLines page={page} scale={scale} fields={page.fields} picking={picking} />
+      )}
       <FieldLayer fields={page.fields} scale={scale} page={pageSize} />
       {showNumbers && <FieldNumberBadges pageId={page.id} scale={scale} />}
     </div>

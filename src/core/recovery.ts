@@ -1,4 +1,4 @@
-import type { EditorDocument, FormValue, ImageAsset, PageRef } from './model'
+import type { DocumentFont, EditorDocument, FormValue, ImageAsset, PageRef } from './model'
 
 /** What is kept on disk to bring a document back after a crash. Bytes are stored separately. */
 export interface RecoverySnapshot {
@@ -8,10 +8,12 @@ export interface RecoverySnapshot {
   formValues: Record<string, Record<string, FormValue>>
   sources: Record<string, { name: string }>
   assets: Record<string, { mime: ImageAsset['mime'] }>
+  fonts?: Record<string, Omit<DocumentFont, 'bytes'>>
 }
 
 const sourceBlob = (id: string) => `source-${id}`
 const assetBlob = (id: string) => `asset-${id}`
+const fontBlob = (id: string) => `font-${id}`
 
 export function toSnapshot(document: EditorDocument, savedAt: string): RecoverySnapshot {
   const names = Object.entries(document.sources).map(([id, source]) => [id, { name: source.name }])
@@ -22,7 +24,10 @@ export function toSnapshot(document: EditorDocument, savedAt: string): RecoveryS
     pages: document.pages,
     formValues: document.formValues,
     sources: Object.fromEntries(names),
-    assets: Object.fromEntries(mimes)
+    assets: Object.fromEntries(mimes),
+    fonts: Object.fromEntries(
+      Object.entries(document.fonts ?? {}).map(([id, { bytes: _bytes, ...font }]) => [id, font])
+    )
   }
 }
 
@@ -31,6 +36,7 @@ export function blobsOf(document: EditorDocument): Record<string, Uint8Array> {
   const blobs: Record<string, Uint8Array> = {}
   for (const [id, source] of Object.entries(document.sources)) blobs[sourceBlob(id)] = source.bytes
   for (const [id, asset] of Object.entries(document.assets)) blobs[assetBlob(id)] = asset.bytes
+  for (const [id, font] of Object.entries(document.fonts ?? {})) blobs[fontBlob(id)] = font.bytes
   return blobs
 }
 
@@ -56,6 +62,11 @@ export function fromSnapshot(snapshot: RecoverySnapshot, blobs: Record<string, U
     const bytes = blobs[assetBlob(id)]
     if (!bytes) return null
     document.assets[id] = { mime, bytes }
+  }
+  for (const [id, font] of Object.entries(snapshot.fonts ?? {})) {
+    const bytes = blobs[fontBlob(id)]
+    if (!bytes) return null
+    ;(document.fonts ??= {})[id] = { ...font, bytes }
   }
   return document
 }

@@ -108,7 +108,11 @@ export function nextCheckboxValue(value: CheckboxField['value']): CheckboxField[
 }
 
 /** Measures the widest line at a font size, in points. */
-export type MeasureText = (text: string, fontSize: number, style?: Pick<TextStyle, 'bold' | 'italic' | 'family'>) => number
+export type MeasureText = (
+  text: string,
+  fontSize: number,
+  style?: Pick<TextStyle, 'bold' | 'italic' | 'family' | 'documentFont' | 'useDocumentFont'>
+) => number
 
 /** Sizes a text field to its content, no larger than the page, and keeps it on the page. */
 export function fitTextField(field: TextField, measure: MeasureText, page: Size): TextField {

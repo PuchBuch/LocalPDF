@@ -129,6 +129,9 @@ export const en: Messages = {
     bold: 'Bold',
     italic: 'Italic',
     color: 'Text color',
+    asInDocument: (name: string) => (name ? `As in the document: ${name}` : 'As in the document'),
+    pick: 'Take the style of text on the page',
+    replaced: 'The document’s font lacks some letters, so a similar font writes the text.',
     boldIcon: 'B',
     italicIcon: 'I',
     families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }

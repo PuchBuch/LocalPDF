@@ -2,6 +2,7 @@ import type { MeasureText } from '../../../core/fields'
 import { FONT_FACES, FONT_FAMILIES, familyInfo, type FontFamily } from '../../../core/fonts'
 import type { TextStyle } from '../../../core/model'
 import type { ExportFonts } from '../../../export/buildPdf'
+import { documentFontCss } from './documentFonts'
 
 /** Measuring large and scaling down avoids the rounding of small font sizes. */
 const MEASURE_SIZE = 100
@@ -12,7 +13,9 @@ const fontShorthand = (style?: Partial<Pick<TextStyle, 'bold' | 'italic' | 'fami
   `${style?.italic ? 'italic ' : ''}${style?.bold ? 'bold ' : ''}${MEASURE_SIZE}px "${familyInfo(style?.family).css}"`
 
 export const measureText: MeasureText = (text, fontSize, style) => {
-  context.font = fontShorthand(style)
+  // A document's font is its one face, never made bolder or slanted.
+  const own = style?.useDocumentFont ? documentFontCss(style.documentFont) : undefined
+  context.font = own ? `${MEASURE_SIZE}px "${own}"` : fontShorthand(style)
   // The PDF draws text without kerning, so the screen does not use it either.
   context.fontKerning = 'none'
   return (context.measureText(text).width * fontSize) / MEASURE_SIZE

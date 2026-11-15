@@ -1,4 +1,4 @@
-import type { TextStyle } from './model'
+import type { DocumentFont, TextStyle } from './model'
 
 export type FontFamily = 'arial' | 'times' | 'calibri' | 'courier'
 
@@ -32,6 +32,64 @@ export const DEFAULT_FAMILY: FontFamily = 'arial'
 
 export function familyInfo(id: FontFamily | undefined): FontFamilyInfo {
   return FONT_FAMILIES.find((family) => family.id === (id ?? DEFAULT_FAMILY))!
+}
+
+const drawableSets = new WeakMap<DocumentFont, Set<number>>()
+
+function canDraw(font: DocumentFont, text: string): boolean {
+  let drawable = drawableSets.get(font)
+  if (!drawable) {
+    drawable = new Set(font.codePoints)
+    drawableSets.set(font, drawable)
+  }
+  // The export draws a no-break space as a plain one.
+  for (const character of text.replaceAll(' ', ' ')) {
+    if (character !== '\n' && character !== '\r' && !drawable.has(character.codePointAt(0)!)) return false
+  }
+  return true
+}
+
+/**
+ * The document's font that draws a text field, if the field is to use one and it has
+ * every letter of the text. Screen and export decide alike.
+ */
+export function documentFontFor(
+  style: TextStyle | undefined,
+  text: string,
+  fonts: Record<string, DocumentFont> | undefined
+): DocumentFont | undefined {
+  if (!style?.useDocumentFont || !style.documentFont) return undefined
+  const font = fonts?.[style.documentFont]
+  return font && canDraw(font, text) ? font : undefined
+}
+
+/** Whether a field asks for the document's font but cannot have it, for letters the font lacks. */
+export function documentFontReplaced(
+  style: TextStyle | undefined,
+  text: string,
+  fonts: Record<string, DocumentFont> | undefined
+): boolean {
+  return style?.useDocumentFont === true && documentFontFor(style, text, fonts) === undefined
+}
+
+/** The style a field is drawn in, with the document's font given up where it cannot draw the text. */
+export function drawnStyle(
+  style: TextStyle | undefined,
+  text: string,
+  fonts: Record<string, DocumentFont> | undefined
+): TextStyle | undefined {
+  return documentFontReplaced(style, text, fonts) ? { ...style!, useDocumentFont: false } : style
+}
+
+/** From the top of a text field's line box to its baseline, as a share of the font size. */
+export function baselineShare(style: TextStyle | undefined, font: DocumentFont | undefined, lineHeight: number): number {
+  if (!font || !style?.useDocumentFont) return familyInfo(style?.family).baseline
+  return (lineHeight - font.ascent - font.descent) / 2 + font.ascent
+}
+
+/** Drops the subset tag a PDF puts before the name of a font cut down to the letters in use. */
+export function plainFontName(name: string): string {
+  return name.replace(/^[A-Z]{6}\+/, '').trim()
 }
 
 /** The four faces of a family, as the file name endings they are stored under. */

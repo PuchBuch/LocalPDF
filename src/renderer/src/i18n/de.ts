@@ -130,6 +130,9 @@ export const de: Messages = {
     bold: 'Fett',
     italic: 'Kursiv',
     color: 'Textfarbe',
+    asInDocument: (name: string) => (name ? `Wie im Dokument: ${name}` : 'Wie im Dokument'),
+    pick: 'Stil von Text auf der Seite übernehmen',
+    replaced: 'Der Schrift des Dokuments fehlen einige Buchstaben, daher schreibt eine ähnliche Schrift den Text.',
     boldIcon: 'F',
     italicIcon: 'K',
     families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }

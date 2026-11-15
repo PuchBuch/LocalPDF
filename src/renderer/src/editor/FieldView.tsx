@@ -9,12 +9,13 @@ import {
   TEXT_PLACEHOLDER,
   TICK_PATH
 } from '../../../core/fields'
-import { DEFAULT_FAMILY, familyInfo, FONT_FAMILIES, type FontFamily } from '../../../core/fonts'
+import { DEFAULT_FAMILY, documentFontFor, documentFontReplaced, familyInfo, FONT_FAMILIES, type FontFamily } from '../../../core/fonts'
 import type { Point, Rect, Size } from '../../../core/geometry'
 import type { CheckboxField, CombField, Field, ImageField, RgbColor, TextField } from '../../../core/model'
 import { SNAP_DISTANCE_PX, snapToNeighbours, type SnapGuides } from '../../../core/snap'
 import { coversOf } from '../../../core/textLines'
 import { t } from '../i18n'
+import { documentFontCss, registeredFonts } from '../render/documentFonts'
 import { addPictureFromFile, useEditor } from '../store'
 import { useAssetUrl } from './useAssetUrl'
 
@@ -72,6 +73,17 @@ const cssColor = ({ r, g, b }: RgbColor) => `rgb(${r} ${g} ${b})`
 
 /** Must match what the export draws for the same field. */
 function textFieldStyle(field: TextField, scale: number) {
+  // The document's font is its one face, so it is never made bolder or slanted.
+  const own = documentFontFor(field.style, field.value, registeredFonts()) && documentFontCss(field.style?.documentFont)
+  if (own) {
+    return {
+      fontSize: field.fontSize * scale,
+      fontFamily: `'${own}', sans-serif`,
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+      color: field.style ? cssColor(field.style.color) : undefined
+    }
+  }
   return {
     fontSize: field.fontSize * scale,
     fontFamily: field.style?.family ? `'${familyInfo(field.style.family).css}', sans-serif` : undefined,
@@ -442,13 +454,20 @@ const PANEL_MARGIN = 8
 /** Between the panel and its button, as in the stylesheet. */
 const PANEL_GAP = 6
 
+/** The value of the font list for the font of the document. */
+const DOCUMENT_FONT = 'document'
+
 /** The font of a text field: its family, bold, italic and colour. */
 function FontTool({ field }: { field: TextField }) {
   const [open, setOpen] = useState(false)
   const [place, setPlace] = useState<{ shift: number; above: boolean }>({ shift: 0, above: false })
   const panel = useRef<HTMLDivElement>(null)
-  const { setTextStyle } = useEditor.getState()
+  const { setTextStyle, pickStyle } = useEditor.getState()
   const style = field.style
+  const fonts = useEditor((state) => state.document?.fonts)
+  const picking = useEditor((state) => state.pickingStyleFor === field.id)
+  const documentFont = style?.documentFont ? fonts?.[style.documentFont] : undefined
+  const replaced = documentFontReplaced(style, field.value, fonts)
 
   // The document scrolls in its own area, which cuts off anything reaching past it: near the
   // right or bottom edge of the view, the panel moves left or opens upwards to stay whole.
@@ -474,11 +493,11 @@ function FontTool({ field }: { field: TextField }) {
     <div className="font-tool">
       <button
         type="button"
-        className={open ? 'active' : undefined}
+        className={[open ? 'active' : '', replaced ? 'warning' : ''].join(' ').trim() || undefined}
         data-testid="font-tool"
         aria-label={t.font.title}
         aria-expanded={open}
-        title={t.font.title}
+        title={replaced ? `${t.font.title}. ${t.font.replaced}` : t.font.title}
         onClick={() => setOpen((value) => !value)}
       >
         <span className="font-tool-icon">A</span>
@@ -495,9 +514,17 @@ function FontTool({ field }: { field: TextField }) {
             data-testid="font-family"
             aria-label={t.font.family}
             title={t.font.family}
-            value={style?.family ?? DEFAULT_FAMILY}
-            onChange={(event) => setTextStyle(field.id, { family: event.target.value as FontFamily })}
+            value={documentFont && style?.useDocumentFont ? DOCUMENT_FONT : (style?.family ?? DEFAULT_FAMILY)}
+            onChange={(event) => {
+              const { value } = event.target
+              if (value === DOCUMENT_FONT && documentFont) {
+                setTextStyle(field.id, { useDocumentFont: true, bold: documentFont.bold, italic: documentFont.italic })
+              } else setTextStyle(field.id, { family: value as FontFamily })
+            }}
           >
+            {documentFont && (
+              <option value={DOCUMENT_FONT}>{t.font.asInDocument(documentFont.name)}</option>
+            )}
             {FONT_FAMILIES.map(({ id }) => (
               <option key={id} value={id}>
                 {t.font.families[id]}
@@ -534,6 +561,24 @@ function FontTool({ field }: { field: TextField }) {
             value={toHex(style?.color ?? { r: 0, g: 0, b: 0 })}
             onChange={(event) => setTextStyle(field.id, { color: fromHex(event.target.value) })}
           />
+          <button
+            type="button"
+            className={picking ? 'active' : undefined}
+            data-testid="font-pick"
+            aria-label={t.font.pick}
+            aria-pressed={picking}
+            title={t.font.pick}
+            onClick={() => pickStyle(picking ? null : field.id)}
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M11.5 1.5 14.5 4.5 12.5 6.5 13.5 7.5 12.5 8.5 7.5 3.5 8.5 2.5 9.5 3.5Z M7 5 11 9 5 15H1V11Z" />
+            </svg>
+          </button>
+          {replaced && (
+            <p className="font-tool-note" data-testid="font-replaced">
+              {t.font.replaced}
+            </p>
+          )}
         </div>
       )}
     </div>

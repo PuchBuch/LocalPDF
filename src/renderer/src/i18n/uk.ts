@@ -129,6 +129,9 @@ export const uk: Messages = {
     bold: 'Жирний',
     italic: 'Курсив',
     color: 'Колір тексту',
+    asInDocument: (name: string) => (name ? `Як у документі: ${name}` : 'Як у документі'),
+    pick: 'Узяти стиль із тексту сторінки',
+    replaced: 'У шрифті документа бракує деяких літер, тому текст написано схожим шрифтом.',
     boldIcon: 'Ж',
     italicIcon: 'К',
     families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }

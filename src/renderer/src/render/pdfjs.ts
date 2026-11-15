@@ -13,6 +13,8 @@ export function openPdf(bytes: Uint8Array, password?: string): Promise<PDFDocume
     // pdf.js moves the buffer it gets to its worker. The source must stay usable for export.
     data: bytes.slice(),
     password,
+    // Keeps the bytes of the page's fonts, so edited text can be drawn in them.
+    fontExtraProperties: true,
     cMapUrl: assetUrl('cmaps'),
     cMapPacked: true,
     standardFontDataUrl: assetUrl('standard_fonts'),

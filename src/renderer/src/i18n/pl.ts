@@ -129,6 +129,9 @@ export const pl: Messages = {
     bold: 'Pogrubienie',
     italic: 'Kursywa',
     color: 'Kolor tekstu',
+    asInDocument: (name: string) => (name ? `Jak w dokumencie: ${name}` : 'Jak w dokumencie'),
+    pick: 'Pobierz styl z tekstu na stronie',
+    replaced: 'W czcionce dokumentu brakuje niektórych liter, więc tekst ma podobną czcionkę.',
     boldIcon: 'P',
     italicIcon: 'K',
     families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }

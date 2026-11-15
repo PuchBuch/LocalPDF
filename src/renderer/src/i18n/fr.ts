@@ -130,6 +130,9 @@ export const fr: Messages = {
     bold: 'Gras',
     italic: 'Italique',
     color: 'Couleur du texte',
+    asInDocument: (name: string) => (name ? `Comme dans le document: ${name}` : 'Comme dans le document'),
+    pick: 'Reprendre le style d’un texte de la page',
+    replaced: 'Il manque des lettres à la police du document, une police proche écrit donc le texte.',
     boldIcon: 'G',
     italicIcon: 'I',
     families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }

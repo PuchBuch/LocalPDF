@@ -129,6 +129,9 @@ export const it: Messages = {
     bold: 'Grassetto',
     italic: 'Corsivo',
     color: 'Colore del testo',
+    asInDocument: (name: string) => (name ? `Come nel documento: ${name}` : 'Come nel documento'),
+    pick: 'Prendi lo stile da un testo della pagina',
+    replaced: 'Al carattere del documento mancano alcune lettere, quindi il testo usa un carattere simile.',
     boldIcon: 'G',
     italicIcon: 'C',
     families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }

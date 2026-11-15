@@ -5,16 +5,18 @@ import { coverOf, coversOf, isCovered, overlapsAny, type TextLine, type TextWord
 import { pageTextLines, pageTextWords, type ContentPage } from '../../../export/extractContent'
 import { getPdfPage } from '../render/pdfjs'
 import { measureText } from '../render/textMetrics'
-import { startEditingLine, startEditingWord, useEditor } from '../store'
+import { pickStyleFromLine, startEditingLine, startEditingWord, useEditor } from '../store'
 
 interface EditableLinesProps {
   page: PageRef
   scale: number
   fields: Field[]
+  /** The lines are clicked for their look, which a text field takes. */
+  picking?: boolean
 }
 
 /** The lines or words of a page as things to click, while the tool for editing them is on. */
-export function EditableLines({ page, scale, fields }: EditableLinesProps) {
+export function EditableLines({ page, scale, fields, picking = false }: EditableLinesProps) {
   const scope = useEditor((state) => state.editScope)
   const [lines, setLines] = useState<TextLine[]>([])
   const [words, setWords] = useState<TextWord[]>([])
@@ -52,10 +54,11 @@ export function EditableLines({ page, scale, fields }: EditableLinesProps) {
     [words, covers]
   )
 
-  const items = scope === 'line' ? openLines : openWords
+  // A look can be taken from any line, also one that has been replaced.
+  const items = picking ? lines : scope === 'line' ? openLines : openWords
 
   return (
-    <div className="editable-lines">
+    <div className={picking ? 'editable-lines picking' : 'editable-lines'}>
       {items.map((item, index) => {
         const box = coverOf(item)
         return (
@@ -63,12 +66,13 @@ export function EditableLines({ page, scale, fields }: EditableLinesProps) {
             key={`${index}-${item.x}-${item.baseline}`}
             type="button"
             className="editable-line"
-            data-testid={scope === 'line' ? 'editable-line' : 'editable-word'}
+            data-testid={picking ? 'style-source' : scope === 'line' ? 'editable-line' : 'editable-word'}
             aria-label={item.text}
             style={{ left: box.x * scale, top: box.y * scale, width: box.width * scale, height: box.height * scale }}
             onClick={(event) => {
               event.stopPropagation()
-              void (scope === 'line' ? startEditingLine(page, item) : startEditingWord(page, item as TextWord))
+              if (picking) void pickStyleFromLine(page, item)
+              else void (scope === 'line' ? startEditingLine(page, item) : startEditingWord(page, item as TextWord))
             }}
           />
         )

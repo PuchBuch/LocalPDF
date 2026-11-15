@@ -127,6 +127,9 @@ export const ru = {
     bold: 'Жирный',
     italic: 'Курсив',
     color: 'Цвет текста',
+    asInDocument: (name: string) => (name ? `Как в документе: ${name}` : 'Как в документе'),
+    pick: 'Взять стиль с текста страницы',
+    replaced: 'В шрифте документа нет некоторых букв, текст написан похожим шрифтом.',
     boldIcon: 'Ж',
     italicIcon: 'К',
     families: {

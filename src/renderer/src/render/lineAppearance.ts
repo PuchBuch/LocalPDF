@@ -12,6 +12,8 @@ import {
   type TextLine,
   type TextWord
 } from '../../../core/textLines'
+import { prepareDocumentFont } from '../../../export/documentFont'
+import { registerDocumentFont } from './documentFonts'
 import { measureText } from './textMetrics'
 
 /** Large enough that the strokes of small letters have solid pixels, free of blending at the edges. */
@@ -30,6 +32,50 @@ interface PdfFontInfo {
   black?: boolean
   italic?: boolean
   fallbackName?: string
+  loadedName?: string
+  data?: Uint8Array
+  isType3Font?: boolean
+  missingFile?: boolean
+  vertical?: boolean
+}
+
+/** Fonts of pages, ready to draw new text, by their id. Null for one that cannot. */
+const preparedFonts = new Map<string, Promise<LineAppearance['font'] | null>>()
+
+/** The font a line is drawn in, made ready to draw new text and shown on the screen. */
+function documentFontOf(sourceId: string, font: PdfFontInfo | null): Promise<LineAppearance['font'] | null> {
+  if (!font?.loadedName || !font.data || font.isType3Font || font.missingFile || font.vertical) return Promise.resolve(null)
+  const id = `${sourceId}-${font.loadedName}`
+  let prepared = preparedFonts.get(id)
+  if (!prepared) {
+    const data = font.data
+    prepared = (async () => {
+      const ready = prepareDocumentFont(data, fontLook(font))
+      if (!ready) return null
+      await registerDocumentFont(id, ready)
+      return { id, font: ready }
+    })()
+    preparedFonts.set(id, prepared)
+  }
+  return prepared
+}
+
+/** The look of a line with the font it is drawn in, where that font can draw new text. */
+async function withDocumentFont(
+  sourceId: string,
+  font: PdfFontInfo | null,
+  appearance: LineAppearance
+): Promise<LineAppearance> {
+  const own = await documentFontOf(sourceId, font).catch((error: unknown) => {
+    console.error(error)
+    return null
+  })
+  if (!own) return appearance
+  return {
+    ...appearance,
+    style: { ...appearance.style, ...fontLook(font), documentFont: own.id, useDocumentFont: true },
+    font: own
+  }
 }
 
 async function fontOf(page: PDFPageProxy, fontName: string | undefined): Promise<PdfFontInfo | null> {
@@ -64,7 +110,12 @@ async function drawBand(page: PDFPageProxy, run: PageTextRun, rotation: Rotation
 }
 
 /** How a line of the page looks: its font, its colour and what is behind it. */
-export async function lineAppearance(page: PDFPageProxy, line: TextLine, rotation: Rotation): Promise<LineAppearance> {
+export async function lineAppearance(
+  page: PDFPageProxy,
+  sourceId: string,
+  line: TextLine,
+  rotation: Rotation
+): Promise<LineAppearance> {
   const [font, band] = await Promise.all([
     fontOf(page, line.fontName),
     drawBand(page, line, rotation, line.x, line.x + line.width)
@@ -72,7 +123,7 @@ export async function lineAppearance(page: PDFPageProxy, line: TextLine, rotatio
   const { ink, background } = inkAndBackground(band.pixels)
   const look = fontLook(font)
   const family = closestFamily(line, look, font?.fallbackName, measureText)
-  return { style: { ...look, color: ink, family }, background }
+  return withDocumentFont(sourceId, font, { style: { ...look, color: ink, family }, background })
 }
 
 /**
@@ -82,6 +133,7 @@ export async function lineAppearance(page: PDFPageProxy, line: TextLine, rotatio
  */
 export async function wordAppearance(
   page: PDFPageProxy,
+  sourceId: string,
   word: TextWord,
   rotation: Rotation
 ): Promise<{ word: TextWord; appearance: LineAppearance }> {
@@ -100,5 +152,6 @@ export async function wordAppearance(
   const [font, lineFont] = await Promise.all([fontOf(page, word.fontName), fontOf(page, word.line.fontName)])
   const look = fontLook(font)
   const family = closestFamily(word.line, fontLook(lineFont), lineFont?.fallbackName, measureText)
-  return { word: placed, appearance: { style: { ...look, color: ink, family }, background } }
+  const appearance = await withDocumentFont(sourceId, font, { style: { ...look, color: ink, family }, background })
+  return { word: placed, appearance }
 }

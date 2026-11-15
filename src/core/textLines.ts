@@ -1,7 +1,7 @@
 import { LINE_HEIGHT, newTextField, type MeasureText } from './fields'
-import { familyInfo } from './fonts'
+import { baselineShare } from './fonts'
 import type { Rect } from './geometry'
-import type { Field, RgbColor, TextCover, TextField, TextStyle } from './model'
+import type { DocumentFont, Field, RgbColor, TextCover, TextField, TextStyle } from './model'
 
 /** A piece of horizontal text on the displayed page, in points from its top-left corner. */
 export interface PageTextRun {
@@ -26,6 +26,8 @@ export interface TextWord extends PageTextRun {
 export interface LineAppearance {
   style: TextStyle
   background: RgbColor
+  /** The font the line is drawn in, when it can draw new text. The style names it by this id. */
+  font?: { id: string; font: DocumentFont }
 }
 
 /** Colours that differ by less than this from the background are not text. */
@@ -223,7 +225,7 @@ export function fieldForLine(id: string, line: PageTextRun, appearance?: LineApp
   return {
     ...newTextField(id),
     x: line.x,
-    y: line.baseline - line.height * familyInfo(appearance?.style.family).baseline,
+    y: line.baseline - line.height * baselineShare(appearance?.style, appearance?.font?.font, LINE_HEIGHT),
     width: line.width,
     height: line.height * LINE_HEIGHT,
     value: line.text,

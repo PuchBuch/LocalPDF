@@ -30,6 +30,13 @@ export interface TextStyle {
   color: RgbColor
   /** Arial-like when not set. */
   family?: FontFamily
+  /** The font of the document's text this field took its look from, by its id in the document's fonts. */
+  documentFont?: string
+  /**
+   * Whether that font draws the text, in place of the family. Only while it has every
+   * letter of the text, the family draws it otherwise.
+   */
+  useDocumentFont?: boolean
 }
 
 /** An area of the page painted over, in the given colour or else white. */
@@ -98,6 +105,24 @@ export interface ImageAsset {
   bytes: Uint8Array
 }
 
+/**
+ * A font taken from a source's own text, made ready to draw new text with: its
+ * characters are found by their Unicode code points alone.
+ */
+export interface DocumentFont {
+  /** Its name, as people know it. */
+  name: string
+  bytes: Uint8Array
+  /** Above and below the baseline, as shares of the font size. */
+  ascent: number
+  descent: number
+  /** The look of its one face. */
+  bold: boolean
+  italic: boolean
+  /** Every character it can draw. */
+  codePoints: number[]
+}
+
 export type FormValue = string | boolean | string[]
 
 export interface EditorDocument {
@@ -105,5 +130,7 @@ export interface EditorDocument {
   /** Values of the source's own AcroForm fields, by source id and field name. */
   formValues: Record<string, Record<string, FormValue>>
   assets: Record<string, ImageAsset>
+  /** Fonts of the sources that text fields use, by id. */
+  fonts?: Record<string, DocumentFont>
   pages: PageRef[]
 }

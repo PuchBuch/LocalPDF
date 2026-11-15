@@ -100,9 +100,10 @@ function useEscape(): void {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
-      const { cancelPaste, closeSignature } = useEditor.getState()
+      const { cancelPaste, closeSignature, pickStyle } = useEditor.getState()
       cancelPaste()
       closeSignature()
+      pickStyle(null)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)

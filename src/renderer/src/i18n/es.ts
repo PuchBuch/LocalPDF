@@ -129,6 +129,9 @@ export const es: Messages = {
     bold: 'Negrita',
     italic: 'Cursiva',
     color: 'Color del texto',
+    asInDocument: (name: string) => (name ? `Como en el documento: ${name}` : 'Como en el documento'),
+    pick: 'Tomar el estilo de un texto de la página',
+    replaced: 'A la fuente del documento le faltan letras, así que el texto usa una fuente parecida.',
     boldIcon: 'N',
     italicIcon: 'C',
     families: { arial: 'Arial', times: 'Times New Roman', calibri: 'Calibri', courier: 'Courier New' }

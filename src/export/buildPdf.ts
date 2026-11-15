@@ -20,7 +20,7 @@ import {
 } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import { CROSS_PATH, DOT_PATH, LINE_HEIGHT, MARK_BASE_SIZE, MARK_STROKE_WIDTH, TICK_PATH } from '../core/fields'
-import { DEFAULT_FAMILY, faceOf, familyInfo, type FontFace, type FontFamily } from '../core/fonts'
+import { DEFAULT_FAMILY, documentFontFor, faceOf, familyInfo, type FontFace, type FontFamily } from '../core/fonts'
 import { automaticFontSize, turnRect } from '../core/forms'
 import { displayedSize, displayToPdf, normalizeRotation, visibleBox, type Rect, type Size } from '../core/geometry'
 import { dropUnreachableObjects, removeTextInAreas } from './removeText'
@@ -106,6 +106,10 @@ class ExportContext {
       this.fontCache.set(bytes, font)
     }
     return font
+  }
+
+  get documentFonts(): EditorDocument['fonts'] {
+    return this.document.fonts
   }
 
   image(assetId: string): Promise<PDFImage> {
@@ -455,6 +459,14 @@ function textFont({ fonts }: ExportContext, style: TextStyle | undefined): Uint8
   return fonts.text[style?.family ?? DEFAULT_FAMILY][faceOf(style)]
 }
 
+/** The font of a text field: the document's own where it is to be used and can be, else the family's. */
+function fieldFont(context: ExportContext, field: TextField): Promise<LoadedFont> {
+  const own = documentFontFor(field.style, field.value, context.documentFonts)
+  // Fonts of a page mostly hold only the letters in use already, and cutting them down can lose some.
+  if (own) return context.font(own.bytes, false)
+  return context.font(textFont(context, field.style), familyInfo(field.style?.family).subset)
+}
+
 function drawBackground({ page, box, rotation }: PageTarget, area: TextCover | Field): void {
   page.drawRectangle({
     ...displayToPdf(box, rotation, { x: area.x, y: area.y + area.height }),
@@ -482,7 +494,7 @@ function keepDrawableCharacters(context: ExportContext, font: LoadedFont, fieldI
 
 async function drawText(context: ExportContext, target: PageTarget, field: TextField): Promise<void> {
   if (field.value === '') return
-  const font = await context.font(textFont(context, field.style), familyInfo(field.style?.family).subset)
+  const font = await fieldFont(context, field)
   const { page, box, rotation } = target
   const offset = baselineOffset(font, field.fontSize)
   const color = toPdfColor(field.style?.color, BLACK)
