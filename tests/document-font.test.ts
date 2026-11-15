@@ -10,6 +10,7 @@ import type { DocumentFont, TextField, TextStyle } from '../src/core/model'
 import { blobsOf, fromSnapshot, toSnapshot } from '../src/core/recovery'
 import { buildPdf, type ExportFonts } from '../src/export/buildPdf'
 import { cmapTable, prepareDocumentFont, rebuildFont } from '../src/export/documentFont'
+import { safeFontkit } from '../src/export/safeFontkit'
 import { loadFonts, readDisplayedText, singlePageDocument } from './helpers'
 
 const FONT_DIR = join(resolve(__dirname, '..'), 'src/renderer/public/fonts')
@@ -25,7 +26,7 @@ beforeAll(async () => {
 /** A page with a line of text in Carlito, embedded whole, as office programs write. */
 async function pageInCarlito(): Promise<Uint8Array> {
   const document = await PDFDocument.create()
-  document.registerFontkit(fontkit)
+  document.registerFontkit(safeFontkit)
   const font = await document.embedFont(await readFile(join(FONT_DIR, 'Carlito-Regular.ttf')), { subset: false })
   document.addPage([595, 842]).drawText(SOURCE_TEXT, { x: 50, y: 780, size: 14, font })
   return document.save()

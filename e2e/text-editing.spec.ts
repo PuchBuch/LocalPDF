@@ -3,9 +3,9 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test, type ElectronApplication, type Page } from '@playwright/test'
-import fontkit from '@pdf-lib/fontkit'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { safeFontkit } from '../src/export/safeFontkit'
 import { answerFileDialog, answerSaveDialog, canvasHasInk, expectSavedMatchesScreen, inkBox, launchApp, ROOT } from './harness'
 
 const OUT = join(ROOT, 'samples', 'private', 'out')
@@ -512,7 +512,7 @@ test.describe('the font of the document', () => {
   /** A page with a large red line in Carlito, which the PDF carries, and a plain line in Helvetica. */
   async function writeInCarlito(name: string, subset: boolean): Promise<string> {
     const document = await PDFDocument.create()
-    document.registerFontkit(fontkit)
+    document.registerFontkit(safeFontkit)
     const carlito = await document.embedFont(await readFile(join(ROOT, 'src/renderer/public/fonts/Carlito-Regular.ttf')), {
       subset
     })
