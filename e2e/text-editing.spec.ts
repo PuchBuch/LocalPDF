@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { expect, test, type ElectronApplication, type Page } from '@playwright/test'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { cmapTable, rebuildFont } from '../src/export/documentFont'
 import { safeFontkit } from '../src/export/safeFontkit'
 import { answerFileDialog, answerSaveDialog, canvasHasInk, expectSavedMatchesScreen, inkBox, launchApp, ROOT } from './harness'
 
@@ -513,9 +514,12 @@ test.describe('the font of the document', () => {
   async function writeInCarlito(name: string, subset: boolean): Promise<string> {
     const document = await PDFDocument.create()
     document.registerFontkit(safeFontkit)
-    const carlito = await document.embedFont(await readFile(join(ROOT, 'src/renderer/public/fonts/Carlito-Regular.ttf')), {
-      subset
-    })
+    const data = new Uint8Array(await readFile(join(ROOT, 'src/renderer/public/fonts/Carlito-Regular.ttf')))
+    // Cut down to the letters of its line, as PDFs often carry a font. The library writing
+    // the page would lose letters of Carlito if it did that itself.
+    const reader = safeFontkit.create(data)
+    const letters = new Map([...'Invoice for Anna'].map((c) => [c.codePointAt(0)!, reader.glyphForCodePoint(c.codePointAt(0)!).id]))
+    const carlito = await document.embedFont(subset ? rebuildFont(data, cmapTable(letters)) : data, { subset: false })
     const helvetica = await document.embedFont(StandardFonts.Helvetica)
     const pdfPage = document.addPage([595, 842])
     pdfPage.drawText('Invoice for Anna', { x: 60, y: 760, font: carlito, size: 20, color: rgb(0.8, 0, 0) })

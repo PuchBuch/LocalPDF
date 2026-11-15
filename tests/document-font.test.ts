@@ -23,11 +23,23 @@ beforeAll(async () => {
   fonts = await loadFonts()
 })
 
-/** A page with a line of text in Carlito, embedded whole as office programs often write, or cut down to its letters. */
-async function pageInCarlito(subset = false): Promise<Uint8Array> {
+/**
+ * Carlito with only the letters of a text, as PDFs often carry a font. The library that
+ * writes these pages loses letters of Carlito when it cuts it down itself.
+ */
+function carlitoWithOnly(data: Uint8Array, text: string): Uint8Array {
+  const font = fontkit.create(data)
+  const glyphs = new Map<number, number>()
+  for (const character of text) glyphs.set(character.codePointAt(0)!, font.glyphForCodePoint(character.codePointAt(0)!).id)
+  return rebuildFont(data, cmapTable(glyphs))
+}
+
+/** A page with a line of text in Carlito, embedded whole as office programs often write, or with only its letters. */
+async function pageInCarlito(cutDown = false): Promise<Uint8Array> {
   const document = await PDFDocument.create()
   document.registerFontkit(safeFontkit)
-  const font = await document.embedFont(await readFile(join(FONT_DIR, 'Carlito-Regular.ttf')), { subset })
+  const carlito = new Uint8Array(await readFile(join(FONT_DIR, 'Carlito-Regular.ttf')))
+  const font = await document.embedFont(cutDown ? carlitoWithOnly(carlito, SOURCE_TEXT) : carlito, { subset: false })
   document.addPage([595, 842]).drawText(SOURCE_TEXT, { x: 50, y: 780, size: 14, font })
   return document.save()
 }
