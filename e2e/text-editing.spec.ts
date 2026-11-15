@@ -603,6 +603,26 @@ test.describe('the font of the document', () => {
     await expect(page.getByTestId('font-size')).toHaveText('12')
   })
 
+  test('the style picker keeps the text on its line and at its left edge, on screen and in the file', async () => {
+    await startEditing(await writeInCarlito('picker-place.pdf', false))
+    await line('A plain line').click()
+    await page.getByTestId('font-tool').click()
+    await page.getByTestId('font-pick').click()
+    await line('Invoice for Anna').click()
+    await expect(page.getByTestId('font-size')).toHaveText('20')
+
+    const path = join(directory, 'picker-place-saved.pdf')
+    await answerSaveDialog(app, path)
+    await page.getByTestId('download').click()
+    await expect(page.getByTestId('saved-note')).toBeVisible()
+    const pdf = await getDocument({ data: new Uint8Array(await readFile(path)), verbosity: 0 }).promise
+    const { items } = await (await pdf.getPage(1)).getTextContent()
+    const placed = items.find((item) => 'str' in item && item.str === 'A plain line') as { transform: number[] }
+    // Drawn where the line was: x 60 and baseline 700, in points from the bottom left.
+    expect(placed.transform[4]).toBeCloseTo(60, 0)
+    expect(placed.transform[5]).toBeCloseTo(700, 0)
+  })
+
   test('Escape stops the style picker', async () => {
     await startEditing(await writeInCarlito('picker-escape.pdf', false))
     await line('A plain line').click()

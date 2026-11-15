@@ -1,5 +1,5 @@
 import { LINE_HEIGHT, newTextField, type MeasureText } from './fields'
-import { baselineShare } from './fonts'
+import { baselineShare, documentFontFor, drawnStyle } from './fonts'
 import type { Rect } from './geometry'
 import type { DocumentFont, Field, RgbColor, TextCover, TextField, TextStyle } from './model'
 
@@ -233,6 +233,17 @@ export function fieldForLine(id: string, line: PageTextRun, appearance?: LineApp
     cover: { ...coverOf(line), color: appearance?.background },
     style: appearance?.style
   }
+}
+
+/** Where the first line of a text field has its baseline, as the screen and the export draw it. */
+export function baselineOf(field: TextField, fonts?: Record<string, DocumentFont>): number {
+  const style = drawnStyle(field.style, field.value, fonts)
+  return field.y + field.fontSize * baselineShare(style, documentFontFor(style, field.value, fonts), LINE_HEIGHT)
+}
+
+/** A text field moved up or down so that its first line sits on the given baseline. */
+export function onBaseline(field: TextField, baseline: number, fonts?: Record<string, DocumentFont>): TextField {
+  return { ...field, y: field.y + baseline - baselineOf(field, fonts) }
 }
 
 /** Whether a point lies in any of the areas. */

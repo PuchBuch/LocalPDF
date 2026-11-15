@@ -53,7 +53,7 @@ import { deletePage, movePage, replacePage, rotatePageClockwise } from '../../co
 import type { AppliedValue } from '../../core/aiBridge'
 import type { Quad } from '../../core/scan'
 import type { ScanLook } from './render/scanImage'
-import { coversOf, fieldForLine, type LineAppearance, type PageTextRun, type TextLine, type TextWord } from '../../core/textLines'
+import { baselineOf, coversOf, fieldForLine, onBaseline, type LineAppearance, type PageTextRun, type TextLine, type TextWord } from '../../core/textLines'
 import { decreaseZoom, DEFAULT_ZOOM, increaseZoom } from '../../core/zoom'
 import { buildPdf } from '../../export/buildPdf'
 import { pagesWithLeftoverText, type ContentPage } from '../../export/extractContent'
@@ -585,12 +585,18 @@ export const useEditor = create<EditorState>((set) => ({
     set((state) => {
       // Another family or face is a font of the app's own, the document's one has a single face.
       const ownFont = change.useDocumentFont === undefined && (change.family ?? change.bold ?? change.italic) !== undefined
+      const fonts = state.document?.fonts
+      // Another font sits higher or lower in its line, the text stays on its baseline.
       const fitted = refitted(state, fieldId, (field) =>
         field.type === 'TEXT'
-          ? {
-              ...field,
-              style: { ...DEFAULT_TEXT_STYLE, ...field.style, ...change, ...(ownFont ? { useDocumentFont: false } : {}) }
-            }
+          ? onBaseline(
+              {
+                ...field,
+                style: { ...DEFAULT_TEXT_STYLE, ...field.style, ...change, ...(ownFont ? { useDocumentFont: false } : {}) }
+              },
+              baselineOf(field, fonts),
+              fonts
+            )
           : field
       )
       if (!state.document || !fitted) return {}
@@ -609,11 +615,14 @@ export const useEditor = create<EditorState>((set) => ({
       const found = state.document && findField(state.document, fieldId)
       const page = found && currentPageSize(state, found.pageId)
       if (!state.document || !found || !page || found.field.type !== 'TEXT') return { pickingStyleFor: null }
-      const fitted = sizedToContent(
+      const fonts = withFont(state.document.fonts, appearance)
+      // The text keeps its place on the page: its baseline and its left edge.
+      const restyled = onBaseline(
         { ...found.field, fontSize, style: appearance.style },
-        page,
-        withFont(state.document.fonts, appearance)
+        baselineOf(found.field, state.document.fonts),
+        fonts
       )
+      const fitted = sizedToContent(restyled, page, fonts)
       lastTyping = null
       return {
         ...editDocument(state, (document) => {

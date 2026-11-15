@@ -8,6 +8,7 @@ import { newTextField } from '../src/core/fields'
 import { documentFontFor, documentFontReplaced, drawnStyle, plainFontName } from '../src/core/fonts'
 import type { DocumentFont, TextField, TextStyle } from '../src/core/model'
 import { blobsOf, fromSnapshot, toSnapshot } from '../src/core/recovery'
+import { baselineOf, onBaseline } from '../src/core/textLines'
 import { buildPdf, type ExportFonts } from '../src/export/buildPdf'
 import { cmapTable, prepareDocumentFont, rebuildFont, spaceWidthOf } from '../src/export/documentFont'
 import { safeFontkit } from '../src/export/safeFontkit'
@@ -169,6 +170,26 @@ describe('prepareDocumentFont', () => {
     const { bytes } = await buildPdf(document, fonts)
     expect((await readDisplayedText(bytes)).map((item) => item.text).join(' ')).toContain('Zoo')
     expect((await pageFontNames(bytes)).some((name) => name.startsWith('LiberationSans'))).toBe(true)
+  })
+})
+
+describe('baselineOf', () => {
+  it('moves a field so its text stays on its baseline in another font and size', () => {
+    const font: DocumentFont = {
+      name: 'Tall',
+      bytes: new Uint8Array(),
+      ascent: 1.1,
+      descent: 0.3,
+      bold: false,
+      italic: false,
+      codePoints: [...'Hello'].map((character) => character.codePointAt(0)!)
+    }
+    const before = textField('Hello', { bold: false, italic: false, color: { r: 0, g: 0, b: 0 } })
+    const baseline = baselineOf(before)
+    const after = onBaseline({ ...before, fontSize: 20, style: usingDocumentFont }, baseline, { f1: font })
+    expect(baselineOf(after, { f1: font })).toBeCloseTo(baseline, 6)
+    expect(after.x).toBe(before.x)
+    expect(after.y).not.toBeCloseTo(before.y, 1)
   })
 })
 
