@@ -550,6 +550,9 @@ test.describe('the font of the document', () => {
     await startEditing(await writeInCarlito('carlito-match.pdf', false))
     await line('Invoice for Anna').click()
     await page.getByTestId('field-input').fill('Invoice for Mark')
+    // The comparison looks for dark ink.
+    await page.getByTestId('font-tool').click()
+    await page.getByTestId('font-color').fill('#000000')
     await expectSavedMatchesScreen(app, page, join(directory, 'carlito-match-saved.pdf'), { x: 40, y: 55, width: 400, height: 40 })
   })
 

@@ -23,11 +23,11 @@ beforeAll(async () => {
   fonts = await loadFonts()
 })
 
-/** A page with a line of text in Carlito, embedded whole, as office programs write. */
-async function pageInCarlito(): Promise<Uint8Array> {
+/** A page with a line of text in Carlito, embedded whole as office programs often write, or cut down to its letters. */
+async function pageInCarlito(subset = false): Promise<Uint8Array> {
   const document = await PDFDocument.create()
   document.registerFontkit(safeFontkit)
-  const font = await document.embedFont(await readFile(join(FONT_DIR, 'Carlito-Regular.ttf')), { subset: false })
+  const font = await document.embedFont(await readFile(join(FONT_DIR, 'Carlito-Regular.ttf')), { subset })
   document.addPage([595, 842]).drawText(SOURCE_TEXT, { x: 50, y: 780, size: 14, font })
   return document.save()
 }
@@ -107,6 +107,13 @@ describe('prepareDocumentFont', () => {
     expect(space.id).not.toBe(0)
     expect(space.advanceWidth / rebuilt.unitsPerEm).toBeCloseTo(0.226, 2)
     expect(rebuilt.glyphForCodePoint(0xa0).id).toBe(space.id)
+  })
+
+  it('can draw every letter of the page with a font cut down to them', async () => {
+    const { data, spaceWidth } = await viewerFont(await pageInCarlito(true))
+    const subset = prepareDocumentFont(data, { bold: false, italic: false, spaceWidth })!
+    const missing = [...SOURCE_TEXT].filter((character) => !subset.codePoints.includes(character.codePointAt(0)!))
+    expect(missing).toEqual([])
   })
 
   it('gives up a font it cannot read', () => {
