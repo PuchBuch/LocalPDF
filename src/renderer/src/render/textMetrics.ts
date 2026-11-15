@@ -12,10 +12,22 @@ const context = document.createElement('canvas').getContext('2d')!
 const fontShorthand = (style?: Partial<Pick<TextStyle, 'bold' | 'italic' | 'family'>>) =>
   `${style?.italic ? 'italic ' : ''}${style?.bold ? 'bold ' : ''}${MEASURE_SIZE}px "${familyInfo(style?.family).css}"`
 
-export const measureText: MeasureText = (text, fontSize, style) => {
+function useFont(style: Parameters<MeasureText>[2]): void {
   // A document's font is its one face, never made bolder or slanted.
   const own = style?.useDocumentFont ? documentFontCss(style.documentFont) : undefined
   context.font = own ? `${MEASURE_SIZE}px "${own}"` : fontShorthand(style)
+}
+
+/** The blank a text's first letter has before its ink, in points, as the field's font draws it. */
+export function leftBearing(text: string, fontSize: number, style: Parameters<MeasureText>[2]): number {
+  const first = [...text][0]
+  if (!first) return 0
+  useFont(style)
+  return (-context.measureText(first).actualBoundingBoxLeft * fontSize) / MEASURE_SIZE
+}
+
+export const measureText: MeasureText = (text, fontSize, style) => {
+  useFont(style)
   // The PDF draws text without kerning, so the screen does not use it either.
   context.fontKerning = 'none'
   return (context.measureText(text).width * fontSize) / MEASURE_SIZE

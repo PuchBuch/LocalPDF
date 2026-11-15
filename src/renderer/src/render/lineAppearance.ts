@@ -14,7 +14,7 @@ import {
 } from '../../../core/textLines'
 import { prepareDocumentFont, spaceWidthOf } from '../../../export/documentFont'
 import { registerDocumentFont } from './documentFonts'
-import { measureText } from './textMetrics'
+import { leftBearing, measureText } from './textMetrics'
 
 /** Large enough that the strokes of small letters have solid pixels, free of blending at the edges. */
 const SAMPLE_SCALE = 4
@@ -149,11 +149,16 @@ export async function wordAppearance(
     (search + word.width) * SAMPLE_SCALE,
     word.height * WORD_INK_GAP * SAMPLE_SCALE
   )
-  const placed = span ? { ...word, x: left + span[0] / SAMPLE_SCALE, width: (span[1] - span[0]) / SAMPLE_SCALE } : word
-
   const [font, lineFont] = await Promise.all([fontOf(page, word.fontName), fontOf(page, word.line.fontName)])
   const look = fontLook(font)
   const family = closestFamily(word.line, fontLook(lineFont), lineFont?.fallbackName, measureText)
   const appearance = await withDocumentFont(sourceId, font, { style: { ...look, color: ink, family }, background })
+
+  // The ink starts after the blank the first letter has before it, which the field's font adds again.
+  // The right edge stays at the end of the ink, so the patch still covers all of it.
+  const bearing = leftBearing(word.text, word.height, appearance.style)
+  const placed = span
+    ? { ...word, x: left + span[0] / SAMPLE_SCALE - bearing, width: (span[1] - span[0]) / SAMPLE_SCALE + bearing }
+    : word
   return { word: placed, appearance }
 }

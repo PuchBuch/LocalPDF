@@ -267,6 +267,26 @@ test.describe('editing one word', () => {
     expect(text.join(' ')).toContain('Berlin')
   })
 
+  test('the new word starts where the old one did, not after the blank before its first letter', async () => {
+    await startWordEditing(await writeInFont(StandardFonts.Helvetica, 'word-place.pdf'))
+    await word('15.10.2026').click()
+    await page.getByTestId('field-input').fill('16.11.2027')
+    await page.getByTestId('tool-cursor').click()
+
+    const path = join(directory, 'word-place-saved.pdf')
+    await answerSaveDialog(app, path)
+    await page.getByTestId('download').click()
+    await expect(page.getByTestId('saved-note')).toBeVisible()
+    const pdf = await getDocument({ data: new Uint8Array(await readFile(path)), verbosity: 0 }).promise
+    const { items } = await (await pdf.getPage(1)).getTextContent()
+    const placed = items.find((item) => 'str' in item && item.str === '16.11.2027') as { transform: number[] }
+
+    const helvetica = await (await PDFDocument.create()).embedFont(StandardFonts.Helvetica)
+    const expected = 60 + helvetica.widthOfTextAtSize('Datum ', 16)
+    expect(Math.abs(placed.transform[4]! - expected)).toBeLessThan(0.4)
+    expect(placed.transform[5]).toBeCloseTo(700, 0)
+  })
+
   test('its patch does not bite into the neighbouring words', async () => {
     await startWordEditing(await writeInFont(StandardFonts.Helvetica, 'neighbours.pdf'))
     const before = (await word('15.10.2026').boundingBox())!
