@@ -8,7 +8,12 @@ import type { DocumentFont } from '../core/model'
  * with such a font says the private code too when its text is copied or searched. Only
  * the Unicode codes are kept here. Null for a font that cannot be read or used.
  */
-export function prepareDocumentFont(data: Uint8Array, look: { bold: boolean; italic: boolean }): DocumentFont | null {
+export function prepareDocumentFont(
+  data: Uint8Array,
+  look: { bold: boolean; italic: boolean },
+  /** How wide the PDF says a space of this font is, as a share of the font size. */
+  spaceWidth?: number
+): DocumentFont | null {
   try {
     const font = fontkit.create(data)
     const name = plainFontName(font.fullName || font.familyName || font.postscriptName || '')
@@ -27,7 +32,7 @@ export function prepareDocumentFont(data: Uint8Array, look: { bold: boolean; ita
       }
     }
     if (glyphs.size === 0) return null
-    addSpaces(font, glyphs)
+    addSpaces(font, glyphs, spaceWidth)
 
     return {
       name,
@@ -58,29 +63,52 @@ function isPlainCharacter(codePoint: number): boolean {
   return !privateUse
 }
 
+/** A space is about this wide, as a share of the font size, when the PDF does not say. */
+const USUAL_SPACE = 0.25
+/** A glyph this close in width to the space the PDF gives is taken for it. */
+const SPACE_MATCH = 0.01
+
 /**
  * Gives the spaces back their glyph. The viewer leaves out glyphs with nothing to draw,
- * so a space is still in the font but no character leads to it. It is found by its name.
+ * so a space is still in the font but no character leads to it: it is the empty glyph
+ * as wide as the PDF says a space is, or else as wide as spaces usually are.
  */
-function addSpaces(font: ReturnType<typeof fontkit.create>, glyphs: Map<number, number>): void {
-  if (glyphs.has(0x20)) {
-    if (!glyphs.has(0xa0)) glyphs.set(0xa0, glyphs.get(0x20)!)
-    return
-  }
-  for (let id = 1; id < font.numGlyphs; id++) {
-    try {
-      const glyph = font.getGlyph(id)
-      // The font reader has the name, its types leave it out.
-      const { name } = glyph as typeof glyph & { name?: string }
-      if (name !== 'space' && name !== 'uni0020') continue
-      if (!(glyph.advanceWidth > 0)) return
-      glyphs.set(0x20, id)
-      if (!glyphs.has(0xa0)) glyphs.set(0xa0, id)
-      return
-    } catch {
-      continue
+function addSpaces(font: ReturnType<typeof fontkit.create>, glyphs: Map<number, number>, spaceWidth?: number): void {
+  if (!glyphs.has(0x20)) {
+    const mapped = new Set(glyphs.values())
+    const target = spaceWidth ?? USUAL_SPACE
+    let best: { id: number; difference: number } | null = null
+    for (let id = 1; id < font.numGlyphs; id++) {
+      if (mapped.has(id)) continue
+      try {
+        const glyph = font.getGlyph(id)
+        const width = glyph.advanceWidth / font.unitsPerEm
+        if (width <= 0 || glyph.path.toSVG() !== '') continue
+        const difference = Math.abs(width - target)
+        if (!best || difference < best.difference) best = { id, difference }
+      } catch {
+        continue
+      }
     }
+    const close = spaceWidth === undefined ? 0.1 : SPACE_MATCH
+    if (best && best.difference <= close) glyphs.set(0x20, best.id)
   }
+  if (glyphs.has(0x20) && !glyphs.has(0xa0)) glyphs.set(0xa0, glyphs.get(0x20)!)
+}
+
+/**
+ * How wide a font's space is, as the PDF gives it, from the viewer's font: the width of
+ * the character code whose text is a space. Undefined where that is not known.
+ */
+export function spaceWidthOf(font: { toUnicode?: unknown; widths?: unknown }): number | undefined {
+  const map = (font.toUnicode as { _map?: Record<string, unknown> } | undefined)?._map
+  const widths = font.widths as Record<string, unknown> | undefined
+  if (!map || !widths) return undefined
+  for (const [code, text] of Object.entries(map)) {
+    const width = widths[code]
+    if (text === ' ' && typeof width === 'number' && width > 0) return width / 1000
+  }
+  return undefined
 }
 
 /** Runs of characters whose glyphs follow on as the characters do. */

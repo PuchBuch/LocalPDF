@@ -9,7 +9,7 @@ import { documentFontFor, documentFontReplaced, drawnStyle, plainFontName } from
 import type { DocumentFont, TextField, TextStyle } from '../src/core/model'
 import { blobsOf, fromSnapshot, toSnapshot } from '../src/core/recovery'
 import { buildPdf, type ExportFonts } from '../src/export/buildPdf'
-import { cmapTable, prepareDocumentFont, rebuildFont } from '../src/export/documentFont'
+import { cmapTable, prepareDocumentFont, rebuildFont, spaceWidthOf } from '../src/export/documentFont'
 import { safeFontkit } from '../src/export/safeFontkit'
 import { loadFonts, readDisplayedText, singlePageDocument } from './helpers'
 
@@ -33,7 +33,7 @@ async function pageInCarlito(): Promise<Uint8Array> {
 }
 
 /** The font of the page's first text, as the PDF viewer rebuilds it for the screen. */
-async function viewerFont(bytes: Uint8Array): Promise<{ data: Uint8Array; loadedName: string }> {
+async function viewerFont(bytes: Uint8Array): Promise<{ data: Uint8Array; loadedName: string; spaceWidth?: number }> {
   const pdf = await getDocument({
     data: bytes.slice(),
     standardFontDataUrl: STANDARD_FONTS,
@@ -46,8 +46,8 @@ async function viewerFont(bytes: Uint8Array): Promise<{ data: Uint8Array; loaded
   const item = content.items.find((candidate) => 'str' in candidate && candidate.str.trim() !== '')
   await page.getOperatorList()
   const fontName = (item as { fontName: string }).fontName
-  const font = page.commonObjs.get(fontName) as { data: Uint8Array; loadedName: string }
-  return { data: font.data, loadedName: font.loadedName }
+  const font = page.commonObjs.get(fontName) as { data: Uint8Array; loadedName: string; widths?: unknown }
+  return { data: font.data, loadedName: font.loadedName, spaceWidth: spaceWidthOf(font) }
 }
 
 const usingDocumentFont: TextStyle = {
@@ -78,8 +78,10 @@ describe('prepareDocumentFont', () => {
   let font: DocumentFont
 
   beforeAll(async () => {
-    const { data } = await viewerFont(await pageInCarlito())
-    font = prepareDocumentFont(data, { bold: false, italic: false })!
+    const { data, spaceWidth } = await viewerFont(await pageInCarlito())
+    // Carlito's space is 226 thousandths of the font size wide.
+    expect(spaceWidth).toBeCloseTo(0.226, 2)
+    font = prepareDocumentFont(data, { bold: false, italic: false }, spaceWidth)!
   })
 
   it('reads the font the viewer rebuilt from the page', () => {

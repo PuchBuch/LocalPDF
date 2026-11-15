@@ -12,7 +12,7 @@ import {
   type TextLine,
   type TextWord
 } from '../../../core/textLines'
-import { prepareDocumentFont } from '../../../export/documentFont'
+import { prepareDocumentFont, spaceWidthOf } from '../../../export/documentFont'
 import { registerDocumentFont } from './documentFonts'
 import { measureText } from './textMetrics'
 
@@ -37,6 +37,8 @@ interface PdfFontInfo {
   isType3Font?: boolean
   missingFile?: boolean
   vertical?: boolean
+  toUnicode?: unknown
+  widths?: unknown
 }
 
 /** Fonts of pages, ready to draw new text, by their id. Null for one that cannot. */
@@ -50,7 +52,7 @@ function documentFontOf(sourceId: string, font: PdfFontInfo | null): Promise<Lin
   if (!prepared) {
     const data = font.data
     prepared = (async () => {
-      const ready = prepareDocumentFont(data, fontLook(font))
+      const ready = prepareDocumentFont(data, fontLook(font), spaceWidthOf(font))
       if (!ready) return null
       await registerDocumentFont(id, ready)
       return { id, font: ready }
