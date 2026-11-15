@@ -73,32 +73,56 @@ const USUAL_SPACE = 0.25
 /** A glyph this close in width to the space the PDF gives is taken for it. */
 const SPACE_MATCH = 0.01
 
+/** Spaces are no narrower or wider than these shares of the font size. */
+const SPACE_RANGE = [0.15, 0.4] as const
+
 /**
  * Gives the spaces back their glyph. The viewer leaves out glyphs with nothing to draw,
- * so a space is still in the font but no character leads to it: it is the empty glyph
- * as wide as the PDF says a space is, or else as wide as spaces usually are.
+ * so a space is still in the font but no character leads to it. It is the empty glyph as
+ * wide as the PDF says a space is. Where the PDF does not say, a width two empty glyphs
+ * share comes first, as the space and the no-break space do and the special spaces of a
+ * font do not, then the width nearest to the usual one.
  */
 function addSpaces(font: ReturnType<typeof fontkit.create>, glyphs: Map<number, number>, spaceWidth?: number): void {
   if (!glyphs.has(0x20)) {
     const mapped = new Set(glyphs.values())
-    const target = spaceWidth ?? USUAL_SPACE
-    let best: { id: number; difference: number } | null = null
+    const empty: { id: number; width: number }[] = []
     for (let id = 1; id < font.numGlyphs; id++) {
       if (mapped.has(id)) continue
       try {
         const glyph = font.getGlyph(id)
         const width = glyph.advanceWidth / font.unitsPerEm
-        if (width <= 0 || glyph.path.toSVG() !== '') continue
-        const difference = Math.abs(width - target)
-        if (!best || difference < best.difference) best = { id, difference }
+        if (width > 0 && glyph.path.toSVG() === '') empty.push({ id, width })
       } catch {
         continue
       }
     }
-    const close = spaceWidth === undefined ? 0.1 : SPACE_MATCH
-    if (best && best.difference <= close) glyphs.set(0x20, best.id)
+    const space = spaceWidth === undefined ? likelySpace(empty) : exactSpace(empty, spaceWidth)
+    if (space) glyphs.set(0x20, space.id)
   }
   if (glyphs.has(0x20) && !glyphs.has(0xa0)) glyphs.set(0xa0, glyphs.get(0x20)!)
+}
+
+function exactSpace(empty: { id: number; width: number }[], width: number) {
+  const nearest = empty.reduce<(typeof empty)[number] | null>(
+    (best, glyph) => (!best || Math.abs(glyph.width - width) < Math.abs(best.width - width) ? glyph : best),
+    null
+  )
+  return nearest && Math.abs(nearest.width - width) <= SPACE_MATCH ? nearest : null
+}
+
+function likelySpace(empty: { id: number; width: number }[]) {
+  const candidates = empty.filter(({ width }) => width >= SPACE_RANGE[0] && width <= SPACE_RANGE[1])
+  const key = (width: number) => Math.round(width * 1000)
+  const counts = new Map<number, number>()
+  for (const { width } of candidates) counts.set(key(width), (counts.get(key(width)) ?? 0) + 1)
+  const shared = candidates.filter(({ width }) => counts.get(key(width))! > 1)
+  const pool = shared.length > 0 ? shared : candidates
+  return pool.reduce<(typeof pool)[number] | null>(
+    (best, glyph) =>
+      !best || Math.abs(glyph.width - USUAL_SPACE) < Math.abs(best.width - USUAL_SPACE) ? glyph : best,
+    null
+  )
 }
 
 /**
