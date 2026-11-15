@@ -114,7 +114,7 @@ describe('prepareDocumentFont', () => {
     const texts = (await readDisplayedText(bytes)).map((item) => item.text)
     expect(texts.join(' ')).toContain('Hello Привет World')
     // The app's own font for this text would be Liberation Sans.
-    expect(await pageFontNames(bytes)).not.toContain('LiberationSans')
+    expect((await pageFontNames(bytes)).some((name) => name.startsWith('LiberationSans'))).toBe(false)
   })
 
   it('writes in the app’s font a text with a letter the document’s font lacks', async () => {
@@ -124,7 +124,7 @@ describe('prepareDocumentFont', () => {
     const document = { ...singlePageDocument(source, [field]), fonts: { f1: lacking } }
     const { bytes } = await buildPdf(document, fonts)
     expect((await readDisplayedText(bytes)).map((item) => item.text).join(' ')).toContain('Zoo')
-    expect(await pageFontNames(bytes)).toContain('LiberationSans')
+    expect((await pageFontNames(bytes)).some((name) => name.startsWith('LiberationSans'))).toBe(true)
   })
 })
 

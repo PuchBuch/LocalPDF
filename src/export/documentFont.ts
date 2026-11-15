@@ -27,6 +27,7 @@ export function prepareDocumentFont(data: Uint8Array, look: { bold: boolean; ita
       }
     }
     if (glyphs.size === 0) return null
+    addSpaces(font, glyphs)
 
     return {
       name,
@@ -55,6 +56,31 @@ function isPlainCharacter(codePoint: number): boolean {
   if (codePoint < 0x20 || codePoint === 0xffff) return false
   const privateUse = (codePoint >= 0xe000 && codePoint <= 0xf8ff) || codePoint >= 0xf0000
   return !privateUse
+}
+
+/**
+ * Gives the spaces back their glyph. The viewer leaves out glyphs with nothing to draw,
+ * so a space is still in the font but no character leads to it. It is found by its name.
+ */
+function addSpaces(font: ReturnType<typeof fontkit.create>, glyphs: Map<number, number>): void {
+  if (glyphs.has(0x20)) {
+    if (!glyphs.has(0xa0)) glyphs.set(0xa0, glyphs.get(0x20)!)
+    return
+  }
+  for (let id = 1; id < font.numGlyphs; id++) {
+    try {
+      const glyph = font.getGlyph(id)
+      // The font reader has the name, its types leave it out.
+      const { name } = glyph as typeof glyph & { name?: string }
+      if (name !== 'space' && name !== 'uni0020') continue
+      if (!(glyph.advanceWidth > 0)) return
+      glyphs.set(0x20, id)
+      if (!glyphs.has(0xa0)) glyphs.set(0xa0, id)
+      return
+    } catch {
+      continue
+    }
+  }
 }
 
 /** Runs of characters whose glyphs follow on as the characters do. */
