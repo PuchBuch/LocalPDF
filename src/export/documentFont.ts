@@ -21,8 +21,9 @@ export function prepareDocumentFont(
 ): DocumentFont | null {
   try {
     const font = fontkit.create(data)
-    const name = plainFontName(look.name || font.fullName || font.familyName || font.postscriptName || '')
-    if (hasTwinInApp(name)) return null
+    const fullName = look.name || font.fullName || font.familyName || font.postscriptName || ''
+    const name = plainFontName(fullName)
+    if (hasTwinInApp(name, isSubset(fullName))) return null
 
     const glyphs = new Map<number, number>()
     for (const codePoint of font.characterSet) {
@@ -56,10 +57,18 @@ export function prepareDocumentFont(
 /**
  * Fonts the app carries a twin of, letter for letter as wide. A PDF often only names
  * them, and the viewer then draws its own stand-in, which is no font of the document.
+ * A subset is always in the file, so a subset of Arial or Times is their real letters,
+ * which differ from the twins' in shape, and is kept.
  */
-function hasTwinInApp(name: string): boolean {
+function hasTwinInApp(name: string, subset: boolean): boolean {
   const compact = name.replace(/[\s_,-]/g, '').toLowerCase()
-  return /^(arial|arimo|helvetica|times|tinos|courier|cousine|liberation|foxit|symbol|zapfdingbats)/.test(compact)
+  if (/^(arimo|tinos|cousine|liberation|foxit)/.test(compact)) return true
+  return !subset && /^(arial|helvetica|times|courier|symbol|zapfdingbats)/.test(compact)
+}
+
+/** A subset is named with six capitals and a plus before the font's own name. */
+function isSubset(name: string): boolean {
+  return /^[A-Z]{6}\+/.test(name)
 }
 
 function isPlainCharacter(codePoint: number): boolean {

@@ -148,6 +148,14 @@ describe('prepareDocumentFont', () => {
   it('leaves to the app a font it has a twin of, which the viewer may only have stood in for', async () => {
     const data = new Uint8Array(await readFile(join(FONT_DIR, 'LiberationSans-Regular.ttf')))
     expect(prepareDocumentFont(data, { bold: false, italic: false })).toBeNull()
+    expect(prepareDocumentFont(data, { bold: false, italic: false, name: 'ABCDEF+LiberationSans' })).toBeNull()
+  })
+
+  it('keeps a subset of Arial or Times, which is in the file and drawn unlike their twins', async () => {
+    const data = new Uint8Array(await readFile(join(FONT_DIR, 'Carlito-Regular.ttf')))
+    expect(prepareDocumentFont(data, { bold: false, italic: false, name: 'ABCDEF+ArialMT' })?.name).toBe('ArialMT')
+    expect(prepareDocumentFont(data, { bold: false, italic: false, name: 'GHIJKL+TimesNewRomanPSMT' })).not.toBeNull()
+    expect(prepareDocumentFont(data, { bold: false, italic: false, name: 'Helvetica' })).toBeNull()
   })
 
   it('writes new text that a PDF reader finds as typed, in the font of the document', async () => {
