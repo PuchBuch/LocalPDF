@@ -8,7 +8,7 @@ A PDF editor for Windows that keeps your documents on your computer. Files are n
 
 ## What it does
 
-- **Edit text in place:** click a line or a word and retype it. Bold, italic and color carry over, and a similar font is picked for you.
+- **Edit text in place:** click a line or a word and retype it. Bold, italic and color carry over. New text is set in the document's own font when the file holds the letters it needs, otherwise in a similar one. A picker copies the style of any text on the page.
 - **Remove text for real:** replaced text is cut out of the saved file, not only covered, and the result is checked.
 - **Fill in forms:** a PDF's own form fields, or fields you place yourself, with text, ticks, crosses, dots, signatures and pictures.
 - **Find fields:** adds empty fields at blank lines and boxes.
@@ -44,7 +44,7 @@ It differs from the Windows app in a few ways:
 
 - **Pictures and scans:** text on a picture cannot be cut out. It is only covered and stays in the file, and the app warns you. For scans with confidential data, print to PDF instead and check the result.
 - **Confidential documents:** after removing something sensitive, search the saved file for it in another PDF viewer. Do not rely only on this app.
-- **Edited text** is set in one of four fonts (like Arial, Times New Roman, Calibri or Courier New), so an unusual font will look different. A paragraph does not reflow: a longer word overlaps the next one.
+- **Edited text** is set in the document's font only when that font is embedded in the file and has every letter needed. Otherwise it uses one of four fonts (like Arial, Times New Roman, Calibri or Courier New), so an unusual font will look different. A paragraph does not reflow: a longer word overlaps the next one.
 - **Forms:** XFA forms and JavaScript in forms are not supported.
 - **Text recognition** is less accurate on faint or skewed scans and does not read handwriting. Read through what it finds.
 - **Finding fields** does not detect single-letter cells and may miss or misplace fields on skewed scans.
