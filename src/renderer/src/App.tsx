@@ -4,6 +4,7 @@ import { MAX_ZOOM, MIN_ZOOM } from '../../core/zoom'
 import { PasswordDialog } from './editor/PasswordDialog'
 import { FieldsPanel } from './editor/FieldNumbers'
 import { RecoveryDialog } from './editor/RecoveryDialog'
+import { openReportDialog, ReportDialog, useReportDialog } from './editor/ReportDialog'
 import { ScanDialog } from './editor/ScanDialog'
 import { SignatureDialog } from './editor/SignatureDialog'
 import { DocumentView } from './editor/DocumentView'
@@ -104,6 +105,7 @@ function useEscape(): void {
       cancelPaste()
       closeSignature()
       pickStyle(null)
+      useReportDialog.setState({ open: false })
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
@@ -244,7 +246,8 @@ function DownloadButton() {
   const outputs = [
     { testId: 'print-document', label: t.print, run: printDocument },
     { testId: 'copy-markdown', label: t.copyMarkdown, run: () => copyMarkdown() },
-    { testId: 'save-markdown', label: t.saveMarkdown, run: saveMarkdown }
+    { testId: 'save-markdown', label: t.saveMarkdown, run: saveMarkdown },
+    { testId: 'report-problem', label: t.report.open, run: openReportDialog }
   ]
 
   return (
@@ -360,6 +363,9 @@ function EmptyState({ opening }: { opening: boolean }) {
     <main className="empty-state">
       <div className="empty-state-settings">
         <LanguagePicker />
+        <button type="button" className="report-link" data-testid="report-problem" onClick={openReportDialog}>
+          {t.report.open}
+        </button>
       </div>
       <h1>{t.appName}</h1>
       <div className="dropzone">
@@ -446,6 +452,7 @@ export function App() {
   const recoveryOffer = useEditor((state) => state.recoveryOffer)
   const passwordRequest = useEditor((state) => state.passwordRequest)
   const scanRequest = useEditor((state) => state.scanRequest)
+  const reporting = useReportDialog((state) => state.open)
   useHistoryShortcuts()
   useOutputShortcuts()
   useWindowTitle()
@@ -458,6 +465,7 @@ export function App() {
       {recoveryOffer && <RecoveryDialog savedAt={recoveryOffer.savedAt} names={recoveryOffer.names} />}
       {passwordRequest && <PasswordDialog name={passwordRequest.name} wrong={passwordRequest.wrong} />}
       {scanRequest && <ScanDialog request={scanRequest} />}
+      {reporting && <ReportDialog />}
       <ContextBanners />
       <Notices />
       {dragging && <div className="drop-overlay">{t.dropOverlay}</div>}

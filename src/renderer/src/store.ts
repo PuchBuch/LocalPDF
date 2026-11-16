@@ -37,6 +37,7 @@ import {
   type Versioned
 } from '../../core/history'
 import { classifyLoadError, fileKind } from '../../core/loadError'
+import { noteProblem, noteProblemKey } from './problemLog'
 import { toFormWidget, type FormWidget, type WidgetAnnotation } from '../../core/forms'
 import type {
   CheckboxField,
@@ -339,7 +340,9 @@ async function readFormWidgets(page: PDFPageProxy): Promise<FormWidget[]> {
 }
 
 function failureNotice(file: OpenedFile, error: unknown): string {
-  return classifyLoadError(error) === 'password' ? t.filePassword(file.name) : t.fileUnreadable(file.name)
+  const password = classifyLoadError(error) === 'password'
+  noteProblemKey(password ? 'filePassword' : 'fileUnreadable', error)
+  return password ? t.filePassword(file.name) : t.fileUnreadable(file.name)
 }
 
 function rejectionNotice(file: OpenedFile): string | undefined {
@@ -876,7 +879,9 @@ export async function pickStyleFromLine(page: PageRef, line: TextLine): Promise<
   }
 }
 
-export function addNotice(notice: string): void {
+/** Shows a notice. With the error behind it, its kind goes into a problem report too. */
+export function addNotice(notice: string, error?: unknown): void {
+  noteProblem(notice, error)
   useEditor.setState((state) => ({ notices: [...state.notices, notice] }))
 }
 
@@ -999,7 +1004,7 @@ export async function saveDocument(): Promise<boolean> {
     return true
   } catch (error) {
     console.error(error)
-    addNotice(built ? t.saveFailed : t.exportFailed)
+    addNotice(built ? t.saveFailed : t.exportFailed, error)
     return false
   } finally {
     useEditor.setState({ saving: false })

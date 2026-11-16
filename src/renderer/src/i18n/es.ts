@@ -35,6 +35,16 @@ export const es: Messages = {
   saveMarkdown: 'Guardar el texto como Markdown',
   extractFailed: 'No se pudo extraer el texto del documento.',
   copied: 'Texto copiado al portapapeles',
+  report: {
+    open: 'Informar de un problema…',
+    title: 'Informar de un problema',
+    intro:
+      'Este texto se convierte en una nueva incidencia en GitHub, que cualquiera puede leer. No contiene nada de sus documentos ni nombres de archivo. Añada lo que pasó y envíelo usted mismo desde la página de GitHub.',
+    openGithub: 'Abrir la página de GitHub',
+    copy: 'Copiar',
+    copied: 'Informe copiado',
+    close: 'Cerrar'
+  },
   password: {
     title: 'Este documento está protegido con contraseña',
     placeholder: 'Contraseña',

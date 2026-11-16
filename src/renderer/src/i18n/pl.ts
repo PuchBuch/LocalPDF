@@ -35,6 +35,16 @@ export const pl: Messages = {
   saveMarkdown: 'Zapisz tekst jako Markdown',
   extractFailed: 'Nie udało się wyodrębnić tekstu dokumentu.',
   copied: 'Tekst skopiowano do schowka',
+  report: {
+    open: 'Zgłoś problem…',
+    title: 'Zgłoś problem',
+    intro:
+      'Ten tekst stanie się nowym zgłoszeniem na GitHubie, które każdy może przeczytać. Nie zawiera niczego z Twoich dokumentów ani nazw plików. Dopisz, co się stało, i wyślij go samodzielnie ze strony GitHub.',
+    openGithub: 'Otwórz stronę GitHub',
+    copy: 'Kopiuj',
+    copied: 'Zgłoszenie skopiowane',
+    close: 'Zamknij'
+  },
   password: {
     title: 'Ten dokument jest chroniony hasłem',
     placeholder: 'Hasło',

@@ -8,6 +8,7 @@ import type {
   StoredRecovery,
   UnsavedAnswer
 } from '../preload'
+import { isIssueUrl } from '../core/problemReport'
 
 /**
  * What the Electron process does for the desktop app, done with what a browser tab
@@ -251,7 +252,15 @@ const bridge: LocalPdfApi = {
   readRecovery,
   writeRecovery,
   clearRecovery,
-  recoveryAccepted: () => Promise.resolve()
+  recoveryAccepted: () => Promise.resolve(),
+  variant: 'extension',
+  appVersion: () => Promise.resolve(chrome.runtime.getManifest().version_name ?? chrome.runtime.getManifest().version),
+  // The dialog links to the page itself, in a new tab; this is only there for the same interface.
+  openIssuePage: (url) => {
+    if (!isIssueUrl(url)) return Promise.resolve(false)
+    window.open(url, '_blank', 'noopener')
+    return Promise.resolve(true)
+  }
 }
 
 window.localpdf = bridge

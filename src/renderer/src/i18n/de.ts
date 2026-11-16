@@ -36,6 +36,16 @@ export const de: Messages = {
   saveMarkdown: 'Text als Markdown speichern',
   extractFailed: 'Der Text des Dokuments konnte nicht ausgelesen werden.',
   copied: 'Text in die Zwischenablage kopiert',
+  report: {
+    open: 'Problem melden…',
+    title: 'Problem melden',
+    intro:
+      'Dieser Text wird zu einem neuen Eintrag auf GitHub, den jeder lesen kann. Er enthält nichts aus Ihren Dokumenten und keine Dateinamen. Ergänzen Sie, was passiert ist, und senden Sie ihn selbst von der GitHub-Seite ab.',
+    openGithub: 'GitHub-Seite öffnen',
+    copy: 'Kopieren',
+    copied: 'Bericht kopiert',
+    close: 'Schließen'
+  },
   password: {
     title: 'Dieses Dokument ist passwortgeschützt',
     placeholder: 'Passwort',

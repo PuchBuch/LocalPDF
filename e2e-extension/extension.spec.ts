@@ -709,3 +709,26 @@ test('the toolbar button opens the editor, and then brings back its tab instead 
   await tab.waitForTimeout(800)
   expect(editorTabs()).toHaveLength(1)
 })
+
+test('reports a problem through a link to the new issue page, and the extension itself sends nothing', async () => {
+  await launch()
+  // The page the link opens is not loaded in the test; only where it goes counts.
+  await context.route('https://github.com/**', (route) => route.abort())
+  const manifest = JSON.parse(await readFile(join(EXTENSION, 'manifest.json'), 'utf8'))
+
+  await page.getByTestId('report-problem').click()
+  const text = page.getByTestId('report-text')
+  await expect(text).toHaveValue(/Variant:\*\* Browser extension/)
+  expect(await text.inputValue()).toContain(`LocalPDF version:** ${manifest.version_name}`)
+  expect(await text.inputValue()).toMatch(/System and browser:\*\* Windows .*, (Chrome|Edge) \d+/)
+  expect(outsideRequests).toEqual([])
+
+  const link = page.getByTestId('report-github')
+  expect(await link.getAttribute('href')).toMatch(/^https:\/\/github\.com\/PuchBuch\/LocalPDF\/issues\/new\?template=bug_report\.md&/)
+  expect(await link.getAttribute('target')).toBe('_blank')
+
+  const request = context.waitForEvent('request', (sent) => sent.url().startsWith('https://github.com/'))
+  await link.click()
+  expect((await request).url()).toMatch(/^https:\/\/github\.com\/PuchBuch\/LocalPDF\/issues\/new\?/)
+  expect(outsideRequests.every((url) => url.startsWith('https://github.com/PuchBuch/LocalPDF/issues/new?'))).toBe(true)
+})

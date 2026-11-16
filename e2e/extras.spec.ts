@@ -403,3 +403,51 @@ test.describe('lining up while dragging', () => {
     expect(Math.abs(back.y - second.y)).toBeLessThan(0.5)
   })
 })
+
+test.describe('report a problem', () => {
+  test('fills in a report without file names and hands only the issue page to the browser', async () => {
+    const broken = join(directory, 'Mietvertrag Müller.pdf')
+    await writeFile(broken, 'not a PDF at all')
+    await open(broken)
+    await expect(page.getByTestId('notice')).toContainText('Mietvertrag')
+
+    await app.evaluate(({ shell }) => {
+      shell.openExternal = async (url: string) => {
+        ;(globalThis as unknown as { opened: string[] }).opened = [...((globalThis as unknown as { opened?: string[] }).opened ?? []), url]
+      }
+    })
+    const opened = () => app.evaluate(() => (globalThis as unknown as { opened?: string[] }).opened ?? [])
+
+    await page.getByTestId('report-problem').click()
+    const text = page.getByTestId('report-text')
+    await expect(text).toHaveValue(/Variant:\*\* Windows app/)
+    const report = await text.inputValue()
+    expect(report).toContain('fileUnreadable')
+    expect(report).toMatch(/LocalPDF version:\*\* \d+\.\d+\.\d+/)
+    expect(report).not.toContain('Mietvertrag')
+
+    await page.getByTestId('report-github').click()
+    await expect.poll(opened).toHaveLength(1)
+    const [url] = await opened()
+    expect(url!.startsWith('https://github.com/PuchBuch/LocalPDF/issues/new?template=bug_report.md&')).toBe(true)
+    expect(decodeURIComponent(url!)).not.toContain('Mietvertrag')
+    expect(app.windows()).toHaveLength(1)
+
+    // A page that asks the main process for any other address gets nothing opened.
+    expect(await page.evaluate(() => window.localpdf.openIssuePage('https://example.com/'))).toBe(false)
+    expect(await opened()).toHaveLength(1)
+
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('report-dialog')).toHaveCount(0)
+  })
+
+  test('is in the menu beside Download once a document is open', async () => {
+    await openPages('Alpha')
+    await page.getByTestId('more-download').click()
+    await page.getByTestId('report-problem').click()
+    await expect(page.getByTestId('report-dialog')).toBeVisible()
+    await expect(page.getByTestId('report-text')).toHaveValue(/Recent errors:\*\* none/)
+    await page.getByTestId('report-close').click()
+    await expect(page.getByTestId('report-dialog')).toHaveCount(0)
+  })
+})

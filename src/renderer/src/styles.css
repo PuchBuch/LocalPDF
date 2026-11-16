@@ -987,6 +987,39 @@ button.primary {
   margin-right: auto;
 }
 
+.dialog-actions a.button {
+  padding: 8px 14px;
+  border: 1px solid #2460c8;
+  border-radius: 6px;
+  color: #fff;
+  background: #2460c8;
+  text-decoration: none;
+}
+
+.report-text {
+  display: block;
+  width: 100%;
+  height: 260px;
+  box-sizing: border-box;
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  font: 13px Consolas, 'Cascadia Mono', monospace;
+  resize: vertical;
+}
+
+.report-link {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  color: #173f87;
+  background: none;
+  font: 13px 'Segoe UI', system-ui, sans-serif;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* Field numbers and the list of fields */
 
 .field-numbers {

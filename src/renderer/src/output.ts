@@ -15,7 +15,7 @@ export async function whileBusy(failure: string, work: () => Promise<void>): Pro
     await work()
   } catch (error) {
     console.error(error)
-    addNotice(failure)
+    addNotice(failure, error)
   } finally {
     useEditor.setState({ saving: false })
   }

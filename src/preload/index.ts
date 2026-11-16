@@ -56,7 +56,11 @@ const api = {
   writeRecovery: (state: string, newBlobs: Record<string, Uint8Array>, keptBlobs: string[]): Promise<void> =>
     ipcRenderer.invoke('recovery:write', state, newBlobs, keptBlobs),
   clearRecovery: (): Promise<void> => ipcRenderer.invoke('recovery:clear'),
-  recoveryAccepted: (): Promise<void> => ipcRenderer.invoke('recovery:accepted')
+  recoveryAccepted: (): Promise<void> => ipcRenderer.invoke('recovery:accepted'),
+  variant: 'windows-app' as 'windows-app' | 'extension',
+  appVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
+  /** Opens the GitHub page for a new issue in the browser. Any other address is refused. */
+  openIssuePage: (url: string): Promise<boolean> => ipcRenderer.invoke('app:open-issue-page', url)
 }
 
 export type LocalPdfApi = typeof api

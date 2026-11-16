@@ -1,6 +1,6 @@
 # Privacy policy
 
-*Applies to the LocalPDF Windows app and the LocalPDF Chrome extension. Last updated: 8 November 2026.*
+*Applies to the LocalPDF Windows app and the LocalPDF Chrome extension. Last updated: 16 November 2026.*
 
 LocalPDF does not collect, send or share any data. It has no accounts, no analytics, no advertising and no servers.
 
@@ -9,6 +9,8 @@ LocalPDF does not collect, send or share any data. It has no accounts, no analyt
 The PDF files and pictures you open are read and edited only on your computer. They are never uploaded. Text recognition (OCR), fonts and every other part of the editor are included in the app and run locally.
 
 The Windows app blocks all outside network requests. The Chrome extension requests no permissions and its content security policy allows no connections to other sites, so it cannot send your files anywhere.
+
+"Report a problem…" only prepares a text: the version, the variant, Windows and the browser, the interface language and the kinds of recent errors, never the content of a document or a file name. You see the text first, and you send it yourself through GitHub; LocalPDF sends nothing. The list of recent errors is kept in memory only and is gone when you close LocalPDF.
 
 ## What is stored on your computer
 

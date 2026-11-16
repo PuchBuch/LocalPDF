@@ -1,8 +1,9 @@
-import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, protocol, session } from 'electron'
+import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, protocol, session, shell } from 'electron'
 import { randomUUID } from 'node:crypto'
 import { readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, join, resolve, sep } from 'node:path'
 import { openableArguments } from '../core/launchArguments'
+import { isIssueUrl } from '../core/problemReport'
 import type { DialogTexts } from '../preload'
 import { clearRecovery, clearRecoveryOnClose, readRecovery, recoveryAccepted, writeRecovery } from './recovery'
 
@@ -171,6 +172,15 @@ function readOpenedFiles(paths: string[]) {
 
 // LOCALPDF_LOCALE lets a test run in a language whatever the computer it runs on.
 ipcMain.handle('app:system-locale', () => process.env['LOCALPDF_LOCALE'] ?? app.getLocale())
+
+ipcMain.handle('app:version', () => app.getVersion())
+
+// The app itself still makes no request: the page opens in the user's own browser.
+ipcMain.handle('app:open-issue-page', async (_event, url: unknown) => {
+  if (!isIssueUrl(url)) return false
+  await shell.openExternal(url)
+  return true
+})
 
 ipcMain.on('app:set-dialog-texts', (_event, texts: DialogTexts) => {
   dialogTexts = texts
