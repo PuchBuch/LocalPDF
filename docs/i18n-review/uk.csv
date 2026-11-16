@@ -1,0 +1,193 @@
+﻿key;kind;English;Українська;correction;status
+appName;text;LocalPDF;LocalPDF;;machine
+language;text;Language;Мова;;machine
+ocrLanguage;text;Text recognition language;Мова розпізнавання тексту;;machine
+dialogs.unsavedMessage;text;Save changes before closing?;Зберегти зміни перед закриттям?;;machine
+dialogs.unsavedDetail;text;If you do not save, they will be lost.;Якщо не зберегти, їх буде втрачено.;;machine
+dialogs.save;text;Save;Зберегти;;machine
+dialogs.dontSave;text;Don’t save;Не зберігати;;machine
+dialogs.cancel;text;Cancel;Скасувати;;machine
+dialogs.incomingMessage;text;Open {names}?;Відкрити {names}?;;machine
+dialogs.incomingDetail;text;Another document is open.;Зараз відкрито інший документ.;;machine
+dialogs.add;text;Add to the document;Додати до документа;;machine
+dialogs.replace;text;Open instead;Відкрити замість нього;;machine
+dialogs.filesFilter;text;PDF and images;PDF і зображення;;machine
+selectFile;text;Choose a file;Вибрати файл;;machine
+dropHint;text;or drop a PDF or a picture here;або перетягніть сюди PDF чи зображення;;machine
+dropOverlay;text;Drop the file to add it;Відпустіть файл, щоб додати його;;machine
+opening;text;Opening the file…;Відкриваю файл…;;machine
+newFile;text;New file;Новий файл;;machine
+download;text;Download;Завантажити;;machine
+saving;text;Please wait…;Зачекайте…;;machine
+savedAs;template;Saved: {name};Збережено: {name};;machine
+saveFailed;text;The file could not be saved. It may be open in another program. Try another name or folder.;Не вдалося зберегти файл. Можливо, його відкрито в іншій програмі. Спробуйте іншу назву або теку.;;machine
+exportFailed;text;This file could not be saved again: its inner structure is too unusual, or it is damaged. The original file has not changed.;Цей файл не вдалося зберегти знову: його внутрішня будова надто незвична або він пошкоджений. Вихідний файл не змінено.;;machine
+moreOptions;text;Other outputs;Інші способи виведення;;machine
+print;text;Print;Друк;;machine
+printFailed;text;The document could not be sent to the printer.;Не вдалося надіслати документ на друк.;;machine
+copyMarkdown;text;Copy text as Markdown;Скопіювати текст як Markdown;;machine
+saveMarkdown;text;Save text as Markdown;Зберегти текст як Markdown;;machine
+extractFailed;text;The text of the document could not be extracted.;Не вдалося витягти текст документа.;;machine
+copied;text;Text copied to the clipboard;Текст скопійовано до буфера обміну;;machine
+report.open;text;Report a problem…;Повідомити про проблему…;;machine
+report.title;text;Report a problem;Повідомити про проблему;;machine
+report.intro;text;This text becomes a new issue on GitHub, which anyone can read. It holds nothing from your documents and no file names. Add what happened, then send it yourself from the GitHub page.;Цей текст стане новим зверненням на GitHub, яке може прочитати будь-хто. У ньому немає вмісту ваших документів та назв файлів. Допишіть, що сталося, і надішліть його самі зі сторінки GitHub.;;machine
+report.openGithub;text;Open the GitHub page;Відкрити сторінку GitHub;;machine
+report.copy;text;Copy;Копіювати;;machine
+report.copied;text;Report copied;Звіт скопійовано;;machine
+report.close;text;Close;Закрити;;machine
+password.title;text;This document is password-protected;Документ захищено паролем;;machine
+password.placeholder;text;Password;Пароль;;machine
+password.wrong;text;Wrong password. Please try again.;Неправильний пароль. Спробуйте ще раз.;;machine
+password.keep;text;Keep password;Зберегти пароль;;machine
+password.keepOn;text;The saved file will stay protected by this password;Збережений файл залишиться захищеним цим паролем;;machine
+password.keepOff;text;The saved file will not be protected;Збережений файл не матиме захисту;;machine
+password.unlock;text;Unlock;Відкрити;;machine
+password.cancel;text;Cancel;Скасувати;;machine
+thumbnailMenu.copyContent;text;Copy text;Скопіювати текст;;machine
+thumbnailMenu.recognize;text;Recognize text;Розпізнати текст;;machine
+thumbnailMenu.findFields;text;Find fields;Знайти поля;;machine
+thumbnailMenu.thisPage;text;This page;Ця сторінка;;machine
+thumbnailMenu.allPages;text;All pages;Усі сторінки;;machine
+thumbnailMenu.clearFields;code;(count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`);(count) => (count === 1 ? 'Очистити поле (1)' : `Очистити поля${countSuffix(count)}`);;machine
+thumbnailMenu.deleteFields;code;(count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`);(count) => (count === 1 ? 'Видалити поле (1)' : `Видалити поля${countSuffix(count)}`);;machine
+thumbnailMenu.printPage;text;Print this page;Надрукувати сторінку;;machine
+thumbnailMenu.replacePage;text;Replace with a scan or photo…;Замінити сканом або фото…;;machine
+fieldsPanel.title;template;Fields ({count});Поля ({count});;machine
+fieldsPanel.showNumbers;text;Show numbers;Показати номери;;machine
+fieldsPanel.empty;text;The document has no fields;У документі немає полів;;machine
+fieldsPanel.goTo;template;Go to field {number};Перейти до поля {number};;machine
+fieldsPanel.types.text;text;text;текст;;machine
+fieldsPanel.types.checkbox;text;checkbox;прапорець;;machine
+fieldsPanel.types.radio;text;option;вибір одного;;machine
+fieldsPanel.types.choice;text;list;список;;machine
+fieldsPanel.types.signature;text;signature;підпис;;machine
+fieldsPanel.types.picture;text;picture;зображення;;machine
+fieldsPanel.types.cells;text;text in cells;текст у клітинках;;machine
+ai.copy;text;Copy form for AI;Копіювати форму для ШІ;;machine
+ai.paste;text;Paste AI answer;Вставити відповідь ШІ;;machine
+ai.copied;text;Form copied: paste it into an AI chat;Форму скопійовано: вставте її в чат із ШІ;;machine
+ai.copyFailed;text;The form could not be copied.;Не вдалося скопіювати форму.;;machine
+ai.instructions;text;"Fill in the form. Answer with JSON only, like {""1"": ""…"", ""2"": true}, where each key is a field number. For a checkbox give true or false, for a choice one of the listed options exactly as written. Skip fields you have no data for.
+Fields (number | type | name | label next to it | options):";"Заповни форму. Відповідай лише JSON на кшталт {""1"": ""…"", ""2"": true}, де ключ — номер поля. Для прапорця — true або false, для вибору — один із перелічених варіантів точно як написано. Поля без даних пропусти.
+Поля (номер | тип | назва | підпис поруч | варіанти):";;machine
+ai.dialogTitle;text;AI answer;Відповідь ШІ;;machine
+ai.dialogHint;text;Paste the answer from the AI chat. An answer with explanations works too: the JSON in it is found.;Вставте відповідь із чату з ШІ. Підійде й відповідь із поясненнями: програма знайде в ній JSON.;;machine
+ai.placeholder;text;"{""1"": ""…"", ""2"": true}";"{""1"": ""…"", ""2"": true}";;machine
+ai.fill;text;Fill in;Заповнити;;machine
+ai.cancel;text;Cancel;Скасувати;;machine
+ai.close;text;Close;Закрити;;machine
+ai.summary;template;Filled {filled} of {answered};Заповнено {filled} з {answered};;machine
+ai.undoHint;text;Ctrl+Z undoes all of it at once.;Усе заповнене скасовується одним Ctrl+Z.;;machine
+ai.problems.empty;template;The answer is empty.;Відповідь порожня.;;machine
+ai.problems.notJson;template;No JSON was found in the answer.;У відповіді не знайдено JSON.;;machine
+ai.problems.notObject;template;"The answer must be a JSON object like {""1"": …}.";"Відповідь має бути об’єктом JSON на кшталт {""1"": …}.";;machine
+ai.problems.unknownField;template;There is no field {number} — skipped.;Поля {number} немає — пропущено.;;machine
+ai.problems.manualOnly;template;Field {number}: a signature or picture can only be added by hand — skipped.;Поле {number}: підпис і зображення можна додати лише вручну — пропущено.;;machine
+ai.problems.expectedText;template;Field {number}: text was expected, got {got} — skipped.;Поле {number}: очікувався текст, надійшло {got} — пропущено.;;machine
+ai.problems.expectedBoolean;template;Field {number}: a tick was expected (true or false), got {got} — skipped.;Поле {number}: очікувалася позначка (true або false), надійшло {got} — пропущено.;;machine
+ai.problems.notAnOption;template;Field {number}: there is no such option: {got} — skipped.;Поле {number}: такого варіанта немає: {got} — пропущено.;;machine
+scan.title;text;Prepare the page;Підготовка сторінки;;machine
+scan.found;text;Sheet found. Adjust the corners if needed.;Аркуш знайдено. Підправте кути, якщо потрібно.;;machine
+scan.notFound;text;No sheet found: drag the corners to the edges of the sheet.;Аркуш не знайдено: перетягніть кути до країв аркуша.;;machine
+scan.lookLabel;text;Page look:;Вигляд сторінки:;;machine
+scan.looks.color;text;Color;Кольоровий;;machine
+scan.looks.gray;text;Black and white;Чорно-білий;;machine
+scan.looks.original;text;Not cleaned;Без очищення;;machine
+scan.asIs;text;Use as is;Без обробки;;machine
+scan.wholePicture;text;Whole picture;Увесь знімок;;machine
+scan.use;text;Done;Готово;;machine
+scan.cancel;text;Cancel;Скасувати;;machine
+scan.corner;text;Corner of the sheet;Кут аркуша;;machine
+scan.preparing;text;Preparing the page…;Підготовка сторінки…;;machine
+scan.done;text;Page replaced;Сторінку замінено;;machine
+scan.failed;text;The page could not be replaced.;Не вдалося замінити сторінку.;;machine
+textLeftInFile;template;Warning: on page {pages} the replaced text could not be fully removed from the file. It cannot be seen, but software can find it.;Увага: на сторінці {pages} замінений текст не вдалося повністю видалити з файлу. Його не видно, але програмами його можна знайти.;;machine
+imageLeftInFile;template;Warning: on page {pages} there is a picture under the replaced text. It is covered but stays in the file, and what it shows can be extracted.;Увага: на сторінці {pages} під заміненим текстом є зображення. Його закрито, але воно залишилося у файлі, і його вміст можна витягти.;;machine
+ocr.starting;text;Starting text recognition…;Запускаю розпізнавання…;;machine
+ocr.progress;template;Recognizing page {page} of {total}…;Розпізнаю сторінку {page} з {total}…;;machine
+ocr.done;template;Words recognized: {words};Розпізнано слів: {words};;machine
+ocr.nothingToRead;text;These pages already have text, there is nothing to recognize;На цих сторінках уже є текст, розпізнавати нічого;;machine
+ocr.noWords;text;No text found. The scan may be too faint, or the page may have no text.;Текст не знайдено. Можливо, скан надто блідий або на сторінці немає тексту.;;machine
+ocr.failed;text;The text could not be recognized.;Не вдалося розпізнати текст.;;machine
+detect.found;template;Fields found: {count};Знайдено полів: {count};;machine
+detect.none;text;No fields to fill in were found;Полів для заповнення не знайдено;;machine
+detect.failed;text;Fields could not be searched for.;Не вдалося знайти поля.;;machine
+formNotPrinted;text;Warning: the form of this file could not be printed into its pages, so the values entered in its fields were not saved. Try entering them as ordinary text.;Увага: форму цього файлу не вдалося вбудувати в сторінки, тому введені значення не збереглися. Спробуйте ввести їх як звичайний текст.;;machine
+moveHint;text;Hold Shift to turn alignment off;Утримуйте Shift, щоб вимкнути вирівнювання;;machine
+editScope.line;text;Line;Рядок;;machine
+editScope.word;text;Word;Слово;;machine
+editScope.label;text;What to edit;Що редагувати;;machine
+font.title;text;Font;Шрифт;;machine
+font.family;text;Typeface;Гарнітура;;machine
+font.bold;text;Bold;Жирний;;machine
+font.italic;text;Italic;Курсив;;machine
+font.color;text;Text color;Колір тексту;;machine
+font.asInDocument;code;(name: string) => (name ? `As in the document: ${name}` : 'As in the document');(name: string) => (name ? `Як у документі: ${name}` : 'Як у документі');;machine
+font.pick;text;Take the style of text on the page;Узяти стиль із тексту сторінки;;machine
+font.replaced;text;The document’s font lacks some letters, so a similar font writes the text.;У шрифті документа бракує деяких літер, тому текст написано схожим шрифтом.;;machine
+font.boldIcon;text;B;Ж;;machine
+font.italicIcon;text;I;К;;machine
+font.families.arial;text;Arial;Arial;;machine
+font.families.times;text;Times New Roman;Times New Roman;;machine
+font.families.calibri;text;Calibri;Calibri;;machine
+font.families.courier;text;Courier New;Courier New;;machine
+recovery.title;text;An unsaved document was found;Знайдено незбережений документ;;machine
+recovery.details;template;{names}. Last change: {time}.;{names}. Остання зміна: {time}.;;machine
+recovery.restore;text;Restore;Відновити;;machine
+recovery.discard;text;Delete;Видалити;;machine
+recovery.failed;text;The document could not be restored.;Не вдалося відновити документ.;;machine
+missingCharacters;template;Characters missing from the font were left out of the file: {characters};До файлу не потрапили символи, яких немає у шрифті: {characters};;machine
+zoomIn;text;Zoom in;Збільшити;;machine
+zoomOut;text;Zoom out;Зменшити;;machine
+close;text;Close;Закрити;;machine
+undo;text;Undo;Скасувати;;machine
+redo;text;Redo;Повторити;;machine
+addPages;text;Add pages;Додати сторінки;;machine
+deletePage;text;Delete page;Видалити сторінку;;machine
+rotatePage;text;Rotate clockwise;Повернути за годинниковою стрілкою;;machine
+movePageUp;text;Move up;Перемістити вище;;machine
+movePageDown;text;Move down;Перемістити нижче;;machine
+tools.cursor.label;text;Cursor;Курсор;;machine
+tools.cursor.hint;text;Cursor: select text and fields in the document;Курсор: виділяйте текст і вибирайте поля в документі;;machine
+tools.edit.label;text;Edit text;Редагувати текст;;machine
+tools.edit.hint;text;Edit text: click a line or word of the document and change it;Редагувати текст: натисніть на рядок або слово документа і змініть їх;;machine
+tools.text.label;text;Text;Текст;;machine
+tools.text.hint;text;Text: click anywhere on the page to add a field;Текст: натисніть на сторінку, щоб додати поле;;machine
+tools.checkbox.label;text;Mark;Позначка;;machine
+tools.checkbox.hint;text;Mark: click the page, then choose a tick, a cross or a dot;Позначка: натисніть на сторінку, потім виберіть галочку, хрестик або крапку;;machine
+tools.signature.label;text;Signature;Підпис;;machine
+tools.signature.hint;text;Signature: click anywhere on the page to add a field;Підпис: натисніть на сторінку, щоб додати поле;;machine
+tools.picture.label;text;Picture;Зображення;;machine
+tools.picture.hint;text;Picture: click anywhere on the page to add a field;Зображення: натисніть на сторінку, щоб додати поле;;machine
+tools.comb.label;text;Text in cells;Текст у клітинках;;machine
+tools.comb.hint;text;Text in cells: click anywhere on the page to add a field;Текст у клітинках: натисніть на сторінку, щоб додати поле;;machine
+signature.title;text;Signature;Підпис;;machine
+signature.tabDraw;text;Draw;Намалювати;;machine
+signature.tabType;text;Type;Надрукувати;;machine
+signature.clear;text;Clear;Очистити;;machine
+signature.finish;text;Done;Готово;;machine
+signature.namePlaceholder;text;Enter a name;Введіть ім’я;;machine
+choosePicture;text;Choose a picture;Вибрати зображення;;machine
+pictureUnsupported;template;“{name}” was not added: this field takes JPEG, PNG, WebP and GIF.;«{name}» не додано: це поле приймає JPEG, PNG, WebP і GIF.;;machine
+spacingSmaller;text;Narrower cells;Вужчі клітинки;;machine
+spacingLarger;text;Wider cells;Ширші клітинки;;machine
+resizeHint;text;Hold Shift to unlock the proportions;Утримуйте Shift, щоб зняти фіксацію пропорцій;;machine
+fieldCopy;text;Copy field;Копіювати поле;;machine
+fieldDelete;text;Delete field;Видалити поле;;machine
+fieldMove;text;Drag field;Перетягнути поле;;machine
+fieldBackground;text;Background: transparent or white;Фон: прозорий або білий;;machine
+fontSmaller;text;Smaller font;Зменшити шрифт;;machine
+fontLarger;text;Larger font;Збільшити шрифт;;machine
+checkbox;text;Tick;Галочка;;machine
+checkboxMarks.tick;text;Tick;Галочка;;machine
+checkboxMarks.cross;text;Cross;Хрестик;;machine
+checkboxMarks.dot;text;Dot;Крапка;;machine
+pasteHint;text;Click any page to paste the field. Esc cancels;Натисніть на будь-яку сторінку, щоб вставити поле. Esc — скасування;;machine
+pageOf;template;Page {page} of {total};Сторінка {page} з {total};;machine
+zoomPercent;code;(zoom) => `${Math.round(zoom * 100)}%`;(zoom) => `${Math.round(zoom * 100)} %`;;machine
+goToPage;template;Go to page {page};Перейти до сторінки {page};;machine
+fileUnreadable;template;“{name}” could not be opened. The file is damaged or its format is not supported.;Не вдалося відкрити «{name}». Файл пошкоджено або його формат не підтримується.;;machine
+filePassword;template;The protection of “{name}” could not be removed.;Не вдалося зняти захист із «{name}».;;machine
+fileHeic;template;“{name}” was not opened: HEIC is not supported yet. Save the photo as JPEG.;«{name}» не відкрито: формат HEIC поки не підтримується. Збережіть фото як JPEG.;;machine
+fileUnsupported;template;“{name}” was not opened: PDF, JPEG, PNG, WebP and GIF are supported.;«{name}» не відкрито: підтримуються PDF, JPEG, PNG, WebP і GIF.;;machine

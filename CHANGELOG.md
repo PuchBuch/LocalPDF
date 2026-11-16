@@ -7,6 +7,7 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 - The README describes the document's own font and the style picker, and their limits.
 - The browser extension is tested in Microsoft Edge as well as Chromium.
 - "Report a problem…", in the menu beside Download and on the start screen, prepares a report with the version, the system and the kinds of recent errors, without file names or document content. You check it and send it yourself on GitHub.
+- A German README, and the German, Russian and Ukrainian texts as tables for native speakers to correct.
 
 ## 0.9.0-beta.11 (2026-11-15)
 

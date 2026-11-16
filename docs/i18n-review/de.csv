@@ -1,0 +1,193 @@
+﻿key;kind;English;Deutsch;correction;status
+appName;text;LocalPDF;LocalPDF;;machine
+language;text;Language;Sprache;;machine
+ocrLanguage;text;Text recognition language;Sprache der Texterkennung;;machine
+dialogs.unsavedMessage;text;Save changes before closing?;Änderungen vor dem Schließen speichern?;;machine
+dialogs.unsavedDetail;text;If you do not save, they will be lost.;Wenn Sie nicht speichern, gehen sie verloren.;;machine
+dialogs.save;text;Save;Speichern;;machine
+dialogs.dontSave;text;Don’t save;Nicht speichern;;machine
+dialogs.cancel;text;Cancel;Abbrechen;;machine
+dialogs.incomingMessage;text;Open {names}?;{names} öffnen?;;machine
+dialogs.incomingDetail;text;Another document is open.;Es ist bereits ein anderes Dokument geöffnet.;;machine
+dialogs.add;text;Add to the document;Zum Dokument hinzufügen;;machine
+dialogs.replace;text;Open instead;Stattdessen öffnen;;machine
+dialogs.filesFilter;text;PDF and images;PDF und Bilder;;machine
+selectFile;text;Choose a file;Datei auswählen;;machine
+dropHint;text;or drop a PDF or a picture here;oder ziehen Sie eine PDF-Datei oder ein Bild hierher;;machine
+dropOverlay;text;Drop the file to add it;Datei loslassen, um sie hinzuzufügen;;machine
+opening;text;Opening the file…;Datei wird geöffnet…;;machine
+newFile;text;New file;Neue Datei;;machine
+download;text;Download;Herunterladen;;machine
+saving;text;Please wait…;Bitte warten…;;machine
+savedAs;template;Saved: {name};Gespeichert: {name};;machine
+saveFailed;text;The file could not be saved. It may be open in another program. Try another name or folder.;Die Datei konnte nicht gespeichert werden. Vielleicht ist sie in einem anderen Programm geöffnet. Versuchen Sie einen anderen Namen oder Ordner.;;machine
+exportFailed;text;This file could not be saved again: its inner structure is too unusual, or it is damaged. The original file has not changed.;Diese Datei konnte nicht neu gespeichert werden: Ihr innerer Aufbau ist zu ungewöhnlich oder sie ist beschädigt. Die Originaldatei wurde nicht verändert.;;machine
+moreOptions;text;Other outputs;Weitere Ausgaben;;machine
+print;text;Print;Drucken;;machine
+printFailed;text;The document could not be sent to the printer.;Das Dokument konnte nicht an den Drucker gesendet werden.;;machine
+copyMarkdown;text;Copy text as Markdown;Text als Markdown kopieren;;machine
+saveMarkdown;text;Save text as Markdown;Text als Markdown speichern;;machine
+extractFailed;text;The text of the document could not be extracted.;Der Text des Dokuments konnte nicht ausgelesen werden.;;machine
+copied;text;Text copied to the clipboard;Text in die Zwischenablage kopiert;;machine
+report.open;text;Report a problem…;Problem melden…;;machine
+report.title;text;Report a problem;Problem melden;;machine
+report.intro;text;This text becomes a new issue on GitHub, which anyone can read. It holds nothing from your documents and no file names. Add what happened, then send it yourself from the GitHub page.;Dieser Text wird zu einem neuen Eintrag auf GitHub, den jeder lesen kann. Er enthält nichts aus Ihren Dokumenten und keine Dateinamen. Ergänzen Sie, was passiert ist, und senden Sie ihn selbst von der GitHub-Seite ab.;;machine
+report.openGithub;text;Open the GitHub page;GitHub-Seite öffnen;;machine
+report.copy;text;Copy;Kopieren;;machine
+report.copied;text;Report copied;Bericht kopiert;;machine
+report.close;text;Close;Schließen;;machine
+password.title;text;This document is password-protected;Dieses Dokument ist passwortgeschützt;;machine
+password.placeholder;text;Password;Passwort;;machine
+password.wrong;text;Wrong password. Please try again.;Falsches Passwort. Bitte versuchen Sie es erneut.;;machine
+password.keep;text;Keep password;Passwort beibehalten;;machine
+password.keepOn;text;The saved file will stay protected by this password;Die gespeicherte Datei bleibt mit diesem Passwort geschützt;;machine
+password.keepOff;text;The saved file will not be protected;Die gespeicherte Datei ist nicht geschützt;;machine
+password.unlock;text;Unlock;Öffnen;;machine
+password.cancel;text;Cancel;Abbrechen;;machine
+thumbnailMenu.copyContent;text;Copy text;Text kopieren;;machine
+thumbnailMenu.recognize;text;Recognize text;Text erkennen;;machine
+thumbnailMenu.findFields;text;Find fields;Felder finden;;machine
+thumbnailMenu.thisPage;text;This page;Diese Seite;;machine
+thumbnailMenu.allPages;text;All pages;Alle Seiten;;machine
+thumbnailMenu.clearFields;code;(count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`);(count) => (count === 1 ? 'Feld leeren (1)' : `Felder leeren${countSuffix(count)}`);;machine
+thumbnailMenu.deleteFields;code;(count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`);(count) => (count === 1 ? 'Feld löschen (1)' : `Felder löschen${countSuffix(count)}`);;machine
+thumbnailMenu.printPage;text;Print this page;Diese Seite drucken;;machine
+thumbnailMenu.replacePage;text;Replace with a scan or photo…;Durch Scan oder Foto ersetzen…;;machine
+fieldsPanel.title;template;Fields ({count});Felder ({count});;machine
+fieldsPanel.showNumbers;text;Show numbers;Nummern anzeigen;;machine
+fieldsPanel.empty;text;The document has no fields;Das Dokument hat keine Felder;;machine
+fieldsPanel.goTo;template;Go to field {number};Zum Feld {number};;machine
+fieldsPanel.types.text;text;text;Text;;machine
+fieldsPanel.types.checkbox;text;checkbox;Kästchen;;machine
+fieldsPanel.types.radio;text;option;Auswahl;;machine
+fieldsPanel.types.choice;text;list;Liste;;machine
+fieldsPanel.types.signature;text;signature;Unterschrift;;machine
+fieldsPanel.types.picture;text;picture;Bild;;machine
+fieldsPanel.types.cells;text;text in cells;Text in Kästchen;;machine
+ai.copy;text;Copy form for AI;Formular für KI kopieren;;machine
+ai.paste;text;Paste AI answer;KI-Antwort einfügen;;machine
+ai.copied;text;Form copied: paste it into an AI chat;Formular kopiert: in einen KI-Chat einfügen;;machine
+ai.copyFailed;text;The form could not be copied.;Das Formular konnte nicht kopiert werden.;;machine
+ai.instructions;text;"Fill in the form. Answer with JSON only, like {""1"": ""…"", ""2"": true}, where each key is a field number. For a checkbox give true or false, for a choice one of the listed options exactly as written. Skip fields you have no data for.
+Fields (number | type | name | label next to it | options):";"Fülle das Formular aus. Antworte nur mit JSON wie {""1"": ""…"", ""2"": true}, wobei jeder Schlüssel eine Feldnummer ist. Für ein Kästchen true oder false, für eine Auswahl eine der genannten Optionen genau wie geschrieben. Felder ohne Angaben lässt du weg.
+Felder (Nummer | Typ | Name | Beschriftung daneben | Optionen):";;machine
+ai.dialogTitle;text;AI answer;KI-Antwort;;machine
+ai.dialogHint;text;Paste the answer from the AI chat. An answer with explanations works too: the JSON in it is found.;Fügen Sie die Antwort aus dem KI-Chat ein. Auch eine Antwort mit Erklärungen geht: Das JSON darin wird gefunden.;;machine
+ai.placeholder;text;"{""1"": ""…"", ""2"": true}";"{""1"": ""…"", ""2"": true}";;machine
+ai.fill;text;Fill in;Ausfüllen;;machine
+ai.cancel;text;Cancel;Abbrechen;;machine
+ai.close;text;Close;Schließen;;machine
+ai.summary;template;Filled {filled} of {answered};Ausgefüllt: {filled} von {answered};;machine
+ai.undoHint;text;Ctrl+Z undoes all of it at once.;Strg+Z macht alles auf einmal rückgängig.;;machine
+ai.problems.empty;template;The answer is empty.;Die Antwort ist leer.;;machine
+ai.problems.notJson;template;No JSON was found in the answer.;In der Antwort wurde kein JSON gefunden.;;machine
+ai.problems.notObject;template;"The answer must be a JSON object like {""1"": …}.";"Die Antwort muss ein JSON-Objekt wie {""1"": …} sein.";;machine
+ai.problems.unknownField;template;There is no field {number} — skipped.;Feld {number} gibt es nicht — übersprungen.;;machine
+ai.problems.manualOnly;template;Field {number}: a signature or picture can only be added by hand — skipped.;Feld {number}: Unterschrift oder Bild nur von Hand — übersprungen.;;machine
+ai.problems.expectedText;template;Field {number}: text was expected, got {got} — skipped.;Feld {number}: Text erwartet, erhalten {got} — übersprungen.;;machine
+ai.problems.expectedBoolean;template;Field {number}: a tick was expected (true or false), got {got} — skipped.;Feld {number}: Häkchen erwartet (true oder false), erhalten {got} — übersprungen.;;machine
+ai.problems.notAnOption;template;Field {number}: there is no such option: {got} — skipped.;Feld {number}: diese Option gibt es nicht: {got} — übersprungen.;;machine
+scan.title;text;Prepare the page;Seite vorbereiten;;machine
+scan.found;text;Sheet found. Adjust the corners if needed.;Blatt gefunden. Passen Sie die Ecken bei Bedarf an.;;machine
+scan.notFound;text;No sheet found: drag the corners to the edges of the sheet.;Kein Blatt gefunden: Ziehen Sie die Ecken an die Ränder des Blatts.;;machine
+scan.lookLabel;text;Page look:;Aussehen der Seite:;;machine
+scan.looks.color;text;Color;Farbe;;machine
+scan.looks.gray;text;Black and white;Schwarzweiß;;machine
+scan.looks.original;text;Not cleaned;Ohne Bereinigung;;machine
+scan.asIs;text;Use as is;Unverändert;;machine
+scan.wholePicture;text;Whole picture;Ganzes Bild;;machine
+scan.use;text;Done;Fertig;;machine
+scan.cancel;text;Cancel;Abbrechen;;machine
+scan.corner;text;Corner of the sheet;Ecke des Blatts;;machine
+scan.preparing;text;Preparing the page…;Seite wird vorbereitet…;;machine
+scan.done;text;Page replaced;Seite ersetzt;;machine
+scan.failed;text;The page could not be replaced.;Die Seite konnte nicht ersetzt werden.;;machine
+textLeftInFile;template;Warning: on page {pages} the replaced text could not be fully removed from the file. It cannot be seen, but software can find it.;Achtung: Auf Seite {pages} konnte der ersetzte Text nicht vollständig aus der Datei entfernt werden. Er ist nicht zu sehen, kann aber mit Programmen gefunden werden.;;machine
+imageLeftInFile;template;Warning: on page {pages} there is a picture under the replaced text. It is covered but stays in the file, and what it shows can be extracted.;Achtung: Auf Seite {pages} liegt unter dem ersetzten Text ein Bild. Es ist verdeckt, bleibt aber in der Datei, und sein Inhalt kann ausgelesen werden.;;machine
+ocr.starting;text;Starting text recognition…;Texterkennung wird gestartet…;;machine
+ocr.progress;template;Recognizing page {page} of {total}…;Seite {page} von {total} wird erkannt…;;machine
+ocr.done;template;Words recognized: {words};Erkannte Wörter: {words};;machine
+ocr.nothingToRead;text;These pages already have text, there is nothing to recognize;Diese Seiten enthalten bereits Text, es gibt nichts zu erkennen;;machine
+ocr.noWords;text;No text found. The scan may be too faint, or the page may have no text.;Kein Text gefunden. Vielleicht ist der Scan zu blass oder die Seite enthält keinen Text.;;machine
+ocr.failed;text;The text could not be recognized.;Der Text konnte nicht erkannt werden.;;machine
+detect.found;template;Fields found: {count};Gefundene Felder: {count};;machine
+detect.none;text;No fields to fill in were found;Keine auszufüllenden Felder gefunden;;machine
+detect.failed;text;Fields could not be searched for.;Die Felder konnten nicht gesucht werden.;;machine
+formNotPrinted;text;Warning: the form of this file could not be printed into its pages, so the values entered in its fields were not saved. Try entering them as ordinary text.;Achtung: Das Formular dieser Datei konnte nicht in die Seiten übernommen werden, daher wurden die eingetragenen Werte nicht gespeichert. Tragen Sie sie stattdessen als normalen Text ein.;;machine
+moveHint;text;Hold Shift to turn alignment off;Halten Sie die Umschalttaste gedrückt, um das Ausrichten abzuschalten;;machine
+editScope.line;text;Line;Zeile;;machine
+editScope.word;text;Word;Wort;;machine
+editScope.label;text;What to edit;Was bearbeiten;;machine
+font.title;text;Font;Schrift;;machine
+font.family;text;Typeface;Schriftart;;machine
+font.bold;text;Bold;Fett;;machine
+font.italic;text;Italic;Kursiv;;machine
+font.color;text;Text color;Textfarbe;;machine
+font.asInDocument;code;(name: string) => (name ? `As in the document: ${name}` : 'As in the document');(name: string) => (name ? `Wie im Dokument: ${name}` : 'Wie im Dokument');;machine
+font.pick;text;Take the style of text on the page;Stil von Text auf der Seite übernehmen;;machine
+font.replaced;text;The document’s font lacks some letters, so a similar font writes the text.;Der Schrift des Dokuments fehlen einige Buchstaben, daher schreibt eine ähnliche Schrift den Text.;;machine
+font.boldIcon;text;B;F;;machine
+font.italicIcon;text;I;K;;machine
+font.families.arial;text;Arial;Arial;;machine
+font.families.times;text;Times New Roman;Times New Roman;;machine
+font.families.calibri;text;Calibri;Calibri;;machine
+font.families.courier;text;Courier New;Courier New;;machine
+recovery.title;text;An unsaved document was found;Ein nicht gespeichertes Dokument wurde gefunden;;machine
+recovery.details;template;{names}. Last change: {time}.;{names}. Letzte Änderung: {time}.;;machine
+recovery.restore;text;Restore;Wiederherstellen;;machine
+recovery.discard;text;Delete;Löschen;;machine
+recovery.failed;text;The document could not be restored.;Das Dokument konnte nicht wiederhergestellt werden.;;machine
+missingCharacters;template;Characters missing from the font were left out of the file: {characters};Zeichen, die in der Schrift fehlen, wurden nicht übernommen: {characters};;machine
+zoomIn;text;Zoom in;Vergrößern;;machine
+zoomOut;text;Zoom out;Verkleinern;;machine
+close;text;Close;Schließen;;machine
+undo;text;Undo;Rückgängig;;machine
+redo;text;Redo;Wiederholen;;machine
+addPages;text;Add pages;Seiten hinzufügen;;machine
+deletePage;text;Delete page;Seite löschen;;machine
+rotatePage;text;Rotate clockwise;Im Uhrzeigersinn drehen;;machine
+movePageUp;text;Move up;Nach oben;;machine
+movePageDown;text;Move down;Nach unten;;machine
+tools.cursor.label;text;Cursor;Zeiger;;machine
+tools.cursor.hint;text;Cursor: select text and fields in the document;Zeiger: Text und Felder im Dokument auswählen;;machine
+tools.edit.label;text;Edit text;Text bearbeiten;;machine
+tools.edit.hint;text;Edit text: click a line or word of the document and change it;Text bearbeiten: Klicken Sie auf eine Zeile oder ein Wort und ändern Sie es;;machine
+tools.text.label;text;Text;Text;;machine
+tools.text.hint;text;Text: click anywhere on the page to add a field;Text: Klicken Sie auf die Seite, um ein Feld hinzuzufügen;;machine
+tools.checkbox.label;text;Mark;Markierung;;machine
+tools.checkbox.hint;text;Mark: click the page, then choose a tick, a cross or a dot;Markierung: Klicken Sie auf die Seite und wählen Sie Haken, Kreuz oder Punkt;;machine
+tools.signature.label;text;Signature;Unterschrift;;machine
+tools.signature.hint;text;Signature: click anywhere on the page to add a field;Unterschrift: Klicken Sie auf die Seite, um ein Feld hinzuzufügen;;machine
+tools.picture.label;text;Picture;Bild;;machine
+tools.picture.hint;text;Picture: click anywhere on the page to add a field;Bild: Klicken Sie auf die Seite, um ein Feld hinzuzufügen;;machine
+tools.comb.label;text;Text in cells;Text in Kästchen;;machine
+tools.comb.hint;text;Text in cells: click anywhere on the page to add a field;Text in Kästchen: Klicken Sie auf die Seite, um ein Feld hinzuzufügen;;machine
+signature.title;text;Signature;Unterschrift;;machine
+signature.tabDraw;text;Draw;Zeichnen;;machine
+signature.tabType;text;Type;Tippen;;machine
+signature.clear;text;Clear;Leeren;;machine
+signature.finish;text;Done;Fertig;;machine
+signature.namePlaceholder;text;Enter a name;Namen eingeben;;machine
+choosePicture;text;Choose a picture;Bild auswählen;;machine
+pictureUnsupported;template;“{name}” was not added: this field takes JPEG, PNG, WebP and GIF.;„{name}“ wurde nicht hinzugefügt: Dieses Feld nimmt JPEG, PNG, WebP und GIF an.;;machine
+spacingSmaller;text;Narrower cells;Schmalere Kästchen;;machine
+spacingLarger;text;Wider cells;Breitere Kästchen;;machine
+resizeHint;text;Hold Shift to unlock the proportions;Halten Sie die Umschalttaste gedrückt, um die Proportionen freizugeben;;machine
+fieldCopy;text;Copy field;Feld kopieren;;machine
+fieldDelete;text;Delete field;Feld löschen;;machine
+fieldMove;text;Drag field;Feld ziehen;;machine
+fieldBackground;text;Background: transparent or white;Hintergrund: transparent oder weiß;;machine
+fontSmaller;text;Smaller font;Schrift verkleinern;;machine
+fontLarger;text;Larger font;Schrift vergrößern;;machine
+checkbox;text;Tick;Haken;;machine
+checkboxMarks.tick;text;Tick;Haken;;machine
+checkboxMarks.cross;text;Cross;Kreuz;;machine
+checkboxMarks.dot;text;Dot;Punkt;;machine
+pasteHint;text;Click any page to paste the field. Esc cancels;Klicken Sie auf eine Seite, um das Feld einzufügen. Esc bricht ab;;machine
+pageOf;template;Page {page} of {total};Seite {page} von {total};;machine
+zoomPercent;code;(zoom) => `${Math.round(zoom * 100)}%`;(zoom) => `${Math.round(zoom * 100)} %`;;machine
+goToPage;template;Go to page {page};Zu Seite {page};;machine
+fileUnreadable;template;“{name}” could not be opened. The file is damaged or its format is not supported.;„{name}“ konnte nicht geöffnet werden. Die Datei ist beschädigt oder ihr Format wird nicht unterstützt.;;machine
+filePassword;template;The protection of “{name}” could not be removed.;Der Schutz von „{name}“ konnte nicht entfernt werden.;;machine
+fileHeic;template;“{name}” was not opened: HEIC is not supported yet. Save the photo as JPEG.;„{name}“ wurde nicht geöffnet: HEIC wird noch nicht unterstützt. Speichern Sie das Foto als JPEG.;;machine
+fileUnsupported;template;“{name}” was not opened: PDF, JPEG, PNG, WebP and GIF are supported.;„{name}“ wurde nicht geöffnet: Unterstützt werden PDF, JPEG, PNG, WebP und GIF.;;machine

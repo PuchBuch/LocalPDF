@@ -4,7 +4,7 @@ A PDF editor for Windows that keeps your documents on your computer. Files are n
 
 **This is a beta.** It is well tested on generated files but has seen few real-world documents. Check the result before you rely on it, and keep your originals. [Report a problem](../../issues).
 
-*Русская версия: [README.ru.md](README.ru.md)*
+*Deutsch: [README.de.md](README.de.md) · Русский: [README.ru.md](README.ru.md)*
 
 ## What it does
 
@@ -53,7 +53,11 @@ It differs from the Windows app in a few ways:
 
 ## Translations
 
-The translations were machine-made and have not yet been read by native speakers. Corrections are welcome: see `src/renderer/src/i18n`.
+The translations were machine-made and have not yet been read by native speakers. Corrections are welcome.
+
+The texts for review are in `docs/i18n-review/` (German, Russian and Ukrainian): one row per text, with the English original beside it. A reviewer writes improvements in the `correction` column, sets the status `ok` where a text is fine, and sends the file back.
+`node scripts/i18n-import.mjs docs/i18n-review/de.csv` takes the corrections into `src/renderer/src/i18n/de.ts` and marks them `fixed`; `--dry-run` only shows them. A correction must keep the placeholders such as `{page}`. Then run `npx vitest run i18n`.
+`node scripts/i18n-export.mjs` writes the review files anew after texts change, keeping the marks of texts that stayed the same.
 
 ## Development
 

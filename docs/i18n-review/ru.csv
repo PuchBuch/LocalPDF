@@ -1,0 +1,193 @@
+﻿key;kind;English;Русский;correction;status
+appName;text;LocalPDF;LocalPDF;;machine
+language;text;Language;Язык;;machine
+ocrLanguage;text;Text recognition language;Язык распознавания;;machine
+dialogs.unsavedMessage;text;Save changes before closing?;Сохранить изменения перед закрытием?;;machine
+dialogs.unsavedDetail;text;If you do not save, they will be lost.;Если не сохранить, они будут потеряны.;;machine
+dialogs.save;text;Save;Сохранить;;machine
+dialogs.dontSave;text;Don’t save;Не сохранять;;machine
+dialogs.cancel;text;Cancel;Отмена;;machine
+dialogs.incomingMessage;text;Open {names}?;Открыть {names}?;;machine
+dialogs.incomingDetail;text;Another document is open.;Сейчас открыт другой документ.;;machine
+dialogs.add;text;Add to the document;Добавить к документу;;machine
+dialogs.replace;text;Open instead;Открыть вместо него;;machine
+dialogs.filesFilter;text;PDF and images;PDF и изображения;;machine
+selectFile;text;Choose a file;Выбрать файл;;machine
+dropHint;text;or drop a PDF or a picture here;или перетащите сюда PDF или картинку;;machine
+dropOverlay;text;Drop the file to add it;Отпустите файл, чтобы добавить его;;machine
+opening;text;Opening the file…;Открываю файл…;;machine
+newFile;text;New file;Новый файл;;machine
+download;text;Download;Скачать;;machine
+saving;text;Please wait…;Подождите…;;machine
+savedAs;template;Saved: {name};Сохранено: {name};;machine
+saveFailed;text;The file could not be saved. It may be open in another program. Try another name or folder.;Не удалось сохранить файл. Возможно, он открыт в другой программе. Попробуйте другое имя или папку.;;machine
+exportFailed;text;This file could not be saved again: its inner structure is too unusual, or it is damaged. The original file has not changed.;Этот файл не удалось пересохранить: его внутреннее устройство слишком необычное или он повреждён. Исходный файл не изменён.;;machine
+moreOptions;text;Other outputs;Другие способы вывода;;machine
+print;text;Print;Печать;;machine
+printFailed;text;The document could not be sent to the printer.;Не удалось отправить документ на печать.;;machine
+copyMarkdown;text;Copy text as Markdown;Скопировать текст как Markdown;;machine
+saveMarkdown;text;Save text as Markdown;Сохранить текст как Markdown;;machine
+extractFailed;text;The text of the document could not be extracted.;Не удалось извлечь текст документа.;;machine
+copied;text;Text copied to the clipboard;Текст скопирован в буфер обмена;;machine
+report.open;text;Report a problem…;Сообщить о проблеме…;;machine
+report.title;text;Report a problem;Сообщить о проблеме;;machine
+report.intro;text;This text becomes a new issue on GitHub, which anyone can read. It holds nothing from your documents and no file names. Add what happened, then send it yourself from the GitHub page.;Этот текст станет новым обращением на GitHub, его сможет прочитать кто угодно. В нём нет содержимого ваших документов и имён файлов. Допишите, что произошло, и отправьте его сами со страницы GitHub.;;machine
+report.openGithub;text;Open the GitHub page;Открыть страницу GitHub;;machine
+report.copy;text;Copy;Скопировать;;machine
+report.copied;text;Report copied;Отчёт скопирован;;machine
+report.close;text;Close;Закрыть;;machine
+password.title;text;This document is password-protected;Документ защищён паролем;;machine
+password.placeholder;text;Password;Пароль;;machine
+password.wrong;text;Wrong password. Please try again.;Неверный пароль. Попробуйте ещё раз.;;machine
+password.keep;text;Keep password;Сохранить пароль;;machine
+password.keepOn;text;The saved file will stay protected by this password;Сохранённый файл останется защищённым этим паролем;;machine
+password.keepOff;text;The saved file will not be protected;В сохранённом файле защиты не будет;;machine
+password.unlock;text;Unlock;Открыть;;machine
+password.cancel;text;Cancel;Отмена;;machine
+thumbnailMenu.copyContent;text;Copy text;Скопировать текст;;machine
+thumbnailMenu.recognize;text;Recognize text;Распознать текст;;machine
+thumbnailMenu.findFields;text;Find fields;Найти поля;;machine
+thumbnailMenu.thisPage;text;This page;Эта страница;;machine
+thumbnailMenu.allPages;text;All pages;Все страницы;;machine
+thumbnailMenu.clearFields;code;(count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`);(count: number) => (count === 1 ? 'Очистить поле (1)' : `Очистить поля${countSuffix(count)}`);;machine
+thumbnailMenu.deleteFields;code;(count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`);(count: number) => (count === 1 ? 'Удалить поле (1)' : `Удалить поля${countSuffix(count)}`);;machine
+thumbnailMenu.printPage;text;Print this page;Напечатать страницу;;machine
+thumbnailMenu.replacePage;text;Replace with a scan or photo…;Заменить сканом или фото…;;machine
+fieldsPanel.title;template;Fields ({count});Поля ({count});;machine
+fieldsPanel.showNumbers;text;Show numbers;Показать номера;;machine
+fieldsPanel.empty;text;The document has no fields;В документе нет полей;;machine
+fieldsPanel.goTo;template;Go to field {number};Перейти к полю {number};;machine
+fieldsPanel.types.text;text;text;текст;;machine
+fieldsPanel.types.checkbox;text;checkbox;флажок;;machine
+fieldsPanel.types.radio;text;option;выбор одного;;machine
+fieldsPanel.types.choice;text;list;список;;machine
+fieldsPanel.types.signature;text;signature;подпись;;machine
+fieldsPanel.types.picture;text;picture;картинка;;machine
+fieldsPanel.types.cells;text;text in cells;текст в клетках;;machine
+ai.copy;text;Copy form for AI;Копировать форму для ИИ;;machine
+ai.paste;text;Paste AI answer;Вставить ответ ИИ;;machine
+ai.copied;text;Form copied: paste it into an AI chat;Форма скопирована: вставьте её в чат с ИИ;;machine
+ai.copyFailed;text;The form could not be copied.;Не удалось скопировать форму.;;machine
+ai.instructions;text;"Fill in the form. Answer with JSON only, like {""1"": ""…"", ""2"": true}, where each key is a field number. For a checkbox give true or false, for a choice one of the listed options exactly as written. Skip fields you have no data for.
+Fields (number | type | name | label next to it | options):";"Заполни форму. Ответь только JSON вида {""1"": ""…"", ""2"": true}, где ключ — номер поля. Для флажка — true или false, для выбора — один из перечисленных вариантов точно как написано. Поля, для которых нет данных, пропусти.
+Поля (номер | тип | имя | подпись рядом | варианты):";;machine
+ai.dialogTitle;text;AI answer;Ответ ИИ;;machine
+ai.dialogHint;text;Paste the answer from the AI chat. An answer with explanations works too: the JSON in it is found.;Вставьте ответ из чата с ИИ. Подойдёт и ответ с пояснениями: программа найдёт в нём JSON.;;machine
+ai.placeholder;text;"{""1"": ""…"", ""2"": true}";"{""1"": ""…"", ""2"": true}";;machine
+ai.fill;text;Fill in;Заполнить;;machine
+ai.cancel;text;Cancel;Отмена;;machine
+ai.close;text;Close;Закрыть;;machine
+ai.summary;template;Filled {filled} of {answered};Заполнено {filled} из {answered};;machine
+ai.undoHint;text;Ctrl+Z undoes all of it at once.;Всё заполненное отменяется одним Ctrl+Z.;;machine
+ai.problems.empty;template;The answer is empty.;Ответ пустой.;;machine
+ai.problems.notJson;template;No JSON was found in the answer.;В ответе не найден JSON.;;machine
+ai.problems.notObject;template;"The answer must be a JSON object like {""1"": …}.";"Ответ должен быть объектом JSON вида {""1"": …}.";;machine
+ai.problems.unknownField;template;There is no field {number} — skipped.;Поля {number} нет — пропущено.;;machine
+ai.problems.manualOnly;template;Field {number}: a signature or picture can only be added by hand — skipped.;Поле {number}: подпись и картинку можно добавить только вручную — пропущено.;;machine
+ai.problems.expectedText;template;Field {number}: text was expected, got {got} — skipped.;Поле {number}: ожидался текст, пришло {got} — пропущено.;;machine
+ai.problems.expectedBoolean;template;Field {number}: a tick was expected (true or false), got {got} — skipped.;Поле {number}: ожидалась галочка (true или false), пришло {got} — пропущено.;;machine
+ai.problems.notAnOption;template;Field {number}: there is no such option: {got} — skipped.;Поле {number}: такого варианта нет: {got} — пропущено.;;machine
+scan.title;text;Prepare the page;Подготовка страницы;;machine
+scan.found;text;Sheet found. Adjust the corners if needed.;Лист найден. Поправьте углы, если нужно.;;machine
+scan.notFound;text;No sheet found: drag the corners to the edges of the sheet.;Лист не найден: перетащите углы к краям листа.;;machine
+scan.lookLabel;text;Page look:;Вид страницы:;;machine
+scan.looks.color;text;Color;Цветной;;machine
+scan.looks.gray;text;Black and white;Чёрно-белый;;machine
+scan.looks.original;text;Not cleaned;Без очистки;;machine
+scan.asIs;text;Use as is;Без обработки;;machine
+scan.wholePicture;text;Whole picture;Весь снимок;;machine
+scan.use;text;Done;Готово;;machine
+scan.cancel;text;Cancel;Отмена;;machine
+scan.corner;text;Corner of the sheet;Угол листа;;machine
+scan.preparing;text;Preparing the page…;Подготовка страницы…;;machine
+scan.done;text;Page replaced;Страница заменена;;machine
+scan.failed;text;The page could not be replaced.;Не удалось заменить страницу.;;machine
+textLeftInFile;template;Warning: on page {pages} the replaced text could not be fully removed from the file. It cannot be seen, but software can find it.;Внимание: на странице {pages} заменённый текст не удалось полностью удалить из файла. На вид его нет, но программами его можно найти.;;machine
+imageLeftInFile;template;Warning: on page {pages} there is a picture under the replaced text. It is covered but stays in the file, and what it shows can be extracted.;Внимание: на странице {pages} под заменённым текстом лежит картинка. Она закрыта, но осталась в файле, и то, что на ней изображено, можно извлечь.;;machine
+ocr.starting;text;Starting text recognition…;Запускаю распознавание…;;machine
+ocr.progress;template;Recognizing page {page} of {total}…;Распознаю страницу {page} из {total}…;;machine
+ocr.done;template;Words recognized: {words};Распознано слов: {words};;machine
+ocr.nothingToRead;text;These pages already have text, there is nothing to recognize;На этих страницах уже есть текст, распознавать нечего;;machine
+ocr.noWords;text;No text found. The scan may be too faint, or the page may have no text.;Текст не найден. Возможно, скан слишком бледный или на странице нет текста.;;machine
+ocr.failed;text;The text could not be recognized.;Не удалось распознать текст.;;machine
+detect.found;template;Fields found: {count};Найдено полей: {count};;machine
+detect.none;text;No fields to fill in were found;Полей для заполнения не найдено;;machine
+detect.failed;text;Fields could not be searched for.;Не удалось найти поля.;;machine
+formNotPrinted;text;Warning: the form of this file could not be printed into its pages, so the values entered in its fields were not saved. Try entering them as ordinary text.;Внимание: форму этого файла не удалось впечатать в страницы, поэтому значения, вписанные в её поля, не сохранились. Попробуйте вписать их как обычный текст.;;machine
+moveHint;text;Hold Shift to turn alignment off;Удерживайте Shift, чтобы отключить выравнивание;;machine
+editScope.line;text;Line;Строка;;machine
+editScope.word;text;Word;Слово;;machine
+editScope.label;text;What to edit;Что править;;machine
+font.title;text;Font;Шрифт;;machine
+font.family;text;Typeface;Гарнитура;;machine
+font.bold;text;Bold;Жирный;;machine
+font.italic;text;Italic;Курсив;;machine
+font.color;text;Text color;Цвет текста;;machine
+font.asInDocument;code;(name: string) => (name ? `As in the document: ${name}` : 'As in the document');(name: string) => (name ? `Как в документе: ${name}` : 'Как в документе');;machine
+font.pick;text;Take the style of text on the page;Взять стиль с текста страницы;;machine
+font.replaced;text;The document’s font lacks some letters, so a similar font writes the text.;В шрифте документа нет некоторых букв, текст написан похожим шрифтом.;;machine
+font.boldIcon;text;B;Ж;;machine
+font.italicIcon;text;I;К;;machine
+font.families.arial;text;Arial;Arial;;machine
+font.families.times;text;Times New Roman;Times New Roman;;machine
+font.families.calibri;text;Calibri;Calibri;;machine
+font.families.courier;text;Courier New;Courier New;;machine
+recovery.title;text;An unsaved document was found;Найден несохранённый документ;;machine
+recovery.details;template;{names}. Last change: {time}.;{names}. Последнее изменение: {time}.;;machine
+recovery.restore;text;Restore;Восстановить;;machine
+recovery.discard;text;Delete;Удалить;;machine
+recovery.failed;text;The document could not be restored.;Не удалось восстановить документ.;;machine
+missingCharacters;template;Characters missing from the font were left out of the file: {characters};В файл не попали символы, которых нет в шрифте: {characters};;machine
+zoomIn;text;Zoom in;Увеличить;;machine
+zoomOut;text;Zoom out;Уменьшить;;machine
+close;text;Close;Закрыть;;machine
+undo;text;Undo;Отменить;;machine
+redo;text;Redo;Повторить;;machine
+addPages;text;Add pages;Добавить страницы;;machine
+deletePage;text;Delete page;Удалить страницу;;machine
+rotatePage;text;Rotate clockwise;Повернуть по часовой;;machine
+movePageUp;text;Move up;Переместить выше;;machine
+movePageDown;text;Move down;Переместить ниже;;machine
+tools.cursor.label;text;Cursor;Курсор;;machine
+tools.cursor.hint;text;Cursor: select text and fields in the document;Курсор: выделяйте текст и выбирайте поля в документе;;machine
+tools.edit.label;text;Edit text;Править текст;;machine
+tools.edit.hint;text;Edit text: click a line or word of the document and change it;Править текст: нажмите на строку или слово документа и измените их;;machine
+tools.text.label;text;Text;Текст;;machine
+tools.text.hint;text;Text: click anywhere on the page to add a field;Текст: нажмите в любом месте страницы, чтобы добавить поле;;machine
+tools.checkbox.label;text;Mark;Отметка;;machine
+tools.checkbox.hint;text;Mark: click the page, then choose a tick, a cross or a dot;Отметка: нажмите на страницу, затем выберите галочку, крестик или точку;;machine
+tools.signature.label;text;Signature;Подпись;;machine
+tools.signature.hint;text;Signature: click anywhere on the page to add a field;Подпись: нажмите в любом месте страницы, чтобы добавить поле;;machine
+tools.picture.label;text;Picture;Картинка;;machine
+tools.picture.hint;text;Picture: click anywhere on the page to add a field;Картинка: нажмите в любом месте страницы, чтобы добавить поле;;machine
+tools.comb.label;text;Text in cells;Текст по ячейкам;;machine
+tools.comb.hint;text;Text in cells: click anywhere on the page to add a field;Текст по ячейкам: нажмите в любом месте страницы, чтобы добавить поле;;machine
+signature.title;text;Signature;Подпись;;machine
+signature.tabDraw;text;Draw;Нарисовать;;machine
+signature.tabType;text;Type;Напечатать;;machine
+signature.clear;text;Clear;Очистить;;machine
+signature.finish;text;Done;Готово;;machine
+signature.namePlaceholder;text;Enter a name;Введите имя;;machine
+choosePicture;text;Choose a picture;Выбрать картинку;;machine
+pictureUnsupported;template;“{name}” was not added: this field takes JPEG, PNG, WebP and GIF.;«{name}» не добавлен: для поля подходят JPEG, PNG, WebP и GIF.;;machine
+spacingSmaller;text;Narrower cells;Уже ячейки;;machine
+spacingLarger;text;Wider cells;Шире ячейки;;machine
+resizeHint;text;Hold Shift to unlock the proportions;Удерживайте Shift, чтобы снять фиксацию пропорций;;machine
+fieldCopy;text;Copy field;Копировать поле;;machine
+fieldDelete;text;Delete field;Удалить поле;;machine
+fieldMove;text;Drag field;Перетащить поле;;machine
+fieldBackground;text;Background: transparent or white;Фон: прозрачный или белый;;machine
+fontSmaller;text;Smaller font;Уменьшить шрифт;;machine
+fontLarger;text;Larger font;Увеличить шрифт;;machine
+checkbox;text;Tick;Галочка;;machine
+checkboxMarks.tick;text;Tick;Галочка;;machine
+checkboxMarks.cross;text;Cross;Крестик;;machine
+checkboxMarks.dot;text;Dot;Точка;;machine
+pasteHint;text;Click any page to paste the field. Esc cancels;Нажмите на любую страницу, чтобы вставить поле. Esc — отмена;;machine
+pageOf;template;Page {page} of {total};Страница {page} из {total};;machine
+zoomPercent;code;(zoom) => `${Math.round(zoom * 100)}%`;(zoom: number) => `${Math.round(zoom * 100)} %`;;machine
+goToPage;template;Go to page {page};Перейти к странице {page};;machine
+fileUnreadable;template;“{name}” could not be opened. The file is damaged or its format is not supported.;Не удалось открыть «{name}». Файл повреждён или его формат не поддерживается.;;machine
+filePassword;template;The protection of “{name}” could not be removed.;Не удалось снять защиту с «{name}».;;machine
+fileHeic;template;“{name}” was not opened: HEIC is not supported yet. Save the photo as JPEG.;«{name}» не открыт: формат HEIC пока не поддерживается. Сохраните фото как JPEG.;;machine
+fileUnsupported;template;“{name}” was not opened: PDF, JPEG, PNG, WebP and GIF are supported.;«{name}» не открыт: поддерживаются PDF, JPEG, PNG, WebP и GIF.;;machine
