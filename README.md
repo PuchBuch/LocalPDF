@@ -68,6 +68,10 @@ npm run build:extension  # the Chrome extension, in out-extension/ and as a zip 
 npm run test:extension   # builds it and tests it in headless Chromium: no windows open
 ```
 
+Releases come once a week. Every fix adds a line under **Unreleased** in [CHANGELOG.md](CHANGELOG.md) instead of raising the version.
+`node scripts/release.mjs --dry-run` shows the next version and its notes; without `--dry-run` it raises the version, moves the notes and builds and checks the extension zip.
+It commits nothing: it prints the commands to commit, push and tag, and the tag makes the cloud build the installer.
+
 If Electron crashes with `Cannot read properties of undefined (reading 'isPackaged')`, your terminal has `ELECTRON_RUN_AS_NODE` set. Clear it: `Remove-Item Env:\ELECTRON_RUN_AS_NODE`.
 
 - `src/core`: the document model and geometry, free of the interface.
