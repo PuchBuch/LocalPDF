@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LocalPDF: a PDF editor that keeps your files on your computer</title>
+<meta name="description" content="Edit PDFs and fill in forms on your computer. Nothing is uploaded: no accounts, no servers, no network access. Windows app and browser extension, open source.">
+<link rel="icon" href="images/icon-128.png">
+<link rel="alternate" hreflang="de" href="de/">
+<style>
+:root {
+  --text: #1d2733;
+  --muted: #55626f;
+  --bg: #ffffff;
+  --soft: #f2f5f9;
+  --line: #d9e0e8;
+  --accent: #2460c8;
+  --accent-text: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #e6ebf0;
+    --muted: #a3afbb;
+    --bg: #141a21;
+    --soft: #1d252e;
+    --line: #2f3a46;
+    --accent: #5b8ee6;
+    --accent-text: #0d1117;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+  font: 17px/1.55 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+main { max-width: 960px; margin: 0 auto; padding: 0 16px 48px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 20px; }
+.brand img { width: 32px; height: 32px; }
+nav a { color: var(--muted); margin-left: 12px; }
+a { color: var(--accent); }
+h1 { overflow-wrap: break-word; font-size: clamp(28px, 5vw, 44px); line-height: 1.15; margin: 32px 0 12px; }
+.lead { font-size: 20px; color: var(--muted); margin: 0 0 24px; max-width: 720px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 8px; }
+.button {
+  display: inline-block; padding: 11px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;
+  border: 1px solid var(--accent); color: var(--accent);
+}
+.button.primary { background: var(--accent); color: var(--accent-text); }
+.button small { display: block; font-weight: 400; font-size: 13px; opacity: 0.85; }
+.note { color: var(--muted); font-size: 15px; margin: 8px 0 0; }
+h2 { font-size: 26px; margin: 48px 0 12px; }
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 12px 24px; padding: 0; list-style: none; }
+.features li { padding: 12px 14px; background: var(--soft); border-radius: 8px; }
+.features strong { display: block; }
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; }
+figure { margin: 0; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; display: block; }
+figcaption { color: var(--muted); font-size: 15px; margin-top: 6px; }
+.privacy { padding: 20px; border-left: 4px solid var(--accent); background: var(--soft); border-radius: 0 8px 8px 0; }
+.privacy p { margin: 0 0 8px; }
+footer { color: var(--muted); font-size: 15px; border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="brand"><img src="images/icon-128.png" alt="">LocalPDF</span>
+    <nav><a href="de/" hreflang="de" lang="de">Deutsch</a><a href="https://github.com/PuchBuch/LocalPDF">GitHub</a></nav>
+  </header>
+
+  <h1>Edit PDFs and fill in forms without uploading them</h1>
+  <p class="lead">LocalPDF is a free PDF editor that keeps your documents on your computer. No account, no servers, no network access: your files never leave your machine.</p>
+
+  <div class="buttons">
+    <a class="button primary" href="https://github.com/PuchBuch/LocalPDF/releases/latest">Windows<small>Download the app</small></a>
+    <a class="button" href="https://github.com/PuchBuch/LocalPDF#chrome-extension">Chrome<small>Extension, soon in the store</small></a>
+    <a class="button" href="https://github.com/PuchBuch/LocalPDF#chrome-extension">Edge<small>Extension, soon in the store</small></a>
+  </div>
+  <p class="note">This is a beta. Check the result and keep your originals.</p>
+
+  <h2>What it does</h2>
+  <ul class="features">
+    <li><strong>Fill in forms</strong>A PDF's own fields, or fields you place yourself: text, ticks, crosses, signatures and pictures.</li>
+    <li><strong>Edit text in place</strong>Click a line or a word and retype it, in the document's own font when the file holds it.</li>
+    <li><strong>Remove text for real</strong>Replaced text is cut out of the saved file, not only covered.</li>
+    <li><strong>Fill with any AI, offline</strong>Copy the numbered fields into the AI chat you choose and paste its answer back. LocalPDF itself sends nothing.</li>
+    <li><strong>Recognize scans</strong>Offline text recognition in eight languages makes scans searchable.</li>
+    <li><strong>Manage pages</strong>Delete, rotate and reorder pages, merge PDFs and pictures, put in a photo of a page signed by hand.</li>
+  </ul>
+
+  <h2>Screenshots</h2>
+  <div class="shots">
+    <figure><img src="images/1-edit-text.jpg" width="1280" height="800" loading="lazy" alt="LocalPDF editing the total line of an invoice"><figcaption>Edit text in place</figcaption></figure>
+    <figure><img src="images/2-forms-and-signature.jpg" width="1280" height="800" loading="lazy" alt="A form filled in with text, ticks and a signature"><figcaption>Forms and signatures</figcaption></figure>
+    <figure><img src="images/3-recognize-scans.jpg" width="1280" height="800" loading="lazy" alt="The Recognize text menu on a scanned delivery note"><figcaption>Recognize scans offline</figcaption></figure>
+    <figure><img src="images/4-pages.jpg" width="1280" height="800" loading="lazy" alt="A four-page report with buttons to delete, rotate and move each page"><figcaption>Manage pages</figcaption></figure>
+  </div>
+
+  <h2>Your privacy</h2>
+  <div class="privacy">
+    <p>LocalPDF does not collect, send or share any data. The Windows app blocks all outside network requests. The browser extension asks for no permissions and cannot connect to any website. Text recognition, fonts and everything else run on your computer.</p>
+    <p>This page uses no cookies, no counters and no outside scripts or fonts.</p>
+    <p><a href="https://github.com/PuchBuch/LocalPDF/blob/main/PRIVACY.md">Privacy policy</a></p>
+  </div>
+
+  <footer>
+    Open source under the MIT licence. <a href="https://github.com/PuchBuch/LocalPDF">Source code</a> · <a href="https://github.com/PuchBuch/LocalPDF#known-limits">Known limits</a> · <a href="https://github.com/PuchBuch/LocalPDF/issues">Report a problem</a>
+  </footer>
+</main>
+</body>
+</html>

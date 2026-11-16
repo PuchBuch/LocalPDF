@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LocalPDF: PDF-Formulare ausfüllen, ohne sie hochzuladen</title>
+<meta name="description" content="PDFs bearbeiten und Formulare ausfüllen, auf Ihrem Computer. Nichts wird hochgeladen: keine Konten, keine Server, kein Netzwerkzugriff. Windows-App und Browser-Erweiterung, Open Source.">
+<link rel="icon" href="../images/icon-128.png">
+<link rel="alternate" hreflang="en" href="../">
+<style>
+:root {
+  --text: #1d2733;
+  --muted: #55626f;
+  --bg: #ffffff;
+  --soft: #f2f5f9;
+  --line: #d9e0e8;
+  --accent: #2460c8;
+  --accent-text: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #e6ebf0;
+    --muted: #a3afbb;
+    --bg: #141a21;
+    --soft: #1d252e;
+    --line: #2f3a46;
+    --accent: #5b8ee6;
+    --accent-text: #0d1117;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+  font: 17px/1.55 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+main { max-width: 960px; margin: 0 auto; padding: 0 16px 48px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 20px; }
+.brand img { width: 32px; height: 32px; }
+nav a { color: var(--muted); margin-left: 12px; }
+a { color: var(--accent); }
+h1 { overflow-wrap: break-word; font-size: clamp(28px, 5vw, 44px); line-height: 1.15; margin: 32px 0 12px; hyphens: auto; }
+.lead { font-size: 20px; color: var(--muted); margin: 0 0 24px; max-width: 720px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 8px; }
+.button {
+  display: inline-block; padding: 11px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;
+  border: 1px solid var(--accent); color: var(--accent);
+}
+.button.primary { background: var(--accent); color: var(--accent-text); }
+.button small { display: block; font-weight: 400; font-size: 13px; opacity: 0.85; }
+.note { color: var(--muted); font-size: 15px; margin: 8px 0 0; }
+h2 { font-size: 26px; margin: 48px 0 12px; }
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 12px 24px; padding: 0; list-style: none; }
+.features li { padding: 12px 14px; background: var(--soft); border-radius: 8px; }
+.features strong { display: block; }
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; }
+figure { margin: 0; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; display: block; }
+figcaption { color: var(--muted); font-size: 15px; margin-top: 6px; }
+.privacy { padding: 20px; border-left: 4px solid var(--accent); background: var(--soft); border-radius: 0 8px 8px 0; }
+.privacy p { margin: 0 0 8px; }
+footer { color: var(--muted); font-size: 15px; border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="brand"><img src="../images/icon-128.png" alt="">LocalPDF</span>
+    <nav><a href="../" hreflang="en" lang="en">English</a><a href="https://github.com/PuchBuch/LocalPDF">GitHub</a></nav>
+  </header>
+
+  <h1>PDF-Formulare ausfüllen, ohne sie hochzuladen</h1>
+  <p class="lead">LocalPDF ist ein kostenloser PDF-Editor, der Ihre Dokumente auf Ihrem Computer lässt. Kein Konto, keine Server, kein Netzwerkzugriff: Ihre Dateien verlassen Ihren Rechner nie. Gerade für Anträge, Formulare von Ämtern und Verträge mit persönlichen Daten.</p>
+
+  <div class="buttons">
+    <a class="button primary" href="https://github.com/PuchBuch/LocalPDF/releases/latest">Windows<small>App herunterladen</small></a>
+    <a class="button" href="https://github.com/PuchBuch/LocalPDF/blob/main/README.de.md#browser-erweiterung">Chrome<small>Erweiterung, bald im Store</small></a>
+    <a class="button" href="https://github.com/PuchBuch/LocalPDF/blob/main/README.de.md#browser-erweiterung">Edge<small>Erweiterung, bald im Store</small></a>
+  </div>
+  <p class="note">Dies ist eine Beta. Prüfen Sie das Ergebnis und behalten Sie Ihre Originale.</p>
+
+  <h2>Was es kann</h2>
+  <ul class="features">
+    <li><strong>Formulare ausfüllen</strong>Die Felder des PDFs selbst oder eigene Felder: Text, Häkchen, Kreuze, Unterschriften und Bilder.</li>
+    <li><strong>Text direkt bearbeiten</strong>Zeile oder Wort anklicken und neu tippen, in der Schrift des Dokuments, wenn die Datei sie enthält.</li>
+    <li><strong>Text wirklich entfernen</strong>Ersetzter Text wird aus der gespeicherten Datei herausgeschnitten, nicht nur überdeckt.</li>
+    <li><strong>Mit einer beliebigen KI ausfüllen, ohne Internet</strong>Die nummerierten Felder in den KI-Chat Ihrer Wahl kopieren und die Antwort wieder einfügen. LocalPDF selbst sendet nichts.</li>
+    <li><strong>Scans erkennen</strong>Texterkennung ohne Internet in acht Sprachen macht Scans durchsuchbar.</li>
+    <li><strong>Seiten verwalten</strong>Seiten löschen, drehen und umsortieren, PDFs und Bilder zusammenfügen, das Foto einer von Hand unterschriebenen Seite einsetzen.</li>
+  </ul>
+
+  <h2>Bildschirmfotos</h2>
+  <div class="shots">
+    <figure><img src="../images/1-edit-text.jpg" width="1280" height="800" loading="lazy" alt="LocalPDF beim Bearbeiten der Summenzeile einer Rechnung"><figcaption>Text direkt bearbeiten</figcaption></figure>
+    <figure><img src="../images/2-forms-and-signature.jpg" width="1280" height="800" loading="lazy" alt="Ein Formular mit Text, Häkchen und Unterschrift"><figcaption>Formulare und Unterschriften</figcaption></figure>
+    <figure><img src="../images/3-recognize-scans.jpg" width="1280" height="800" loading="lazy" alt="Das Menü Text erkennen auf einem gescannten Lieferschein"><figcaption>Scans ohne Internet erkennen</figcaption></figure>
+    <figure><img src="../images/4-pages.jpg" width="1280" height="800" loading="lazy" alt="Ein vierseitiger Bericht mit Schaltflächen zum Löschen, Drehen und Verschieben jeder Seite"><figcaption>Seiten verwalten</figcaption></figure>
+  </div>
+  <p class="note">Die Bildschirmfotos zeigen die englische Oberfläche. LocalPDF gibt es auch auf Deutsch.</p>
+
+  <h2>Ihre Privatsphäre</h2>
+  <div class="privacy">
+    <p>LocalPDF sammelt, sendet und teilt keine Daten. Die Windows-App blockiert alle Netzwerkanfragen nach außen. Die Browser-Erweiterung verlangt keine Berechtigungen und kann sich mit keiner Website verbinden. Texterkennung, Schriften und alles andere laufen auf Ihrem Computer.</p>
+    <p>Diese Seite verwendet keine Cookies, keine Zähler und keine fremden Skripte oder Schriften.</p>
+    <p><a href="https://github.com/PuchBuch/LocalPDF/blob/main/PRIVACY.md">Datenschutzerklärung (englisch)</a></p>
+  </div>
+
+  <footer>
+    Open Source unter der MIT-Lizenz. <a href="https://github.com/PuchBuch/LocalPDF">Quellcode</a> · <a href="https://github.com/PuchBuch/LocalPDF/blob/main/README.de.md#grenzen">Grenzen</a> · <a href="https://github.com/PuchBuch/LocalPDF/issues">Problem melden</a>
+  </footer>
+</main>
+</body>
+</html>
