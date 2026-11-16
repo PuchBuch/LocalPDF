@@ -22,7 +22,7 @@ const pages = () => page.getByTestId('pdf-page')
 async function launch(existingProfile?: string): Promise<void> {
   profile = existingProfile ?? (await mkdtemp(join(tmpdir(), 'localpdf-ext-')))
   context = await chromium.launchPersistentContext(profile, {
-    channel: 'chromium',
+    channel: test.info().project.use.channel ?? 'chromium',
     headless: true,
     locale: 'en-US',
     acceptDownloads: true,
