@@ -38,7 +38,7 @@ It differs from the Windows app in a few ways:
 - PDFs cannot be opened with a double-click. Use the extension's button in the toolbar, then choose a file.
 - The crash recovery copy lies unencrypted in your browser profile. Documents opened with a password are never stored there.
 - Printing uses the browser's dialog, and the app cannot tell whether you printed or cancelled.
-- It is tested in Chromium only, not in Edge or other browsers.
+- It is tested in Chromium and Microsoft Edge, not in other browsers.
 
 ## Known limits
 
@@ -65,7 +65,7 @@ npm run test:e2e   # interface tests: app windows open on the screen
 npm run typecheck
 npm run dist       # the installer, in release/
 npm run build:extension  # the Chrome extension, in out-extension/ and as a zip in release/
-npm run test:extension   # builds it and tests it in headless Chromium: no windows open
+npm run test:extension   # builds it and tests it in headless Chromium and the installed Edge: no windows open
 ```
 
 Releases come once a week. Every fix adds a line under **Unreleased** in [CHANGELOG.md](CHANGELOG.md) instead of raising the version.

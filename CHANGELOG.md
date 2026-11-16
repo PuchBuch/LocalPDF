@@ -5,6 +5,7 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 ## Unreleased
 
 - The README describes the document's own font and the style picker, and their limits.
+- The browser extension is tested in Microsoft Edge as well as Chromium.
 
 ## 0.9.0-beta.11 (2026-11-15)
 
