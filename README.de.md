@@ -4,6 +4,8 @@ Ein PDF-Editor für Windows, der Ihre Dokumente auf Ihrem Computer lässt. **PDF
 
 **Dies ist eine Beta.** Sie ist an erzeugten Dateien gut getestet, hat aber erst wenige echte Dokumente gesehen. Prüfen Sie das Ergebnis und behalten Sie Ihre Originale. [Problem melden](../../issues): In der App geht das auch über „Problem melden…“.
 
+**Projektseite:** https://puchbuch.github.io/LocalPDF/de/
+
 *English: [README.md](README.md) · Русский: [README.ru.md](README.ru.md)*
 
 ## Was es kann

@@ -4,6 +4,8 @@ A PDF editor for Windows that keeps your documents on your computer. Files are n
 
 **This is a beta.** It is well tested on generated files but has seen few real-world documents. Check the result before you rely on it, and keep your originals. [Report a problem](../../issues).
 
+**Project page:** https://puchbuch.github.io/LocalPDF/
+
 *Deutsch: [README.de.md](README.de.md) · Русский: [README.ru.md](README.ru.md)*
 
 ## What it does
