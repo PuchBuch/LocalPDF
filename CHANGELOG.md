@@ -4,6 +4,8 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 
 ## Unreleased
 
+## 0.9.0-beta.12 (2026-11-17)
+
 - The README describes the document's own font and the style picker, and their limits.
 - The browser extension is tested in Microsoft Edge as well as Chromium.
 - "Report a problem…", in the menu beside Download and on the start screen, prepares a report with the version, the system and the kinds of recent errors, without file names or document content. You check it and send it yourself on GitHub.
