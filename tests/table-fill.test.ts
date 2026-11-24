@@ -109,6 +109,32 @@ describe('fieldsForTable', () => {
     expect(longer.value.split('\n').join(' ')).toBe('aaaa bbbb cccc dddd eeee ffff')
   })
 
+  it('sets a column in one size, in which each value stays in its cell', () => {
+    const { fields, tooLong } = fill([
+      ['kurz', 'aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj kkkk', 'x'],
+      ['aaaa bbbb cccc dddd eeee ffff', 'kurz', 'y'],
+      ['auch kurz', 'kurz', 'z']
+    ])
+    expect(tooLong).toBe(0)
+    const sizes = fields.map(({ fontSize }) => fontSize)
+    const column = (index: number) => [sizes[index], sizes[index + 3], sizes[index + 6]]
+    for (const index of [0, 1, 2]) expect(new Set(column(index)).size, `column ${index}`).toBe(1)
+    expect(column(0)[0]).toBeLessThan(10)
+    expect(column(2)[0]).toBe(10)
+    fields.forEach((field, index) => {
+      const [row, place] = [1 + Math.floor(index / 3), index % 3]
+      expect(field.y).toBeGreaterThanOrEqual(TABLE.rows[row]!)
+      expect(field.y + field.height).toBeLessThanOrEqual(TABLE.rows[row + 1]!)
+      expect(field.x).toBeGreaterThanOrEqual(TABLE.columns[place]!)
+      expect(field.x + field.width).toBeLessThanOrEqual(TABLE.columns[place + 1]!)
+    })
+  })
+
+  it('makes only a very long value very small, not the whole column', () => {
+    const { fields } = fill([['x'.repeat(300)], ['kurz']])
+    expect(fields.map(({ fontSize }) => fontSize)).toEqual([5, 7])
+  })
+
   it('breaks a word too long for a line between its letters', () => {
     const [field] = fill([['abcdefghijklmno']]).fields
     expect(field!.value).toBe('abcdefghij\nklmno')
