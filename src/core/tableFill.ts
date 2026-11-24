@@ -7,7 +7,7 @@ const MAX_CELL_FONT_SIZE = 10
 const MIN_CELL_FONT_SIZE = 5
 const FONT_STEP = 0.5
 /** Space between the walls of a cell and its text, in points. */
-const INSET_X = 3
+const INSET_X = 4
 const INSET_Y = 2
 /** A value this short, such as a number, is centred in its cell. */
 const SHORT_VALUE = 3
@@ -118,6 +118,13 @@ function wrapText(text: string, fits: (line: string) => boolean): string[] {
   return lines
 }
 
+/** A cell where it really is, or else where its row and column cross. */
+function cellAt(table: TableGrid, row: number, column: number): Rect {
+  const x = table.columns[column]!
+  const y = table.rows[row]!
+  return table.cells?.[row]?.[column] ?? { x, y, width: table.columns[column + 1]! - x, height: table.rows[row + 1]! - y }
+}
+
 export interface TableFillOptions {
   /** The first row of the table to write in, or else its first empty one. */
   firstRow?: number
@@ -153,13 +160,10 @@ export function fieldsForTable(
   let tooLong = 0
 
   for (const [index, row] of places.slice(0, data.length).entries()) {
-    const top = table.rows[row]!
-    const height = table.rows[row + 1]! - top
     for (const [column, cell] of data[index]!.slice(0, columnCount).entries()) {
       const value = cell.trim()
       if (value === '') continue
-      const left = table.columns[column]!
-      const width = table.columns[column + 1]! - left
+      const { x: left, y: top, width, height } = cellAt(table, row, column)
       const wrapped = (fontSize: number) => wrapText(value, (line) => measure(line, fontSize) <= width - INSET_X * 2)
       const fitsHeight = (lines: string[], fontSize: number) => lines.length * fontSize * LINE_HEIGHT <= height - INSET_Y * 2
 

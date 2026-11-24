@@ -67,13 +67,29 @@ describe('fieldsForTable', () => {
     fields.forEach((field, index) => {
       const column = index % 3
       const row = 1 + Math.floor(index / 3)
-      expect(field.x).toBe(TABLE.columns[column]! + 3)
+      expect(field.x).toBe(TABLE.columns[column]! + 4)
       expect(field.x + field.width).toBeLessThanOrEqual(TABLE.columns[column + 1]!)
       expect(field.y + field.height / 2).toBeCloseTo((TABLE.rows[row]! + TABLE.rows[row + 1]!) / 2)
       expect(field).toMatchObject({ type: 'TEXT', fontSize: 10, background: 'transparent' })
     })
     expect(new Set(fields.map(({ id }) => id)).size).toBe(6)
     expect({ leftOutRows, leftOutColumns, tooLong }).toEqual({ leftOutRows: 0, leftOutColumns: 0, tooLong: 0 })
+  })
+
+  it('follows the cells where the walls of a scan slant', () => {
+    const cells = TABLE.emptyRows.map((_, row) =>
+      TABLE.columns.slice(1).map((right, column) => ({
+        x: TABLE.columns[column]! - row * 5,
+        y: TABLE.rows[row]! + column,
+        width: right - TABLE.columns[column]!,
+        height: 30
+      }))
+    )
+    const { fields } = fill([['eins', '5'], ['zwei', '6']], {}, { ...TABLE, cells })
+    expect(fields.map(({ x }) => x)[0]).toBe(40 - 5 + 4)
+    expect(fields.map(({ x }) => x)[2]).toBe(40 - 10 + 4)
+    expect(fields[1]!.x + measure('5', 10) / 2).toBeCloseTo(150 - 5)
+    expect(fields[1]!.y + fields[1]!.height / 2).toBeCloseTo(130 + 1 + 15)
   })
 
   it('centres a short value', () => {
@@ -83,7 +99,7 @@ describe('fieldsForTable', () => {
 
   it('wraps between words, in the largest font the lines fit in', () => {
     const { fields, tooLong } = fill([['aaaa bbbb cccc dddd']])
-    // 54 points hold 10 letters in size 10, so two lines of nine, of which 26 points hold two.
+    // 52 points hold 10 letters in size 10, so two lines of nine, of which 26 points hold two.
     expect(fields[0]).toMatchObject({ value: 'aaaa bbbb\ncccc dddd', fontSize: 10 })
     expect(tooLong).toBe(0)
 

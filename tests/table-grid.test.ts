@@ -6,8 +6,8 @@ const PAGE = { width: 1000, height: 700 }
 const COLUMNS = [40, 131, 338, 456, 627, 711, 885, 957]
 const ROWS = [180, 232, ...Array.from({ length: 12 }, (_, row) => 232 + 33 * (row + 1))]
 
-/** A page picture to draw on, in points, as the mask detection reads, all of it slanted if asked. */
-function canvas({ slant = 0, width = PAGE.width, height = PAGE.height } = {}) {
+/** A page picture to draw on, in points, as the mask detection reads, all of it slanted or widening downwards if asked. */
+function canvas({ slant = 0, widening = 0, width = PAGE.width, height = PAGE.height } = {}) {
   const w = width * SCALE
   const h = height * SCALE
   const flat = new Uint8Array(w * h)
@@ -34,7 +34,18 @@ function canvas({ slant = 0, width = PAGE.width, height = PAGE.height } = {}) {
     for (let dx = 0; dx < width; dx += 5) fill(x + dx, y, 2, height)
   }
   const find = () => {
-    if (slant === 0) return findTables(flat, w, h, SCALE)
+    if (slant === 0 && widening === 0) return findTables(flat, w, h, SCALE)
+    if (widening !== 0) {
+      // Its walls spread towards the bottom, as on a photo taken at an angle.
+      const spread = new Uint8Array(w * h)
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const fromX = Math.round(w / 2 + (x - w / 2) / (1 + (widening * y) / h))
+          if (fromX >= 0 && fromX < w) spread[y * w + x] = flat[y * w + fromX]!
+        }
+      }
+      return findTables(spread, w, h, SCALE)
+    }
     // Turned about the middle of the page, as a sheet laid askew on the scanner.
     const mask = new Uint8Array(w * h)
     const [sin, cos] = [Math.sin((slant * Math.PI) / 180), Math.cos((slant * Math.PI) / 180)]
@@ -93,6 +104,29 @@ describe('findTables', () => {
     expectNear(tables[0]!.columns, COLUMNS, 2)
     expectNear(tables[0]!.rows, ROWS, 2)
     expect(tables[0]!.emptyRows).toEqual(EMPTY_AFTER_HEADING)
+  })
+
+  it('knows where the cells of each row are when the walls slant', () => {
+    const widening = 0.04
+    const page = canvas({ widening })
+    page.table(COLUMNS, ROWS)
+    headings(page)
+    const tables = page.find()
+    expect(tables).toHaveLength(1)
+    const [table] = tables
+    expect(table!.columns).toHaveLength(COLUMNS.length)
+    expect(table!.emptyRows).toEqual(EMPTY_AFTER_HEADING)
+    table!.cells!.forEach((cells, row) => {
+      const y = (ROWS[row]! + ROWS[row + 1]!) / 2
+      const placeOf = (x: number) => PAGE.width / 2 + (x - PAGE.width / 2) * (1 + (widening * y) / PAGE.height)
+      cells.forEach((cell, column) => {
+        expect(Math.abs(cell.x - placeOf(COLUMNS[column]!)), `row ${row}, column ${column}`).toBeLessThan(1.5)
+        expect(Math.abs(cell.x + cell.width - placeOf(COLUMNS[column + 1]!))).toBeLessThan(1.5)
+        expect(Math.abs(cell.y - ROWS[row]!)).toBeLessThan(1)
+      })
+    })
+    // Far enough for the text of the first rows to lie on a wall placed by the average.
+    expect(table!.cells![1]![0]!.x - table!.cells![12]![0]!.x).toBeGreaterThan(8)
   })
 
   it('finds a table whose lines are broken', () => {

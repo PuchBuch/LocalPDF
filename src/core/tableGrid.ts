@@ -1,3 +1,4 @@
+import type { Rect } from './geometry'
 import { readMask } from './maskReader'
 
 /** Sizes are in points, the picture is scanned in pixels. */
@@ -16,6 +17,8 @@ const MIN_ROW_HEIGHT = 6
 const MIN_COLUMN_WIDTH = 6
 /** The same wall is found this far apart in neighbouring rows. */
 const WALL_TOLERANCE = 3
+/** A wall missed in more rows than this is looked for no further away. */
+const MAX_MISSED_ROWS = 3
 const WALL_COVERAGE = 0.8
 /** Left out along the walls when looking for ink in a cell. */
 const CELL_INSET = 3
@@ -30,6 +33,8 @@ export interface TableGrid {
   rows: number[]
   /** For each row, whether nothing is written in any of its cells. */
   emptyRows: boolean[]
+  /** Where each cell of each row really is, as the walls of a scan slant. */
+  cells?: Rect[][]
 }
 
 /** A horizontal line in pixels, which may slant a little. */
@@ -164,15 +169,55 @@ function joinDoubleLines(lines: HorizontalLine[], scale: number): HorizontalLine
   return joined
 }
 
-/** Values close to the one before them, in groups. */
-function grouped<T>(items: T[], valueOf: (item: T) => number, gap: number): T[][] {
-  const groups: T[][] = []
-  for (const item of [...items].sort((a, b) => valueOf(a) - valueOf(b))) {
+/** Numbers in order, with those next to each other in one group. */
+function neighbours(values: number[]): number[][] {
+  const groups: number[][] = []
+  for (const value of values) {
     const last = groups.at(-1)
-    if (last && valueOf(item) - valueOf(last.at(-1)!) <= gap) last.push(item)
-    else groups.push([item])
+    if (last && value - last.at(-1)! <= 1) last.push(value)
+    else groups.push([value])
   }
   return groups
+}
+
+interface WallPiece {
+  row: number
+  x: number
+}
+
+/** Where a wall is in a row, between the rows it was found in if it was not found in this one. */
+function wallInRow(pieces: WallPiece[], row: number): number {
+  const before = pieces.filter((piece) => piece.row <= row).at(-1)
+  const after = pieces.find((piece) => piece.row >= row)
+  if (!before || !after) return (before ?? after)!.x
+  if (before.row === after.row) return before.x
+  return before.x + ((after.x - before.x) * (row - before.row)) / (after.row - before.row)
+}
+
+/** The walls between the columns, each followed down the rows as it slants: its place in every row. */
+function innerWalls(rows: RowWalls[], scale: number): number[][] {
+  const found: WallPiece[][] = []
+  rows.forEach(({ left, right, walls }, row) => {
+    for (const x of walls) {
+      if (x - left < MIN_COLUMN_WIDTH * scale || right - x < MIN_COLUMN_WIDTH * scale) continue
+      const distance = (pieces: WallPiece[]) => Math.abs(pieces.at(-1)!.x - x)
+      const continued = found
+        .filter((pieces) => {
+          const missed = row - pieces.at(-1)!.row
+          return missed > 0 && distance(pieces) <= WALL_TOLERANCE * scale * Math.min(missed, MAX_MISSED_ROWS)
+        })
+        .sort((a, b) => distance(a) - distance(b))[0]
+      if (continued) continued.push({ row, x })
+      else found.push([{ row, x }])
+    }
+  })
+  return (
+    found
+      // A merged cell lacks a wall the other rows have, and a letter makes one no other row has.
+      .filter((pieces) => pieces.length * 2 >= rows.length)
+      .map((pieces) => rows.map((_, row) => wallInRow(pieces, row)))
+      .sort((a, b) => a[0]! - b[0]!)
+  )
 }
 
 /**
@@ -195,7 +240,7 @@ export function findTables(mask: Uint8Array, width: number, height: number, scal
     for (let x = from; x <= to; x++) {
       if (verticalWall(x, Math.round(heightAt(top, x)), Math.round(heightAt(bottom, x)), WALL_COVERAGE)) hits.push(x)
     }
-    const walls = grouped(hits, (x) => x, 1)
+    const walls = neighbours(hits)
       .filter((group) => group.length <= maxWall)
       .map((group) => (group[0]! + group.at(-1)!) / 2 + 0.5)
     const left = walls[0]
@@ -224,39 +269,35 @@ export function findTables(mask: Uint8Array, width: number, height: number, scal
     if (rows.length < MIN_ROWS) continue
     for (const line of tableLines) used.add(line)
 
-    const inner = rows.flatMap(({ left, right, walls }, row) =>
-      walls
-        .filter((x) => x - left >= MIN_COLUMN_WIDTH * scale && right - x >= MIN_COLUMN_WIDTH * scale)
-        .map((x) => ({ x, row }))
-    )
-    const columns = [
-      average(rows.map(({ left }) => left)),
-      // A merged cell lacks a wall the other rows have, and a letter makes one no other row has.
-      ...grouped(inner, ({ x }) => x, WALL_TOLERANCE * scale)
-        .filter((group) => new Set(group.map(({ row }) => row)).size * 2 >= rows.length)
-        .map((group) => average(group.map(({ x }) => x))),
-      average(rows.map(({ right }) => right))
-    ]
-
-    const isEmpty = ({ walls }: RowWalls, row: number) => {
-      const inset = CELL_INSET * scale
-      // Where a column's wall is in this row, as a slanted table shifts it.
-      const edges = columns.map((column) => walls.find((x) => Math.abs(x - column) <= EDGE_TOLERANCE * scale * 0.5) ?? column)
-      return edges.slice(1).every((right, index) => {
-        const left = edges[index]!
-        const middle = (left + right) / 2
-        const top = heightAt(tableLines[row]!, middle)
-        const bottom = heightAt(tableLines[row + 1]!, middle)
-        const area = [left + inset, top + inset, right - inset, bottom - inset].map(Math.round) as [number, number, number, number]
-        // A cell too small to look into has no room for writing in it either.
-        return area[2] <= area[0] || area[3] <= area[1] || inkShare(...area) <= MAX_INK_INSIDE
+    const walls = [rows.map(({ left }) => left), ...innerWalls(rows, scale), rows.map(({ right }) => right)]
+    const cells = rows.map((_, row) =>
+      walls.slice(1).map((wall, index): Rect => {
+        const left = walls[index]![row]!
+        const width = wall[row]! - left
+        const top = heightAt(tableLines[row]!, left + width / 2)
+        return { x: left, y: top, width, height: heightAt(tableLines[row + 1]!, left + width / 2) - top }
       })
+    )
+
+    const isEmpty = (cell: Rect) => {
+      const inset = CELL_INSET * scale
+      const area = [cell.x + inset, cell.y + inset, cell.x + cell.width - inset, cell.y + cell.height - inset].map(Math.round) as [
+        number,
+        number,
+        number,
+        number
+      ]
+      // A cell too small to look into has no room for writing in it either.
+      return area[2] <= area[0] || area[3] <= area[1] || inkShare(...area) <= MAX_INK_INSIDE
     }
 
     tables.push({
-      columns: columns.map((x) => x / scale),
+      columns: walls.map((wall) => average(wall) / scale),
       rows: tableLines.map((line) => middleOf(line) / scale),
-      emptyRows: rows.map(isEmpty)
+      emptyRows: cells.map((row) => row.every(isEmpty)),
+      cells: cells.map((row) =>
+        row.map(({ x, y, width, height }) => ({ x: x / scale, y: y / scale, width: width / scale, height: height / scale }))
+      )
     })
   }
   return tables
