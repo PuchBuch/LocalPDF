@@ -21,6 +21,7 @@ Ein PDF-Editor für Windows, der Ihre Dokumente auf Ihrem Computer lässt. **PDF
 - **Seiten verwalten:** löschen, drehen, umsortieren, PDFs und Bilder zusammenfügen.
 - **Von Hand unterschreiben:** eine einzelne Seite drucken, unterschreiben und einen Scan oder ein Handyfoto davon an ihre Stelle setzen. Ein Foto wird gerade gerückt, auf das Blatt zugeschnitten und aufbereitet.
 - **Passwörter:** öffnet geschützte PDFs und kann den Schutz beim Speichern behalten.
+- **Hilfe im Programm:** durchsuchbare Anleitung und häufige Fragen, ohne Internet (F1), auf Deutsch, Englisch und Russisch. Feedback wird im Programm vorbereitet und von Ihnen auf GitHub gesendet.
 - **Außerdem:** Drucken, Text als Markdown, Wiederherstellung nach einem Absturz.
 - **Sprachen:** English, Deutsch, Français, Español, Italiano, Polski, Українська, Русский.
 

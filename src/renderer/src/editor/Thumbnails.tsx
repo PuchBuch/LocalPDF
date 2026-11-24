@@ -14,8 +14,8 @@ const THUMBNAIL_WIDTH = 132
 /** Holds the page number under each thumbnail. */
 const THUMBNAIL_GAP = 36
 const OVERSCAN = 600
-/** The four page buttons beside a thumbnail: a wide page must not be lower than them. */
-const ACTIONS_HEIGHT = 4 * 24 + 3 * 4
+/** The five page buttons beside a thumbnail: a wide page must not be lower than them. */
+const ACTIONS_HEIGHT = 5 * 24 + 4 * 4
 
 export function Thumbnails() {
   const pages = usePages()
@@ -147,6 +147,21 @@ const Thumbnail = memo(function Thumbnail({
           onClick={() => movePage(page.id, 1)}
         >
           ↓
+        </button>
+        <button
+          type="button"
+          data-testid="page-menu"
+          aria-label={t.thumbnailMenu.more}
+          aria-haspopup="menu"
+          title={t.thumbnailMenu.more}
+          onClick={(event) => {
+            // The menu closes on a click anywhere, and this one opens it.
+            event.stopPropagation()
+            const box = event.currentTarget.getBoundingClientRect()
+            onMenu({ pageId: page.id, x: box.right, y: box.top })
+          }}
+        >
+          ⋯
         </button>
       </div>
       <button

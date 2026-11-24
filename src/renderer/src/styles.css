@@ -1280,6 +1280,174 @@ button.primary {
   color: #9a3a1e;
 }
 
+/* Help */
+
+.left-column {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.left-column .thumbnails {
+  flex: 1;
+  min-height: 0;
+}
+
+.left-column .help-buttons {
+  padding: 8px;
+  border-top: 1px solid #cbd4dd;
+  border-right: 1px solid #cbd4dd;
+  background: #f5f7f9;
+}
+
+.help-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.help-buttons button {
+  padding: 6px 4px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  background: #fff;
+}
+
+.help-buttons button:hover {
+  background: #e6eefa;
+}
+
+.first-steps {
+  width: min(520px, 80vw);
+  margin: 0;
+  padding-left: 20px;
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #3d4c5a;
+}
+
+.start-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 16px;
+}
+
+.start-help .report-link {
+  margin-top: 0;
+}
+
+.help-link,
+.tools .help-link {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid #2460c8;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 1;
+  color: #2460c8;
+  background: #fff;
+}
+
+.help-dialog {
+  width: min(900px, 94vw);
+}
+
+.help-search {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.help-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #566573;
+}
+
+.help-body {
+  display: flex;
+  gap: 16px;
+  height: min(480px, 56vh);
+  margin-top: 12px;
+}
+
+.help-contents {
+  flex: 0 0 230px;
+  overflow-y: auto;
+}
+
+.help-contents button {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: left;
+  background: none;
+}
+
+.help-contents button.active,
+.help-contents button:hover {
+  color: #173f87;
+  background: #e6eefa;
+}
+
+.help-content {
+  flex: 1;
+  overflow-y: auto;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.help-content h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.help-content p {
+  margin: 0 0 8px;
+}
+
+.help-content ol,
+.help-content ul {
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+
+.help-content li {
+  margin-bottom: 4px;
+}
+
+.help-content details {
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e6ec;
+}
+
+.help-content summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.help-content details p {
+  margin: 6px 0;
+}
+
+.table-steps {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
 /* Notices */
 
 .notices {
