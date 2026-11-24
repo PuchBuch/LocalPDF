@@ -1341,8 +1341,7 @@ button.primary {
   margin-top: 0;
 }
 
-.help-link,
-.tools .help-link {
+.help-link {
   width: 18px;
   height: 18px;
   padding: 0;
@@ -1352,6 +1351,14 @@ button.primary {
   line-height: 1;
   color: #2460c8;
   background: #fff;
+}
+
+.tools .tool-buttons .help-link {
+  grid-column: 3;
+  width: auto;
+  border: 1px solid #2460c8;
+  border-radius: 6px;
+  font-size: 16px;
 }
 
 .help-dialog {

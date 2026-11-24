@@ -175,10 +175,12 @@ function ToolPicker() {
             {icon}
           </button>
         ))}
+        {/* In the last cell, which the tools leave free, so that the panel is no higher. */}
+        <HelpLink section={toolHelpSection(activeTool)} />
       </div>
       {activeTool === 'edit' && <EditScopePicker />}
       <p className="tool-hint" data-testid="tool-hint">
-        {t.tools[activeTool].hint} <HelpLink section={toolHelpSection(activeTool)} />
+        {t.tools[activeTool].hint}
       </p>
     </div>
   )
