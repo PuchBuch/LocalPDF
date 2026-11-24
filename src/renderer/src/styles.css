@@ -1242,6 +1242,44 @@ button.primary {
   gap: 6px;
 }
 
+/* Filling in a table */
+
+.table-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.table-choice .table-choice {
+  margin-top: 0;
+}
+
+.table-open {
+  padding: 6px 12px;
+  border: 1px solid #aab6c2;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.table-skip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.table-preview {
+  min-height: 20px;
+  margin: 10px 0 0;
+}
+
+.table-warnings {
+  margin: 4px 0 0;
+  padding-left: 20px;
+  color: #9a3a1e;
+}
+
 /* Notices */
 
 .notices {

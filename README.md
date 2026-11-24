@@ -14,6 +14,7 @@ A PDF editor for Windows that keeps your documents on your computer. Files are n
 - **Remove text for real:** replaced text is cut out of the saved file, not only covered, and the result is checked.
 - **Fill in forms:** a PDF's own form fields, or fields you place yourself, with text, ticks, crosses, dots, signatures and pictures.
 - **Find fields:** adds empty fields at blank lines and boxes.
+- **Fill a table on a scanned form:** finds the cells of a ruled table and writes rows into its empty ones, from an Excel (.xlsx) or CSV file or pasted from Excel or Google Sheets. One undo takes it all back.
 - **Fields by number:** every field gets a number in reading order, with a list to jump to any of them.
 - **Fill with any AI, offline:** copy the numbered fields as text for an AI chat, paste its answer back, and the fields are filled. Each field is checked, problems are reported, and one undo takes it all back. LocalPDF itself sends nothing anywhere.
 - **Recognize text in scans (OCR):** offline, in eight languages. Saved files can be searched.
@@ -50,6 +51,7 @@ It differs from the Windows app in a few ways:
 - **Forms:** XFA forms and JavaScript in forms are not supported.
 - **Text recognition** is less accurate on faint or skewed scans and does not read handwriting. Read through what it finds.
 - **Finding fields** does not detect single-letter cells and may miss or misplace fields on skewed scans.
+- **Filling a table** needs clear, complete table lines. Straighten a photo taken at an angle first, by opening it and dragging the corners. Rows on a dark background, and cells merged across rows, may be read wrongly, so look the result over before you use it. The older XLS format is not read. Rows and columns hidden in an Excel file are left out, and unusual number formats are shown plainly.
 - **Printing** sends pages as images, so very large documents can take a while.
 - **Crash recovery:** while a document has unsaved changes, a copy lies unencrypted in `%APPDATA%\LocalPDF\recovery`. It is removed when you save or close normally. Documents opened with a password are never stored there.
 

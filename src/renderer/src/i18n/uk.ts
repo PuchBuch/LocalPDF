@@ -1,3 +1,4 @@
+import { counted } from './plural'
 import type { Messages } from './ru'
 
 const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
@@ -59,6 +60,7 @@ export const uk: Messages = {
     copyContent: 'Скопіювати текст',
     recognize: 'Розпізнати текст',
     findFields: 'Знайти поля',
+    fillTable: 'Заповнити таблицю…',
     thisPage: 'Ця сторінка',
     allPages: 'Усі сторінки',
     clearFields: (count) => (count === 1 ? 'Очистити поле (1)' : `Очистити поля${countSuffix(count)}`),
@@ -129,6 +131,28 @@ export const uk: Messages = {
     found: (count) => `Знайдено полів: ${count}`,
     none: 'Полів для заповнення не знайдено',
     failed: 'Не вдалося знайти поля.'
+  },
+  table: {
+    title: 'Заповнити таблицю',
+    found: (columns, emptyRows) => `Знайдено таблицю: ${counted('uk', columns, 'стовпець', 'стовпці', 'стовпців')}, ${counted('uk', emptyRows, 'порожній рядок', 'порожні рядки', 'порожніх рядків')}`,
+    choose: 'Таблиця:',
+    option: (number, columns, emptyRows) => `${number}: ${counted('uk', columns, 'стовпець', 'стовпці', 'стовпців')}, ${counted('uk', emptyRows, 'порожній рядок', 'порожні рядки', 'порожніх рядків')}`,
+    hint: 'Відкрийте файл Excel (.xlsx) або CSV чи вставте рядки з Excel/Google Sheets або текст із Tab/; між стовпцями.',
+    openFile: 'Відкрити файл…',
+    sheet: 'Аркуш:',
+    fileFailed: 'Файл не вдалося прочитати. Підходять XLSX, CSV і TXT; старий XLS збережіть як XLSX.',
+    fileEmpty: 'У файлі немає рядків.',
+    skipHeading: 'Перший рядок — заголовки, пропустити',
+    preview: (rows, columns) => `Рядків: ${rows}, стовпців: ${columns}`,
+    leftOutRows: (count) => `Зайві рядки не ввійдуть: ${count}`,
+    leftOutColumns: (count) => `Зайві стовпці не ввійдуть: ${count}`,
+    tooLong: (count) => `Не вміщаються в клітинку навіть дрібним шрифтом: ${count}`,
+    noEmptyRows: 'У цій таблиці немає порожніх рядків.',
+    fill: 'Заповнити',
+    cancel: 'Скасувати',
+    filled: (count) => `Заповнено клітинок: ${count}`,
+    notFound: 'Таблицю на сторінці не знайдено',
+    failed: 'Не вдалося заповнити таблицю.'
   },
   formNotPrinted: 'Увага: форму цього файлу не вдалося вбудувати в сторінки, тому введені значення не збереглися. Спробуйте ввести їх як звичайний текст.',
   moveHint: 'Утримуйте Shift, щоб вимкнути вирівнювання',

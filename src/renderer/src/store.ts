@@ -53,6 +53,7 @@ import type {
 import { deletePage, movePage, replacePage, rotatePageClockwise } from '../../core/pageOperations'
 import type { AppliedValue } from '../../core/aiBridge'
 import type { Quad } from '../../core/scan'
+import type { TableGrid } from '../../core/tableGrid'
 import type { ScanLook } from './render/scanImage'
 import { baselineOf, coversOf, fieldForLine, onBaseline, type LineAppearance, type PageTextRun, type TextLine, type TextWord } from '../../core/textLines'
 import { decreaseZoom, DEFAULT_ZOOM, increaseZoom } from '../../core/zoom'
@@ -124,6 +125,8 @@ interface EditorState {
   recoveryOffer: { savedAt: string; names: string[] } | null
   /** A photo or scan waiting for its sheet to be chosen, before it becomes a page. */
   scanRequest: ScanRequest | null
+  /** The tables found on a page, waiting for the rows to write into one of them. */
+  tableRequest: TableRequest | null
   /** Each field shows its number in reading order. */
   showFieldNumbers: boolean
   /** The text field waiting for a line of the page to take its look from. */
@@ -247,6 +250,31 @@ export function answerScan(answer: ScanAnswer | null): void {
   useEditor.setState({ scanRequest: null })
   scanAnswered?.(answer)
   scanAnswered = null
+}
+
+export interface TableRequest {
+  tables: TableGrid[]
+}
+
+export interface TableAnswer {
+  table: TableGrid
+  rows: string[][]
+  skipHeading: boolean
+}
+
+let tableAnswered: ((answer: TableAnswer | null) => void) | null = null
+
+export function askTable(request: TableRequest): Promise<TableAnswer | null> {
+  useEditor.setState({ tableRequest: request })
+  return new Promise((done) => {
+    tableAnswered = done
+  })
+}
+
+export function answerTable(answer: TableAnswer | null): void {
+  useEditor.setState({ tableRequest: null })
+  tableAnswered?.(answer)
+  tableAnswered = null
 }
 
 let passwordAnswered: ((answer: PasswordAnswer | null) => void) | null = null
@@ -465,6 +493,7 @@ export const useEditor = create<EditorState>((set) => ({
   recoveryOffer: null,
   passwordRequest: null,
   scanRequest: null,
+  tableRequest: null,
   showFieldNumbers: false,
   pendingFiles: 0,
   notices: [],

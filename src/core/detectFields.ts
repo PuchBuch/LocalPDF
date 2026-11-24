@@ -1,5 +1,6 @@
 import { CHECKBOX_SIZE, LINE_HEIGHT, newCheckboxField, newTextField, type MeasureText } from './fields'
 import type { Rect, Size } from './geometry'
+import { readMask } from './maskReader'
 import type { CheckboxField, Field, TextField } from './model'
 
 /** Sizes are in points, the picture is scanned in pixels. */
@@ -15,8 +16,6 @@ const MAX_CHECKBOX = 22
 const SQUARE_TOLERANCE = 1.35
 const MIN_TEXT_BOX_HEIGHT = 9
 const MAX_TEXT_BOX_HEIGHT = 120
-/** A wall of a box may be broken for this share of its length, as scans are. */
-const WALL_COVERAGE = 0.85
 /** The inside of an empty box or the space above a line may hold this share of specks. */
 const MAX_INK_INSIDE = 0.02
 const INSET = 2
@@ -41,33 +40,7 @@ interface Segment {
  * pixel, true where it is dark, and scale is its pixels per point.
  */
 export function detectSpots(mask: Uint8Array, width: number, height: number, scale: number): DetectedSpots {
-  const dark = (x: number, y: number) => x >= 0 && y >= 0 && x < width && y < height && mask[y * width + x] === 1
-
-  const inkShare = (left: number, top: number, right: number, bottom: number) => {
-    let ink = 0
-    let total = 0
-    for (let y = Math.max(0, top); y < Math.min(height, bottom); y++) {
-      for (let x = Math.max(0, left); x < Math.min(width, right); x++) {
-        total++
-        if (mask[y * width + x] === 1) ink++
-      }
-    }
-    return total === 0 ? 1 : ink / total
-  }
-
-  const verticalWall = (x: number, top: number, bottom: number) => {
-    const wiggle = Math.max(1, Math.round(scale))
-    let covered = 0
-    for (let y = top; y <= bottom; y++) {
-      for (let offset = -wiggle; offset <= wiggle; offset++) {
-        if (dark(x + offset, y)) {
-          covered++
-          break
-        }
-      }
-    }
-    return covered >= (bottom - top + 1) * WALL_COVERAGE
-  }
+  const { dark, inkShare, verticalWall } = readMask(mask, width, height, scale)
 
   // Dark runs along each row, joined with the same run in the rows below it.
   const minRun = Math.round(MIN_CHECKBOX * scale)

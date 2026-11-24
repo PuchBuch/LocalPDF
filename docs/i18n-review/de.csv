@@ -47,6 +47,7 @@ password.cancel;text;Cancel;Abbrechen;;machine
 thumbnailMenu.copyContent;text;Copy text;Text kopieren;;machine
 thumbnailMenu.recognize;text;Recognize text;Text erkennen;;machine
 thumbnailMenu.findFields;text;Find fields;Felder finden;;machine
+thumbnailMenu.fillTable;text;Fill a table…;Tabelle ausfüllen…;;machine
 thumbnailMenu.thisPage;text;This page;Diese Seite;;machine
 thumbnailMenu.allPages;text;All pages;Alle Seiten;;machine
 thumbnailMenu.clearFields;code;(count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`);(count) => (count === 1 ? 'Feld leeren (1)' : `Felder leeren${countSuffix(count)}`);;machine
@@ -113,6 +114,26 @@ ocr.failed;text;The text could not be recognized.;Der Text konnte nicht erkannt 
 detect.found;template;Fields found: {count};Gefundene Felder: {count};;machine
 detect.none;text;No fields to fill in were found;Keine auszufüllenden Felder gefunden;;machine
 detect.failed;text;Fields could not be searched for.;Die Felder konnten nicht gesucht werden.;;machine
+table.title;text;Fill a table;Tabelle ausfüllen;;machine
+table.found;code;(columns, emptyRows) => `Table found: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(columns, emptyRows) => `Tabelle gefunden: ${columns} ${columns === 1 ? 'Spalte' : 'Spalten'}, ${emptyRows} ${emptyRows === 1 ? 'leere Zeile' : 'leere Zeilen'}`;;machine
+table.choose;text;Table:;Tabelle:;;machine
+table.option;code;(number, columns, emptyRows) => `${number}: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(number, columns, emptyRows) => `${number}: ${columns} ${columns === 1 ? 'Spalte' : 'Spalten'}, ${emptyRows} ${emptyRows === 1 ? 'leere Zeile' : 'leere Zeilen'}`;;machine
+table.hint;text;"Open an Excel (.xlsx) or CSV file, or paste rows from Excel/Google Sheets or text with Tab or ; between the columns.";"Öffnen Sie eine Excel- (.xlsx) oder CSV-Datei oder fügen Sie Zeilen aus Excel/Google Sheets ein oder Text mit Tab oder ; zwischen den Spalten.";;machine
+table.openFile;text;Open a file…;Datei öffnen…;;machine
+table.sheet;text;Sheet:;Blatt:;;machine
+table.fileFailed;text;"The file could not be read. XLSX, CSV and TXT are supported; save an old XLS as XLSX.";"Die Datei konnte nicht gelesen werden. Möglich sind XLSX, CSV und TXT; speichern Sie eine alte XLS-Datei als XLSX.";;machine
+table.fileEmpty;text;The file has no rows.;Die Datei enthält keine Zeilen.;;machine
+table.skipHeading;text;The first row is headings, skip it;Die erste Zeile enthält Überschriften, überspringen;;machine
+table.preview;template;Rows: {rows}, columns: {columns};Zeilen: {rows}, Spalten: {columns};;machine
+table.leftOutRows;template;Extra rows that will be left out: {count};Überzählige Zeilen, die wegfallen: {count};;machine
+table.leftOutColumns;template;Extra columns that will be left out: {count};Überzählige Spalten, die wegfallen: {count};;machine
+table.tooLong;template;Too long for the cell even in the smallest font: {count};Selbst in der kleinsten Schrift zu lang für die Zelle: {count};;machine
+table.noEmptyRows;text;This table has no empty rows.;Diese Tabelle hat keine leeren Zeilen.;;machine
+table.fill;text;Fill in;Ausfüllen;;machine
+table.cancel;text;Cancel;Abbrechen;;machine
+table.filled;template;Cells filled: {count};Ausgefüllte Zellen: {count};;machine
+table.notFound;text;No table was found on the page;Auf der Seite wurde keine Tabelle gefunden;;machine
+table.failed;text;The table could not be filled.;Die Tabelle konnte nicht ausgefüllt werden.;;machine
 formNotPrinted;text;Warning: the form of this file could not be printed into its pages, so the values entered in its fields were not saved. Try entering them as ordinary text.;Achtung: Das Formular dieser Datei konnte nicht in die Seiten übernommen werden, daher wurden die eingetragenen Werte nicht gespeichert. Tragen Sie sie stattdessen als normalen Text ein.;;machine
 moveHint;text;Hold Shift to turn alignment off;Halten Sie die Umschalttaste gedrückt, um das Ausrichten abzuschalten;;machine
 editScope.line;text;Line;Zeile;;machine
