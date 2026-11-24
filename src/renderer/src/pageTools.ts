@@ -4,6 +4,8 @@ import { displayedSize, normalizeRotation, type Rect } from '../../core/geometry
 import { fileKind } from '../../core/loadError'
 import type { Field, OcrWord, PageRef } from '../../core/model'
 import { findPaperCorners, wholePicture } from '../../core/scan'
+import { fieldsForTable, withTakenRows } from '../../core/tableFill'
+import { findTables } from '../../core/tableGrid'
 import { pageHasText, type ContentPage } from '../../export/extractContent'
 import { t } from './i18n'
 import { whileBusy } from './output'
@@ -12,12 +14,14 @@ import { recognizePage, startOcr } from './render/recognize'
 import { preparedScan, readScanPicture, type ScanPicture } from './render/scanImage'
 import { measureText } from './render/textMetrics'
 import type { OpenedFile } from '../../preload'
-import { addNotice, askScan, replacePageWithFile, setPhotoPreparer, useEditor } from './store'
+import { addNotice, askScan, askTable, replacePageWithFile, setPhotoPreparer, useEditor } from './store'
 
 /** Pixels per point of the picture fields are looked for in. */
 const DETECT_SCALE = 2
 /** Pixels darker than this count as ink. */
 const DARK = 140
+/** The thin lines of a scanned table come out paler than writing. */
+const TABLE_DARK = 170
 
 function chosenPages(pageId?: string): PageRef[] {
   const pages = useEditor.getState().document?.pages ?? []
@@ -56,7 +60,7 @@ export function recognizeText(pageId?: string): Promise<void> {
   })
 }
 
-async function pageMask(page: PageRef): Promise<{ mask: Uint8Array; width: number; height: number }> {
+async function pageMask(page: PageRef, darkBelow = DARK): Promise<{ mask: Uint8Array; width: number; height: number }> {
   const pdfPage = await getPdfPage(page.sourceId, page.pageIndex)
   const viewport = pdfPage.getViewport({ scale: DETECT_SCALE, rotation: normalizeRotation(pdfPage.rotate + page.rotation) })
   const canvas = document.createElement('canvas')
@@ -71,7 +75,7 @@ async function pageMask(page: PageRef): Promise<{ mask: Uint8Array; width: numbe
   const mask = new Uint8Array(width * height)
   for (let index = 0; index < mask.length; index++) {
     const offset = index * 4
-    if ((data[offset]! + data[offset + 1]! + data[offset + 2]!) / 3 < DARK) mask[index] = 1
+    if ((data[offset]! + data[offset + 1]! + data[offset + 2]!) / 3 < darkBelow) mask[index] = 1
   }
   return { mask, width, height }
 }
@@ -125,6 +129,35 @@ export function replacePageWithChosenFile(pageId: string): Promise<void> {
     if (!prepared) return
     const replaced = await replacePageWithFile(pageId, prepared)
     if (replaced && prepared !== file) useEditor.setState({ statusNote: t.scan.done })
+  })
+}
+
+/** Writes rows pasted from a spreadsheet into a table on a page, as one step to undo. */
+export function fillTable(pageId: string): Promise<void> {
+  return whileBusy(t.table.failed, async () => {
+    const { pageSizes, formWidgets } = useEditor.getState()
+    const [page] = chosenPages(pageId)
+    const size = pageSizes[pageId]
+    if (!page || !size) return
+    const { mask, width, height } = await pageMask(page, TABLE_DARK)
+    const taken: Rect[] = [
+      // An empty field, as the search for fields leaves them, is nothing to write around.
+      ...page.fields.filter((field) => field.type !== 'TEXT' || field.value.trim() !== ''),
+      ...(formWidgets[pageId] ?? []).map((widget) => turnRect(widget.rect, size, page.rotation))
+    ]
+    const tables = findTables(mask, width, height, DETECT_SCALE).map((table) => withTakenRows(table, taken))
+    if (tables.length === 0) {
+      addNotice(t.table.notFound)
+      return
+    }
+    const answer = await askTable({ tables })
+    if (!answer) return
+    const { fields } = fieldsForTable(answer.table, answer.rows, measureText, () => crypto.randomUUID(), {
+      skipHeading: answer.skipHeading
+    })
+    if (fields.length === 0) return
+    useEditor.getState().addFoundFields({ [pageId]: fields })
+    useEditor.setState({ statusNote: t.table.filled(fields.length) })
   })
 }
 

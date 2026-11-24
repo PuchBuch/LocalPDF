@@ -1,3 +1,5 @@
+import { counted } from './plural'
+
 const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
 
 export const ru = {
@@ -57,6 +59,7 @@ export const ru = {
     copyContent: 'Скопировать текст',
     recognize: 'Распознать текст',
     findFields: 'Найти поля',
+    fillTable: 'Заполнить таблицу…',
     thisPage: 'Эта страница',
     allPages: 'Все страницы',
     clearFields: (count: number) => (count === 1 ? 'Очистить поле (1)' : `Очистить поля${countSuffix(count)}`),
@@ -127,6 +130,24 @@ export const ru = {
     found: (count: number) => `Найдено полей: ${count}`,
     none: 'Полей для заполнения не найдено',
     failed: 'Не удалось найти поля.'
+  },
+  table: {
+    title: 'Заполнить таблицу',
+    found: (columns: number, emptyRows: number) => `Найдена таблица: ${counted('ru', columns, 'колонка', 'колонки', 'колонок')}, ${counted('ru', emptyRows, 'пустая строка', 'пустые строки', 'пустых строк')}`,
+    choose: 'Таблица:',
+    option: (number: number, columns: number, emptyRows: number) => `${number}: ${counted('ru', columns, 'колонка', 'колонки', 'колонок')}, ${counted('ru', emptyRows, 'пустая строка', 'пустые строки', 'пустых строк')}`,
+    hint: 'Вставьте строки из Excel/Google Sheets или текст с Tab/; между колонками.',
+    skipHeading: 'Первая строка — заголовки, пропустить',
+    preview: (rows: number, columns: number) => `Строк: ${rows}, колонок: ${columns}`,
+    leftOutRows: (count: number) => `Лишние строки не войдут: ${count}`,
+    leftOutColumns: (count: number) => `Лишние колонки не войдут: ${count}`,
+    tooLong: (count: number) => `Не помещаются в клетку даже мелким шрифтом: ${count}`,
+    noEmptyRows: 'В этой таблице нет пустых строк.',
+    fill: 'Заполнить',
+    cancel: 'Отмена',
+    filled: (count: number) => `Заполнено клеток: ${count}`,
+    notFound: 'Таблица на странице не найдена',
+    failed: 'Не удалось заполнить таблицу.'
   },
   formNotPrinted: 'Внимание: форму этого файла не удалось впечатать в страницы, поэтому значения, вписанные в её поля, не сохранились. Попробуйте вписать их как обычный текст.',
   moveHint: 'Удерживайте Shift, чтобы отключить выравнивание',

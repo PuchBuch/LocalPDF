@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { t } from '../i18n'
 import { copyMarkdown, printDocument } from '../output'
-import { findFields, recognizeText, replacePageWithChosenFile } from '../pageTools'
+import { fillTable, findFields, recognizeText, replacePageWithChosenFile } from '../pageTools'
 import { useEditor } from '../store'
 
 export interface ThumbnailMenuPlace {
@@ -106,6 +106,9 @@ export function ThumbnailMenu({ pageId, x, y, onClose }: ThumbnailMenuProps) {
       />
       <PagesChoice label={t.thumbnailMenu.recognize} testId="recognize" pageId={pageId} run={(page) => void recognizeText(page)} />
       <PagesChoice label={t.thumbnailMenu.findFields} testId="find-fields" pageId={pageId} run={(page) => void findFields(page)} />
+      <button type="button" role="menuitem" data-testid="fill-table" onClick={() => void fillTable(pageId)}>
+        {t.thumbnailMenu.fillTable}
+      </button>
       <button type="button" role="menuitem" data-testid="print-page" onClick={() => void printDocument(pageId)}>
         {t.thumbnailMenu.printPage}
       </button>

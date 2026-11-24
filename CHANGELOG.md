@@ -4,6 +4,8 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 
 ## Unreleased
 
+- "Fill a table…" in the menu of a page finds a ruled table on a scan and writes rows pasted from Excel, Google Sheets or CSV text into its empty rows, as one step to undo.
+
 ## 0.9.0-beta.12 (2026-11-17)
 
 - The README describes the document's own font and the style picker, and their limits.

@@ -1,3 +1,4 @@
+import { counted } from './plural'
 import type { Messages } from './ru'
 
 const countSuffix = (count: number) => (count > 0 ? ` (${count})` : '')
@@ -59,6 +60,7 @@ export const pl: Messages = {
     copyContent: 'Kopiuj tekst',
     recognize: 'Rozpoznaj tekst',
     findFields: 'Znajdź pola',
+    fillTable: 'Wypełnij tabelę…',
     thisPage: 'Ta strona',
     allPages: 'Wszystkie strony',
     clearFields: (count) => (count === 1 ? 'Wyczyść pole (1)' : `Wyczyść pola${countSuffix(count)}`),
@@ -129,6 +131,24 @@ export const pl: Messages = {
     found: (count) => `Znalezione pola: ${count}`,
     none: 'Nie znaleziono pól do wypełnienia',
     failed: 'Nie udało się wyszukać pól.'
+  },
+  table: {
+    title: 'Wypełnij tabelę',
+    found: (columns, emptyRows) => `Znaleziono tabelę: ${counted('pl', columns, 'kolumna', 'kolumny', 'kolumn')}, ${counted('pl', emptyRows, 'pusty wiersz', 'puste wiersze', 'pustych wierszy')}`,
+    choose: 'Tabela:',
+    option: (number, columns, emptyRows) => `${number}: ${counted('pl', columns, 'kolumna', 'kolumny', 'kolumn')}, ${counted('pl', emptyRows, 'pusty wiersz', 'puste wiersze', 'pustych wierszy')}`,
+    hint: 'Wklej wiersze z Excela/Google Sheets albo tekst z tabulatorem lub ; między kolumnami.',
+    skipHeading: 'Pierwszy wiersz to nagłówki, pomiń go',
+    preview: (rows, columns) => `Wiersze: ${rows}, kolumny: ${columns}`,
+    leftOutRows: (count) => `Nadmiarowe wiersze, które się nie zmieszczą: ${count}`,
+    leftOutColumns: (count) => `Nadmiarowe kolumny, które się nie zmieszczą: ${count}`,
+    tooLong: (count) => `Nie mieszczą się w komórce nawet najmniejszą czcionką: ${count}`,
+    noEmptyRows: 'W tej tabeli nie ma pustych wierszy.',
+    fill: 'Wypełnij',
+    cancel: 'Anuluj',
+    filled: (count) => `Wypełnione komórki: ${count}`,
+    notFound: 'Na stronie nie znaleziono tabeli',
+    failed: 'Nie udało się wypełnić tabeli.'
   },
   formNotPrinted: 'Uwaga: formularza z tego pliku nie udało się wtopić w strony, więc wpisane wartości nie zostały zapisane. Spróbuj wpisać je jako zwykły tekst.',
   moveHint: 'Przytrzymaj Shift, aby wyłączyć wyrównywanie',

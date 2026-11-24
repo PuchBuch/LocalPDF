@@ -7,6 +7,7 @@ import { RecoveryDialog } from './editor/RecoveryDialog'
 import { openReportDialog, ReportDialog, useReportDialog } from './editor/ReportDialog'
 import { ScanDialog } from './editor/ScanDialog'
 import { SignatureDialog } from './editor/SignatureDialog'
+import { TableFillDialog } from './editor/TableFillDialog'
 import { DocumentView } from './editor/DocumentView'
 import { usePages } from './editor/displayedPages'
 import { Thumbnails } from './editor/Thumbnails'
@@ -56,10 +57,11 @@ function useHistoryShortcuts(): void {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code !== 'KeyZ' || !(event.ctrlKey || event.metaKey) || event.altKey) return
-      const { undo, redo, signingFieldId, scanRequest } = useEditor.getState()
+      const { undo, redo, signingFieldId, scanRequest, tableRequest } = useEditor.getState()
       // The signature dialog has its own undo, and its name input the browser's.
       // Under the scan dialog, the page about to be replaced must stay where it is.
-      if (signingFieldId || scanRequest) return
+      // The table dialog has text to undo, and the table must stay as it was found.
+      if (signingFieldId || scanRequest || tableRequest) return
       event.preventDefault()
       if (event.shiftKey) redo()
       else undo()
@@ -452,6 +454,7 @@ export function App() {
   const recoveryOffer = useEditor((state) => state.recoveryOffer)
   const passwordRequest = useEditor((state) => state.passwordRequest)
   const scanRequest = useEditor((state) => state.scanRequest)
+  const tableRequest = useEditor((state) => state.tableRequest)
   const reporting = useReportDialog((state) => state.open)
   useHistoryShortcuts()
   useOutputShortcuts()
@@ -465,6 +468,7 @@ export function App() {
       {recoveryOffer && <RecoveryDialog savedAt={recoveryOffer.savedAt} names={recoveryOffer.names} />}
       {passwordRequest && <PasswordDialog name={passwordRequest.name} wrong={passwordRequest.wrong} />}
       {scanRequest && <ScanDialog request={scanRequest} />}
+      {tableRequest && <TableFillDialog request={tableRequest} />}
       {reporting && <ReportDialog />}
       <ContextBanners />
       <Notices />

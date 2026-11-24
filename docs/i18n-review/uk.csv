@@ -47,6 +47,7 @@ password.cancel;text;Cancel;Скасувати;;machine
 thumbnailMenu.copyContent;text;Copy text;Скопіювати текст;;machine
 thumbnailMenu.recognize;text;Recognize text;Розпізнати текст;;machine
 thumbnailMenu.findFields;text;Find fields;Знайти поля;;machine
+thumbnailMenu.fillTable;text;Fill a table…;Заповнити таблицю…;;machine
 thumbnailMenu.thisPage;text;This page;Ця сторінка;;machine
 thumbnailMenu.allPages;text;All pages;Усі сторінки;;machine
 thumbnailMenu.clearFields;code;(count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`);(count) => (count === 1 ? 'Очистити поле (1)' : `Очистити поля${countSuffix(count)}`);;machine
@@ -113,6 +114,22 @@ ocr.failed;text;The text could not be recognized.;Не вдалося розпі
 detect.found;template;Fields found: {count};Знайдено полів: {count};;machine
 detect.none;text;No fields to fill in were found;Полів для заповнення не знайдено;;machine
 detect.failed;text;Fields could not be searched for.;Не вдалося знайти поля.;;machine
+table.title;text;Fill a table;Заповнити таблицю;;machine
+table.found;code;(columns, emptyRows) => `Table found: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(columns, emptyRows) => `Знайдено таблицю: ${counted('uk', columns, 'стовпець', 'стовпці', 'стовпців')}, ${counted('uk', emptyRows, 'порожній рядок', 'порожні рядки', 'порожніх рядків')}`;;machine
+table.choose;text;Table:;Таблиця:;;machine
+table.option;code;(number, columns, emptyRows) => `${number}: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(number, columns, emptyRows) => `${number}: ${counted('uk', columns, 'стовпець', 'стовпці', 'стовпців')}, ${counted('uk', emptyRows, 'порожній рядок', 'порожні рядки', 'порожніх рядків')}`;;machine
+table.hint;text;"Paste rows from Excel/Google Sheets, or text with Tab or ; between the columns.";"Вставте рядки з Excel/Google Sheets або текст із Tab/; між стовпцями.";;machine
+table.skipHeading;text;The first row is headings, skip it;Перший рядок — заголовки, пропустити;;machine
+table.preview;template;Rows: {rows}, columns: {columns};Рядків: {rows}, стовпців: {columns};;machine
+table.leftOutRows;template;Extra rows that will be left out: {count};Зайві рядки не ввійдуть: {count};;machine
+table.leftOutColumns;template;Extra columns that will be left out: {count};Зайві стовпці не ввійдуть: {count};;machine
+table.tooLong;template;Too long for the cell even in the smallest font: {count};Не вміщаються в клітинку навіть дрібним шрифтом: {count};;machine
+table.noEmptyRows;text;This table has no empty rows.;У цій таблиці немає порожніх рядків.;;machine
+table.fill;text;Fill in;Заповнити;;machine
+table.cancel;text;Cancel;Скасувати;;machine
+table.filled;template;Cells filled: {count};Заповнено клітинок: {count};;machine
+table.notFound;text;No table was found on the page;Таблицю на сторінці не знайдено;;machine
+table.failed;text;The table could not be filled.;Не вдалося заповнити таблицю.;;machine
 formNotPrinted;text;Warning: the form of this file could not be printed into its pages, so the values entered in its fields were not saved. Try entering them as ordinary text.;Увага: форму цього файлу не вдалося вбудувати в сторінки, тому введені значення не збереглися. Спробуйте ввести їх як звичайний текст.;;machine
 moveHint;text;Hold Shift to turn alignment off;Утримуйте Shift, щоб вимкнути вирівнювання;;machine
 editScope.line;text;Line;Рядок;;machine
