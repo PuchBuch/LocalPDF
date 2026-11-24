@@ -165,8 +165,8 @@ export function fieldsForTable(
     lines.length * fontSize * LINE_HEIGHT <= cell.height - INSET_Y * 2
 
   for (const [index, row] of places.slice(0, data.length).entries()) {
-    for (const [column, cell] of data[index]!.slice(0, columnCount).entries()) {
-      const value = cell.trim()
+    for (const [column, entry] of data[index]!.slice(0, columnCount).entries()) {
+      const value = entry.trim()
       if (value === '') continue
       const cell = cellAt(table, row, column)
       let fontSize = MAX_CELL_FONT_SIZE
