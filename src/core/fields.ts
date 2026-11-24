@@ -302,6 +302,9 @@ function inReadingOrder<T extends { box: Rect; key: string }>(items: T[]): T[] {
   return ordered
 }
 
+/** A form field of one source: another source can have a field of the same name. */
+const formFieldKey = (sourceId: string, fieldName: string) => `${sourceId}\u0000${fieldName}`
+
 /**
  * Numbers every field of the document 1…N in reading order: page by page, then from the
  * top down and from left to right, on the page as it is shown. The same fields in the same
@@ -320,9 +323,10 @@ export function numberFields(
   for (const page of document.pages) {
     for (const widget of formWidgets[page.id] ?? []) {
       if (widget.kind !== 'radio') continue
-      const options = radioOptions.get(`\u0000`) ?? []
+      const formField = formFieldKey(page.sourceId, widget.fieldName)
+      const options = radioOptions.get(formField) ?? []
       if (!options.includes(widget.buttonValue)) options.push(widget.buttonValue)
-      radioOptions.set(`\u0000`, options)
+      radioOptions.set(formField, options)
     }
   }
   for (const page of document.pages) {
@@ -346,11 +350,14 @@ export function numberFields(
     }
     for (const { key, ...item } of inReadingOrder(items)) {
       if (item.target.kind === 'form') {
-        const formField = `${item.target.sourceId}\u0000${item.target.fieldName}`
+        const formField = formFieldKey(item.target.sourceId, item.target.fieldName)
         if (formFieldsSeen.has(formField)) continue
         formFieldsSeen.add(formField)
       }
-      const options = item.target.kind === 'form' && item.type === 'radio' ? radioOptions.get(`\u0000`) : undefined
+      const options =
+        item.target.kind === 'form' && item.type === 'radio'
+          ? radioOptions.get(formFieldKey(item.target.sourceId, item.target.fieldName))
+          : undefined
       numbered.push({ ...item, ...(options ? { options } : {}), number: numbered.length + 1 })
     }
   }

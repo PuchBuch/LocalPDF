@@ -264,9 +264,9 @@ describe('numbering the fields', () => {
     fontSize: 0,
     align: 'left'
   })
-  const radio = (id: string, x: number, y: number, buttonValue: string): FormWidget => ({
+  const radio = (id: string, x: number, y: number, buttonValue: string, fieldName = 'choice'): FormWidget => ({
     id,
-    fieldName: 'choice',
+    fieldName,
     rect: { x, y, width: 12, height: 12 },
     kind: 'radio',
     initial: 'Off',
@@ -325,6 +325,29 @@ describe('numbering the fields', () => {
     expect(entries).toHaveLength(2)
     expect(entries[0]).toMatchObject({ number: 1, type: 'radio', name: 'choice', value: '' })
     expect(entries[0]!.target).toMatchObject({ widgetId: 'r1' })
+  })
+
+  it('gives each radio group the options of its own buttons, wherever they are', () => {
+    const document = twoPages([])
+    const entries = numberFields(
+      document,
+      {
+        p1: [radio('a1', 50, 100, 'Yes', 'agree'), radio('a2', 90, 100, 'No', 'agree'), radio('c1', 50, 200, 'Red', 'color')],
+        p2: [radio('c2', 50, 100, 'Blue', 'color')]
+      },
+      sizes
+    )
+    expect(entries.map(({ name, options }) => [name, options])).toEqual([
+      ['agree', ['Yes', 'No']],
+      ['color', ['Red', 'Blue']]
+    ])
+  })
+
+  it('keeps radio groups of the same name in two files apart', () => {
+    const document = twoPages([])
+    document.pages[1]!.sourceId = 'other'
+    const entries = numberFields(document, { p1: [radio('a', 50, 100, 'Yes')], p2: [radio('b', 50, 100, 'Ja')] }, sizes)
+    expect(entries.map(({ options }) => options)).toEqual([['Yes'], ['Ja']])
   })
 
   it('reads a turned page as it is shown', () => {
