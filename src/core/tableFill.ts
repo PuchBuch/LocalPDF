@@ -6,8 +6,10 @@ import type { TableGrid } from './tableGrid'
 const MAX_CELL_FONT_SIZE = 10
 const MIN_CELL_FONT_SIZE = 5
 const FONT_STEP = 0.5
+/** A column is set in one size, but a value that needs a smaller one than this makes only itself smaller. */
+const MIN_COLUMN_FONT_SIZE = 7
 /** Space between the walls of a cell and its text, in points. */
-const INSET_X = 3
+const INSET_X = 4
 const INSET_Y = 2
 /** A value this short, such as a number, is centred in its cell. */
 const SHORT_VALUE = 3
@@ -118,6 +120,13 @@ function wrapText(text: string, fits: (line: string) => boolean): string[] {
   return lines
 }
 
+/** A cell where it really is, or else where its row and column cross. */
+function cellAt(table: TableGrid, row: number, column: number): Rect {
+  const x = table.columns[column]!
+  const y = table.rows[row]!
+  return table.cells?.[row]?.[column] ?? { x, y, width: table.columns[column + 1]! - x, height: table.rows[row + 1]! - y }
+}
+
 export interface TableFillOptions {
   /** The first row of the table to write in, or else its first empty one. */
   firstRow?: number
@@ -149,47 +158,47 @@ export function fieldsForTable(
     (most, cells) => cells.reduce((used, cell, column) => (cell.trim() === '' ? used : Math.max(used, column + 1)), most),
     0
   )
-  const fields: TextField[] = []
-  let tooLong = 0
+  const values: { value: string; column: number; cell: Rect; fontSize: number; fits: boolean }[] = []
+  const wrapped = (value: string, cell: Rect, fontSize: number) =>
+    wrapText(value, (line) => measure(line, fontSize) <= cell.width - INSET_X * 2)
+  const fitsHeight = (lines: string[], cell: Rect, fontSize: number) =>
+    lines.length * fontSize * LINE_HEIGHT <= cell.height - INSET_Y * 2
 
   for (const [index, row] of places.slice(0, data.length).entries()) {
-    const top = table.rows[row]!
-    const height = table.rows[row + 1]! - top
-    for (const [column, cell] of data[index]!.slice(0, columnCount).entries()) {
-      const value = cell.trim()
+    for (const [column, entry] of data[index]!.slice(0, columnCount).entries()) {
+      const value = entry.trim()
       if (value === '') continue
-      const left = table.columns[column]!
-      const width = table.columns[column + 1]! - left
-      const wrapped = (fontSize: number) => wrapText(value, (line) => measure(line, fontSize) <= width - INSET_X * 2)
-      const fitsHeight = (lines: string[], fontSize: number) => lines.length * fontSize * LINE_HEIGHT <= height - INSET_Y * 2
-
+      const cell = cellAt(table, row, column)
       let fontSize = MAX_CELL_FONT_SIZE
-      let lines = wrapped(fontSize)
-      while (!fitsHeight(lines, fontSize) && fontSize > MIN_CELL_FONT_SIZE) {
-        fontSize -= FONT_STEP
-        lines = wrapped(fontSize)
-      }
-      const fits = fitsHeight(lines, fontSize)
-      if (!fits) tooLong++
-
-      const text = lines.join('\n')
-      const textHeight = lines.length * fontSize * LINE_HEIGHT
-      const centred = lines.length === 1 && Array.from(value).length <= SHORT_VALUE
-      const field = {
-        ...newTextField(newId()),
-        value: text,
-        fontSize,
-        x: centred ? left + (width - measure(text, fontSize)) / 2 : left + INSET_X,
-        // Text too long for its cell runs out of it at the bottom only.
-        y: fits ? top + (height - textHeight) / 2 : top + INSET_Y
-      }
-      fields.push(fitTextField(field, measure, { width: Infinity, height: Infinity }))
+      while (!fitsHeight(wrapped(value, cell, fontSize), cell, fontSize) && fontSize > MIN_CELL_FONT_SIZE) fontSize -= FONT_STEP
+      values.push({ value, column, cell, fontSize, fits: fitsHeight(wrapped(value, cell, fontSize), cell, fontSize) })
     }
   }
+
+  const columnSizes = new Map<number, number>()
+  for (const { column, fontSize } of values) {
+    columnSizes.set(column, Math.min(columnSizes.get(column) ?? MAX_CELL_FONT_SIZE, Math.max(fontSize, MIN_COLUMN_FONT_SIZE)))
+  }
+  const fields = values.map(({ value, column, cell, fits, fontSize: largest }) => {
+    // What fits in a size fits in a smaller one too.
+    const fontSize = Math.min(largest, columnSizes.get(column)!)
+    const lines = wrapped(value, cell, fontSize)
+    const text = lines.join('\n')
+    const centred = lines.length === 1 && Array.from(value).length <= SHORT_VALUE
+    const field = {
+      ...newTextField(newId()),
+      value: text,
+      fontSize,
+      x: centred ? cell.x + (cell.width - measure(text, fontSize)) / 2 : cell.x + INSET_X,
+      // Text too long for its cell runs out of it at the bottom only.
+      y: fits ? cell.y + (cell.height - lines.length * fontSize * LINE_HEIGHT) / 2 : cell.y + INSET_Y
+    }
+    return fitTextField(field, measure, { width: Infinity, height: Infinity })
+  })
   return {
     fields,
     leftOutRows: Math.max(0, data.length - places.length),
     leftOutColumns: Math.max(0, usedColumns - columnCount),
-    tooLong
+    tooLong: values.filter(({ fits }) => !fits).length
   }
 }
