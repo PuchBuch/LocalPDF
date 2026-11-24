@@ -118,7 +118,11 @@ table.title;text;Fill a table;Tabelle ausfüllen;;machine
 table.found;code;(columns, emptyRows) => `Table found: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(columns, emptyRows) => `Tabelle gefunden: ${columns} ${columns === 1 ? 'Spalte' : 'Spalten'}, ${emptyRows} ${emptyRows === 1 ? 'leere Zeile' : 'leere Zeilen'}`;;machine
 table.choose;text;Table:;Tabelle:;;machine
 table.option;code;(number, columns, emptyRows) => `${number}: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(number, columns, emptyRows) => `${number}: ${columns} ${columns === 1 ? 'Spalte' : 'Spalten'}, ${emptyRows} ${emptyRows === 1 ? 'leere Zeile' : 'leere Zeilen'}`;;machine
-table.hint;text;"Paste rows from Excel/Google Sheets, or text with Tab or ; between the columns.";"Fügen Sie Zeilen aus Excel/Google Sheets ein oder Text mit Tab oder ; zwischen den Spalten.";;machine
+table.hint;text;"Open an Excel (.xlsx) or CSV file, or paste rows from Excel/Google Sheets or text with Tab or ; between the columns.";"Öffnen Sie eine Excel- (.xlsx) oder CSV-Datei oder fügen Sie Zeilen aus Excel/Google Sheets ein oder Text mit Tab oder ; zwischen den Spalten.";;machine
+table.openFile;text;Open a file…;Datei öffnen…;;machine
+table.sheet;text;Sheet:;Blatt:;;machine
+table.fileFailed;text;"The file could not be read. XLSX, CSV and TXT are supported; save an old XLS as XLSX.";"Die Datei konnte nicht gelesen werden. Möglich sind XLSX, CSV und TXT; speichern Sie eine alte XLS-Datei als XLSX.";;machine
+table.fileEmpty;text;The file has no rows.;Die Datei enthält keine Zeilen.;;machine
 table.skipHeading;text;The first row is headings, skip it;Die erste Zeile enthält Überschriften, überspringen;;machine
 table.preview;template;Rows: {rows}, columns: {columns};Zeilen: {rows}, Spalten: {columns};;machine
 table.leftOutRows;template;Extra rows that will be left out: {count};Überzählige Zeilen, die wegfallen: {count};;machine

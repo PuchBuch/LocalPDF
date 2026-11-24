@@ -4,7 +4,7 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 
 ## Unreleased
 
-- "Fill a table…" in the menu of a page finds a ruled table on a scan and writes rows pasted from Excel, Google Sheets or CSV text into its empty rows, as one step to undo.
+- "Fill a table…" in the menu of a page finds a ruled table on a scan and writes rows from an Excel (.xlsx) or CSV file, or pasted from Excel or Google Sheets, into its empty rows, as one step to undo.
 
 ## 0.9.0-beta.12 (2026-11-17)
 

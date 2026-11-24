@@ -69,6 +69,15 @@ export function parseTableText(text: string): string[][] {
   return rows.filter((cells) => cells.some((cell) => cell !== ''))
 }
 
+/** Rows as text that parseTableText reads the same rows from. */
+export function toTableText(rows: string[][]): string {
+  const columns = rows.reduce((most, cells) => Math.max(most, cells.length), 0)
+  // With no tabs between columns, other separators in the values would be taken for some.
+  const special = columns > 1 ? /["\t\n]/ : /["\t\n;,]/
+  const written = (value: string) => (special.test(value) ? `"${value.replace(/"/g, '""')}"` : value)
+  return rows.map((cells) => Array.from({ length: columns }, (_, column) => written(cells[column] ?? '')).join('\t')).join('\n')
+}
+
 /** The table with the rows that have one of these boxes in them no longer empty. */
 export function withTakenRows(table: TableGrid, taken: Rect[]): TableGrid {
   const left = table.columns[0]!

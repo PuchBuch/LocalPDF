@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { readTableFile, type TableSheet } from '../../../core/tableFile'
 import { fieldsForTable, parseTableText } from '../../../core/tableFill'
 import type { TableGrid } from '../../../core/tableGrid'
-import { t } from '../i18n'
+import { currentLocale, t } from '../i18n'
 import { measureText } from '../render/textMetrics'
 import { answerTable, type TableRequest } from '../store'
+
+const FILE_ACCEPT = '.xlsx,.xlsm,.csv,.tsv,.txt'
 
 const columnsOf = (table: TableGrid) => table.columns.length - 1
 const emptyRowsOf = (table: TableGrid) => table.emptyRows.filter(Boolean).length
 
-/** Takes rows copied from a spreadsheet and shows how they fit into a table of the page. */
+/** Takes rows copied from a spreadsheet or read from a file, and shows how they fit into a table of the page. */
 export function TableFillDialog({ request }: { request: TableRequest }) {
   const { tables } = request
   const [index, setIndex] = useState(() => {
@@ -17,17 +20,40 @@ export function TableFillDialog({ request }: { request: TableRequest }) {
   })
   const [text, setText] = useState('')
   const [skipHeading, setSkipHeading] = useState(false)
+  const [sheets, setSheets] = useState<TableSheet[]>([])
+  const [sheetIndex, setSheetIndex] = useState(0)
+  const [fileProblem, setFileProblem] = useState<string | null>(null)
   const input = useRef<HTMLTextAreaElement>(null)
+  const fileInput = useRef<HTMLInputElement>(null)
   const table = tables[index]!
 
   useEffect(() => input.current?.focus(), [])
 
+  const openFile = async (file: File) => {
+    // Without the error itself, which could quote the file.
+    const found = await file
+      .arrayBuffer()
+      .then((buffer) => readTableFile(new Uint8Array(buffer), currentLocale()))
+      .catch(() => null)
+    setFileProblem(found === null ? t.table.fileFailed : found.length === 0 ? t.table.fileEmpty : null)
+    if (!found?.[0]) return
+    setSheets(found)
+    setSheetIndex(0)
+    setText(found[0].text)
+  }
+
+  const chooseSheet = (position: number) => {
+    setSheetIndex(position)
+    setText(sheets[position]!.text)
+  }
+
   const rows = useMemo(() => parseTableText(text), [text])
   const fill = useMemo(() => fieldsForTable(table, rows, measureText, () => '', { skipHeading }), [table, rows, skipHeading])
   const rowCount = Math.max(0, rows.length - (skipHeading ? 1 : 0))
-  const columnCount = Math.max(0, ...rows.map((cells) => cells.length))
+  const columnCount = rows.reduce((most, cells) => Math.max(most, cells.length), 0)
 
   const warnings = [
+    ...(fileProblem ? [fileProblem] : []),
     ...(emptyRowsOf(table) === 0 ? [t.table.noEmptyRows] : []),
     ...(fill.leftOutRows > 0 ? [t.table.leftOutRows(fill.leftOutRows)] : []),
     ...(fill.leftOutColumns > 0 ? [t.table.leftOutColumns(fill.leftOutColumns)] : []),
@@ -62,6 +88,36 @@ export function TableFillDialog({ request }: { request: TableRequest }) {
           </label>
         )}
         <p className="dialog-text">{t.table.hint}</p>
+        <div className="table-choice">
+          <button type="button" className="table-open" data-testid="table-open-file" onClick={() => fileInput.current?.click()}>
+            {t.table.openFile}
+          </button>
+          <input
+            ref={fileInput}
+            type="file"
+            hidden
+            data-testid="table-file"
+            accept={FILE_ACCEPT}
+            onChange={(event) => {
+              const file = event.target.files?.[0]
+              // So that choosing the same file again, once it has changed, reads it again.
+              event.target.value = ''
+              if (file) void openFile(file)
+            }}
+          />
+          {sheets.length > 1 && (
+            <label className="table-choice">
+              {t.table.sheet}
+              <select data-testid="table-sheet" value={sheetIndex} onChange={(event) => chooseSheet(Number(event.target.value))}>
+                {sheets.map(({ name }, position) => (
+                  <option key={position} value={position}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
         <textarea
           ref={input}
           className="ai-answer"

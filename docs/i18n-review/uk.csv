@@ -118,7 +118,11 @@ table.title;text;Fill a table;Заповнити таблицю;;machine
 table.found;code;(columns, emptyRows) => `Table found: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(columns, emptyRows) => `Знайдено таблицю: ${counted('uk', columns, 'стовпець', 'стовпці', 'стовпців')}, ${counted('uk', emptyRows, 'порожній рядок', 'порожні рядки', 'порожніх рядків')}`;;machine
 table.choose;text;Table:;Таблиця:;;machine
 table.option;code;(number, columns, emptyRows) => `${number}: ${columns} ${columns === 1 ? 'column' : 'columns'}, ${emptyRows} ${emptyRows === 1 ? 'empty row' : 'empty rows'}`;(number, columns, emptyRows) => `${number}: ${counted('uk', columns, 'стовпець', 'стовпці', 'стовпців')}, ${counted('uk', emptyRows, 'порожній рядок', 'порожні рядки', 'порожніх рядків')}`;;machine
-table.hint;text;"Paste rows from Excel/Google Sheets, or text with Tab or ; between the columns.";"Вставте рядки з Excel/Google Sheets або текст із Tab/; між стовпцями.";;machine
+table.hint;text;"Open an Excel (.xlsx) or CSV file, or paste rows from Excel/Google Sheets or text with Tab or ; between the columns.";"Відкрийте файл Excel (.xlsx) або CSV чи вставте рядки з Excel/Google Sheets або текст із Tab/; між стовпцями.";;machine
+table.openFile;text;Open a file…;Відкрити файл…;;machine
+table.sheet;text;Sheet:;Аркуш:;;machine
+table.fileFailed;text;"The file could not be read. XLSX, CSV and TXT are supported; save an old XLS as XLSX.";"Файл не вдалося прочитати. Підходять XLSX, CSV і TXT; старий XLS збережіть як XLSX.";;machine
+table.fileEmpty;text;The file has no rows.;У файлі немає рядків.;;machine
 table.skipHeading;text;The first row is headings, skip it;Перший рядок — заголовки, пропустити;;machine
 table.preview;template;Rows: {rows}, columns: {columns};Рядків: {rows}, стовпців: {columns};;machine
 table.leftOutRows;template;Extra rows that will be left out: {count};Зайві рядки не ввійдуть: {count};;machine

@@ -5,6 +5,7 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas'
 import { expect, test, type ElectronApplication, type Page } from '@playwright/test'
 import { PDFDocument } from 'pdf-lib'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { makeXlsx } from '../tests/xlsxFixture'
 import { answerFileDialog, answerSaveDialog, launchApp, ROOT } from './harness'
 
 const PAGE = { width: 1000, height: 700 }
@@ -210,6 +211,60 @@ test('cancelling adds nothing, and Ctrl+Z in the dialog leaves the document alon
   await page.getByTestId('table-text').fill(asTabs(DATA))
   await page.getByTestId('table-cancel').click()
   await expect(fields()).toHaveCount(1)
+})
+
+test('reads rows from an Excel file, sheet by sheet, and from a CSV file', async () => {
+  const text = (reference: string, value: string) => `<c r="${reference}" t="str"><v>${value}</v></c>`
+  // 1 November 2026 as Excel keeps it.
+  const date = '<c r="A2" s="1"><v>46327</v></c>'
+  const buffer = Buffer.from(
+    makeXlsx({
+      formats: [0, 'dd.mm.yyyy'],
+      sheets: [
+        { name: 'Notizen', data: `<row r="1">${text('A1', 'nur Text')}</row>` },
+        {
+          name: 'Liste',
+          data: `<row r="1">${text('A1', 'Datum')}${text('B1', 'Firma')}</row><row r="2">${date}${text('B2', 'Beispiel GmbH, Musterstadt')}<c r="E2"><v>5</v></c></row>`
+        }
+      ]
+    })
+  )
+  await open(await writeScan('excel.pdf'))
+  await chooseFillTable()
+  const file = page.getByTestId('table-file')
+  await file.setInputFiles({ name: 'liste.xlsx', mimeType: 'application/octet-stream', buffer })
+  await expect(page.getByTestId('table-text')).toHaveValue('nur Text')
+  await page.getByTestId('table-sheet').selectOption({ label: 'Liste' })
+  await expect(page.getByTestId('table-preview')).toHaveText('Строк: 2, колонок: 5')
+  await page.getByTestId('table-skip-heading').check()
+  await page.screenshot({ path: test.info().outputPath('table-excel.png') })
+  await page.getByTestId('table-fill').click()
+  await expect(fields()).toHaveCount(3)
+  const values = await page.getByTestId('field-input').evaluateAll((inputs) => inputs.map((input) => (input as HTMLTextAreaElement).value))
+  expect(values).toEqual(['01.11.2026', 'Beispiel GmbH, Musterstadt', '5'])
+  const cells = [await cellOf(0), await cellOf(1), await cellOf(2)]
+  expect(cells.map(({ row, column }) => [row, column])).toEqual([[1, 0], [1, 1], [1, 4]])
+
+  await chooseFillTable()
+  await file.setInputFiles({ name: 'liste.csv', mimeType: 'text/csv', buffer: Buffer.from('02.11.2026;Müller, Söhne\n03.11.2026;Muster\n') })
+  await expect(page.getByTestId('table-preview')).toHaveText('Строк: 2, колонок: 2')
+  await expect(page.getByTestId('table-sheet')).toHaveCount(0)
+  await page.getByTestId('table-fill').click()
+  await expect(fields()).toHaveCount(7)
+  expect((await cellOf(3)).row).toBe(2)
+  expect(requests).toEqual([])
+})
+
+test('says so when a file cannot be read, and keeps what was pasted', async () => {
+  await open(await writeScan('bad-file.pdf'))
+  await chooseFillTable()
+  await page.getByTestId('table-text').fill(asTabs(DATA))
+  const file = page.getByTestId('table-file')
+  await file.setInputFiles({ name: 'alt.xls', mimeType: 'application/octet-stream', buffer: Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0, 0, 0, 0]) })
+  await expect(page.getByTestId('table-warning')).toContainText(['Файл не удалось прочитать'])
+  await expect(page.getByTestId('table-preview')).toHaveText('Строк: 8, колонок: 7')
+  await file.setInputFiles({ name: 'leer.csv', mimeType: 'text/csv', buffer: Buffer.from(' \n') })
+  await expect(page.getByTestId('table-warning')).toHaveText(['В файле нет строк.'])
 })
 
 test('says so on a page without a table', async () => {
