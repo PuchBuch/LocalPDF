@@ -3,8 +3,18 @@ import { hasUnsavedChanges } from '../../core/history'
 import { MAX_ZOOM, MIN_ZOOM } from '../../core/zoom'
 import { PasswordDialog } from './editor/PasswordDialog'
 import { FieldsPanel } from './editor/FieldNumbers'
+import {
+  closeHelp,
+  currentHelpSection,
+  HelpDialog,
+  HelpLink,
+  openHelp,
+  openQuestions,
+  toolHelpSection,
+  useHelp
+} from './editor/HelpDialog'
 import { RecoveryDialog } from './editor/RecoveryDialog'
-import { openReportDialog, ReportDialog, useReportDialog } from './editor/ReportDialog'
+import { openFeedback, openReportDialog, ReportDialog, useReportDialog } from './editor/ReportDialog'
 import { ScanDialog } from './editor/ScanDialog'
 import { SignatureDialog } from './editor/SignatureDialog'
 import { TableFillDialog } from './editor/TableFillDialog'
@@ -59,6 +69,8 @@ function useHistoryShortcuts(): void {
       if (event.code !== 'KeyZ' || !(event.ctrlKey || event.metaKey) || event.altKey) return
       const { undo, redo, signingFieldId, scanRequest, tableRequest } = useEditor.getState()
       // The signature dialog has its own undo, and its name input the browser's.
+      // So has the help its search and the feedback its text.
+      if (useHelp.getState().open || useReportDialog.getState().open) return
       // Under the scan dialog, the page about to be replaced must stay where it is.
       // The table dialog has text to undo, and the table must stay as it was found.
       if (signingFieldId || scanRequest || tableRequest) return
@@ -79,7 +91,7 @@ function useOutputShortcuts(): void {
       if (event.altKey || event.shiftKey) return
       event.preventDefault()
       const { document, saving, signingFieldId, passwordRequest } = useEditor.getState()
-      if (!document?.pages.length || saving || signingFieldId || passwordRequest) return
+      if (!document?.pages.length || saving || signingFieldId || passwordRequest || useHelp.getState().open) return
       void (event.code === 'KeyS' ? saveDocument() : printDocument())
     }
     window.addEventListener('keydown', onKeyDown)
@@ -103,11 +115,29 @@ function useEscape(): void {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
+      // The help lies over whatever it was opened from, which stays.
+      if (useHelp.getState().open) {
+        closeHelp()
+        return
+      }
       const { cancelPaste, closeSignature, pickStyle } = useEditor.getState()
       cancelPaste()
       closeSignature()
       pickStyle(null)
       useReportDialog.setState({ open: false })
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+}
+
+/** F1, for the chapter about what is being done. */
+function useHelpShortcut(): void {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'F1') return
+      event.preventDefault()
+      if (!useHelp.getState().open) openHelp(currentHelpSection())
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
@@ -145,6 +175,8 @@ function ToolPicker() {
             {icon}
           </button>
         ))}
+        {/* In the last cell, which the tools leave free, so that the panel is no higher. */}
+        <HelpLink section={toolHelpSection(activeTool)} />
       </div>
       {activeTool === 'edit' && <EditScopePicker />}
       <p className="tool-hint" data-testid="tool-hint">
@@ -360,6 +392,19 @@ function OcrLanguagePicker() {
   )
 }
 
+function HelpButtons() {
+  return (
+    <div className="help-buttons">
+      <button type="button" data-testid="open-help" title="F1" onClick={() => openHelp(currentHelpSection())}>
+        ? {t.help.open}
+      </button>
+      <button type="button" data-testid="open-feedback" onClick={() => openFeedback('idea')}>
+        ✉ {t.feedback.open}
+      </button>
+    </div>
+  )
+}
+
 function EmptyState({ opening }: { opening: boolean }) {
   return (
     <main className="empty-state">
@@ -382,6 +427,17 @@ function EmptyState({ opening }: { opening: boolean }) {
         </button>
         <p>{opening ? t.opening : t.dropHint}</p>
       </div>
+      <ol className="first-steps" data-testid="first-steps">
+        <li>{t.help.firstStep}</li>
+        <li>{t.help.secondStep}</li>
+        <li>{t.help.thirdStep}</li>
+      </ol>
+      <div className="start-help">
+        <HelpButtons />
+        <button type="button" className="report-link" data-testid="open-faq" onClick={openQuestions}>
+          {t.help.faq}
+        </button>
+      </div>
     </main>
   )
 }
@@ -397,7 +453,10 @@ function Workspace({ pageCount }: { pageCount: number }) {
 
   return (
     <div className="workspace">
-      <Thumbnails />
+      <div className="left-column">
+        <Thumbnails />
+        <HelpButtons />
+      </div>
       <DocumentView />
       <aside className="tools">
         <div className="history-buttons">
@@ -455,11 +514,13 @@ export function App() {
   const passwordRequest = useEditor((state) => state.passwordRequest)
   const scanRequest = useEditor((state) => state.scanRequest)
   const tableRequest = useEditor((state) => state.tableRequest)
+  const helping = useHelp((state) => state.open)
   const reporting = useReportDialog((state) => state.open)
   useHistoryShortcuts()
   useOutputShortcuts()
   useWindowTitle()
   useEscape()
+  useHelpShortcut()
 
   return (
     <>
@@ -469,6 +530,7 @@ export function App() {
       {passwordRequest && <PasswordDialog name={passwordRequest.name} wrong={passwordRequest.wrong} />}
       {scanRequest && <ScanDialog request={scanRequest} />}
       {tableRequest && <TableFillDialog request={tableRequest} />}
+      {helping && <HelpDialog />}
       {reporting && <ReportDialog />}
       <ContextBanners />
       <Notices />

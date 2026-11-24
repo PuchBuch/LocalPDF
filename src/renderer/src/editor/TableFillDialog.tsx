@@ -5,6 +5,7 @@ import type { TableGrid } from '../../../core/tableGrid'
 import { currentLocale, t } from '../i18n'
 import { measureText } from '../render/textMetrics'
 import { answerTable, type TableRequest } from '../store'
+import { HelpLink } from './HelpDialog'
 
 const FILE_ACCEPT = '.xlsx,.xlsm,.csv,.tsv,.txt'
 
@@ -71,7 +72,9 @@ export function TableFillDialog({ request }: { request: TableRequest }) {
           if (event.key === 'Escape') answerTable(null)
         }}
       >
-        <h2 className="dialog-title">{t.table.title}</h2>
+        <h2 className="dialog-title">
+          {t.table.title} <HelpLink section="table" />
+        </h2>
         <p className="dialog-text" data-testid="table-found">
           {t.table.found(columnsOf(table), emptyRowsOf(table))}
         </p>
@@ -87,7 +90,11 @@ export function TableFillDialog({ request }: { request: TableRequest }) {
             </select>
           </label>
         )}
-        <p className="dialog-text">{t.table.hint}</p>
+        <ol className="table-steps" data-testid="table-steps">
+          <li>{t.table.hint}</li>
+          <li>{t.table.stepCheck}</li>
+          <li>{t.table.stepFill}</li>
+        </ol>
         <div className="table-choice">
           <button type="button" className="table-open" data-testid="table-open-file" onClick={() => fileInput.current?.click()}>
             {t.table.openFile}
@@ -138,7 +145,7 @@ export function TableFillDialog({ request }: { request: TableRequest }) {
         </label>
         <div role="status">
           <p className="table-preview" data-testid="table-preview">
-            {rows.length > 0 && t.table.preview(rowCount, columnCount)}
+            {rows.length > 0 ? t.table.preview(rowCount, columnCount) : t.table.noRows}
           </p>
           {warnings.length > 0 && (
             <ul className="table-warnings">

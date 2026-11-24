@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react'
 import { create } from 'zustand'
-import { issueUrl, reportText, systemOf, type ReportFacts } from '../../../core/problemReport'
+import {
+  FEEDBACK_ISSUES,
+  FEEDBACK_KINDS,
+  feedbackText,
+  issueUrl,
+  systemOf,
+  type FeedbackKind,
+  type ReportFacts
+} from '../../../core/problemReport'
 import { currentLocale, t } from '../i18n'
 import { recentProblems } from '../problemLog'
 
-export const useReportDialog = create<{ open: boolean }>(() => ({ open: false }))
+export const useReportDialog = create<{ open: boolean; kind: FeedbackKind }>(() => ({ open: false, kind: 'problem' }))
 
-export const openReportDialog = (): void => useReportDialog.setState({ open: true })
+export const openFeedback = (kind: FeedbackKind): void => useReportDialog.setState({ open: true, kind })
+export const openReportDialog = (): void => openFeedback('problem')
 // Escape closes it from anywhere in the window, in App's useEscape.
 const closeReportDialog = (): void => useReportDialog.setState({ open: false })
 
@@ -31,16 +40,27 @@ async function gatherFacts(): Promise<ReportFacts> {
   }
 }
 
+/** A problem, an idea or a question, which the person checks and sends on GitHub themselves. */
 export function ReportDialog() {
-  const [text, setText] = useState('')
+  const kind = useReportDialog((state) => state.kind)
+  // Each kind keeps its own text, so that looking at another loses nothing.
+  const [texts, setTexts] = useState<Record<FeedbackKind, string>>({ problem: '', idea: '', question: '' })
   const [copied, setCopied] = useState(false)
+  const text = texts[kind]
 
   useEffect(() => {
-    void gatherFacts().then((facts) => setText(reportText(facts)))
+    void gatherFacts().then((facts) =>
+      setTexts({
+        problem: feedbackText('problem', facts),
+        idea: feedbackText('idea', facts),
+        question: feedbackText('question', facts)
+      })
+    )
   }, [])
 
-  const url = issueUrl('Problem report', text)
+  const url = issueUrl(FEEDBACK_ISSUES[kind].title, text, FEEDBACK_ISSUES[kind].template)
   const inApp = window.localpdf.variant === 'windows-app'
+  const title = kind === 'problem' ? t.report.title : t.feedback.title
 
   const copy = async () => {
     await window.localpdf.copyText(text)
@@ -49,16 +69,36 @@ export function ReportDialog() {
 
   return (
     <div className="dialog-backdrop" data-testid="report-dialog">
-      <div className="dialog" role="dialog" aria-modal="true" aria-label={t.report.title}>
-        <h2 className="dialog-title">{t.report.title}</h2>
-        <p className="dialog-text">{t.report.intro}</p>
+      <div className="dialog" role="dialog" aria-modal="true" aria-label={title}>
+        <h2 className="dialog-title">{title}</h2>
+        <fieldset className="scan-look">
+          <legend>{t.feedback.kind}</legend>
+          {FEEDBACK_KINDS.map((choice) => (
+            <label key={choice}>
+              <input
+                type="radio"
+                name="feedback-kind"
+                data-testid={`feedback-${choice}`}
+                checked={kind === choice}
+                onChange={() => {
+                  useReportDialog.setState({ kind: choice })
+                  setCopied(false)
+                }}
+              />
+              {t.feedback.kinds[choice]}
+            </label>
+          ))}
+        </fieldset>
+        <p className="dialog-text">{kind === 'problem' ? t.report.intro : t.feedback.intro}</p>
+        <p className="dialog-text">{t.feedback.account}</p>
         <textarea
           className="report-text"
           data-testid="report-text"
-          aria-label={t.report.title}
+          aria-label={title}
           value={text}
           onChange={(event) => {
-            setText(event.target.value)
+            const changed = event.target.value
+            setTexts((current) => ({ ...current, [kind]: changed }))
             setCopied(false)
           }}
         />

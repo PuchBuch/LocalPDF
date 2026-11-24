@@ -18,6 +18,7 @@ interface ThumbnailMenuProps extends ThumbnailMenuPlace {
 
 interface PagesChoiceProps {
   label: string
+  hint: string
   testId: string
   /** Runs for the given page, or for all pages without one. */
   run: (pageId?: string) => void
@@ -25,7 +26,7 @@ interface PagesChoiceProps {
 }
 
 /** An item that opens a choice between this page and all pages. */
-function PagesChoice({ label, testId, run, pageId }: PagesChoiceProps) {
+function PagesChoice({ label, hint, testId, run, pageId }: PagesChoiceProps) {
   const [open, setOpen] = useState(false)
   return (
     <div className="menu-parent" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
@@ -35,6 +36,7 @@ function PagesChoice({ label, testId, run, pageId }: PagesChoiceProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         data-testid={testId}
+        title={hint}
         onClick={(event) => {
           event.stopPropagation()
           setOpen(true)
@@ -100,25 +102,45 @@ export function ThumbnailMenu({ pageId, x, y, onClose }: ThumbnailMenuProps) {
     >
       <PagesChoice
         label={t.thumbnailMenu.copyContent}
+        hint={t.menuHints.copyContent}
         testId="copy-content"
         pageId={pageId}
         run={(page) => void copyMarkdown(page)}
       />
-      <PagesChoice label={t.thumbnailMenu.recognize} testId="recognize" pageId={pageId} run={(page) => void recognizeText(page)} />
-      <PagesChoice label={t.thumbnailMenu.findFields} testId="find-fields" pageId={pageId} run={(page) => void findFields(page)} />
-      <button type="button" role="menuitem" data-testid="fill-table" onClick={() => void fillTable(pageId)}>
+      <PagesChoice
+        label={t.thumbnailMenu.recognize}
+        hint={t.menuHints.recognize}
+        testId="recognize"
+        pageId={pageId}
+        run={(page) => void recognizeText(page)}
+      />
+      <PagesChoice
+        label={t.thumbnailMenu.findFields}
+        hint={t.menuHints.findFields}
+        testId="find-fields"
+        pageId={pageId}
+        run={(page) => void findFields(page)}
+      />
+      <button type="button" role="menuitem" data-testid="fill-table" title={t.menuHints.fillTable} onClick={() => void fillTable(pageId)}>
         {t.thumbnailMenu.fillTable}
       </button>
-      <button type="button" role="menuitem" data-testid="print-page" onClick={() => void printDocument(pageId)}>
+      <button type="button" role="menuitem" data-testid="print-page" title={t.menuHints.printPage} onClick={() => void printDocument(pageId)}>
         {t.thumbnailMenu.printPage}
       </button>
-      <button type="button" role="menuitem" data-testid="replace-page" onClick={() => void replacePageWithChosenFile(pageId)}>
+      <button
+        type="button"
+        role="menuitem"
+        data-testid="replace-page"
+        title={t.menuHints.replacePage}
+        onClick={() => void replacePageWithChosenFile(pageId)}
+      >
         {t.thumbnailMenu.replacePage}
       </button>
       <button
         type="button"
         role="menuitem"
         data-testid="clear-fields"
+        title={t.menuHints.clearFields}
         disabled={fieldCount === 0}
         onClick={() => clearPageFields(pageId)}
       >
@@ -129,6 +151,7 @@ export function ThumbnailMenu({ pageId, x, y, onClose }: ThumbnailMenuProps) {
         role="menuitem"
         className="danger"
         data-testid="delete-fields"
+        title={t.menuHints.deleteFields}
         disabled={fieldCount === 0}
         onClick={() => deletePageFields(pageId)}
       >

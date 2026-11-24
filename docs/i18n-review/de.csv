@@ -48,12 +48,41 @@ thumbnailMenu.copyContent;text;Copy text;Text kopieren;;machine
 thumbnailMenu.recognize;text;Recognize text;Text erkennen;;machine
 thumbnailMenu.findFields;text;Find fields;Felder finden;;machine
 thumbnailMenu.fillTable;text;Fill a table…;Tabelle ausfüllen…;;machine
+thumbnailMenu.more;text;More page actions;Weitere Aktionen für die Seite;;machine
 thumbnailMenu.thisPage;text;This page;Diese Seite;;machine
 thumbnailMenu.allPages;text;All pages;Alle Seiten;;machine
 thumbnailMenu.clearFields;code;(count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`);(count) => (count === 1 ? 'Feld leeren (1)' : `Felder leeren${countSuffix(count)}`);;machine
 thumbnailMenu.deleteFields;code;(count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`);(count) => (count === 1 ? 'Feld löschen (1)' : `Felder löschen${countSuffix(count)}`);;machine
 thumbnailMenu.printPage;text;Print this page;Diese Seite drucken;;machine
 thumbnailMenu.replacePage;text;Replace with a scan or photo…;Durch Scan oder Foto ersetzen…;;machine
+menuHints.copyContent;text;Copies the text of the page to the clipboard;Kopiert den Text der Seite in die Zwischenablage;;machine
+menuHints.recognize;text;Reads the text of a scan, so that it can be searched and edited;Liest den Text eines Scans, damit er durchsucht und bearbeitet werden kann;;machine
+menuHints.findFields;text;Puts empty fields on lines and in boxes;Setzt leere Felder auf Linien und in Kästchen;;machine
+menuHints.fillTable;text;Writes rows from Excel, CSV or the clipboard into the cells of a table on a scan;Trägt Zeilen aus Excel, CSV oder der Zwischenablage in die Zellen einer gescannten Tabelle ein;;machine
+menuHints.printPage;text;Prints only this page;Druckt nur diese Seite;;machine
+menuHints.replacePage;text;Puts a scan or photo in place of the page, such as one signed by hand;Setzt einen Scan oder ein Foto an die Stelle der Seite, etwa von Hand unterschrieben;;machine
+menuHints.clearFields;text;Leaves the added fields empty;Lässt die hinzugefügten Felder leer;;machine
+menuHints.deleteFields;text;Removes all added fields from the page;Entfernt alle hinzugefügten Felder von der Seite;;machine
+help.open;text;Help;Hilfe;;machine
+help.title;text;Help;Hilfe;;machine
+help.guide;text;Guide;Anleitung;;machine
+help.faq;text;Questions and answers;Fragen und Antworten;;machine
+help.search;text;Search the help;Hilfe durchsuchen;;machine
+help.nothing;text;Nothing found. Try another word, or ask a question.;Nichts gefunden. Versuchen Sie ein anderes Wort oder stellen Sie eine Frage.;;machine
+help.more;text;Read more;Mehr dazu;;machine
+help.ask;text;No answer here? Ask a question;Keine Antwort gefunden? Frage stellen;;machine
+help.otherLanguage;text;The guide is not available in this language yet, so it is shown in English.;Die Anleitung gibt es in dieser Sprache noch nicht, sie wird auf Englisch angezeigt.;;machine
+help.firstStep;text;Open a PDF, a picture or a scan.;Öffnen Sie ein PDF, ein Bild oder einen Scan.;;machine
+help.secondStep;text;Choose a tool on the right and click the page to write or change text, or to add a mark or a signature.;Wählen Sie rechts ein Werkzeug und klicken Sie auf die Seite, um Text einzutragen oder zu ändern oder eine Markierung oder Unterschrift zu setzen.;;machine
+help.thirdStep;text;Press “Download” to save the finished PDF.;Klicken Sie auf „Herunterladen“, um das fertige PDF zu speichern.;;machine
+feedback.open;text;Feedback;Feedback;;machine
+feedback.title;text;Feedback;Feedback;;machine
+feedback.kind;text;What is it about:;Worum geht es:;;machine
+feedback.kinds.problem;text;Problem;Problem;;machine
+feedback.kinds.idea;text;Idea;Idee;;machine
+feedback.kinds.question;text;Question;Frage;;machine
+feedback.intro;text;This text becomes a new issue on GitHub, which anyone can read. Leave out personal data. Complete it, then send it yourself from the GitHub page.;Dieser Text wird zu einem neuen Eintrag auf GitHub, den jeder lesen kann. Schreiben Sie keine persönlichen Daten hinein. Ergänzen Sie ihn und senden Sie ihn selbst von der GitHub-Seite ab.;;machine
+feedback.account;text;Sending it needs a GitHub account.;Zum Senden ist ein GitHub-Konto nötig.;;machine
 fieldsPanel.title;template;Fields ({count});Felder ({count});;machine
 fieldsPanel.showNumbers;text;Show numbers;Nummern anzeigen;;machine
 fieldsPanel.empty;text;The document has no fields;Das Dokument hat keine Felder;;machine
@@ -123,6 +152,9 @@ table.openFile;text;Open a file…;Datei öffnen…;;machine
 table.sheet;text;Sheet:;Blatt:;;machine
 table.fileFailed;text;"The file could not be read. XLSX, CSV and TXT are supported; save an old XLS as XLSX.";"Die Datei konnte nicht gelesen werden. Möglich sind XLSX, CSV und TXT; speichern Sie eine alte XLS-Datei als XLSX.";;machine
 table.fileEmpty;text;The file has no rows.;Die Datei enthält keine Zeilen.;;machine
+table.stepCheck;text;Check the number of rows and columns below the box.;Prüfen Sie die Anzahl der Zeilen und Spalten unter dem Textfeld.;;machine
+table.stepFill;text;Press “Fill in”: the values go into the empty rows. Ctrl+Z takes it all back.;Klicken Sie auf „Ausfüllen“: Die Werte kommen in die leeren Zeilen. Strg+Z nimmt alles zurück.;;machine
+table.noRows;text;No rows yet: open a file or paste text.;Noch keine Zeilen: Öffnen Sie eine Datei oder fügen Sie Text ein.;;machine
 table.skipHeading;text;The first row is headings, skip it;Die erste Zeile enthält Überschriften, überspringen;;machine
 table.preview;template;Rows: {rows}, columns: {columns};Zeilen: {rows}, Spalten: {columns};;machine
 table.leftOutRows;template;Extra rows that will be left out: {count};Überzählige Zeilen, die wegfallen: {count};;machine

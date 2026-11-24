@@ -48,12 +48,41 @@ thumbnailMenu.copyContent;text;Copy text;Скопіювати текст;;machin
 thumbnailMenu.recognize;text;Recognize text;Розпізнати текст;;machine
 thumbnailMenu.findFields;text;Find fields;Знайти поля;;machine
 thumbnailMenu.fillTable;text;Fill a table…;Заповнити таблицю…;;machine
+thumbnailMenu.more;text;More page actions;Інші дії зі сторінкою;;machine
 thumbnailMenu.thisPage;text;This page;Ця сторінка;;machine
 thumbnailMenu.allPages;text;All pages;Усі сторінки;;machine
 thumbnailMenu.clearFields;code;(count) => (count === 1 ? 'Clear field (1)' : `Clear fields${countSuffix(count)}`);(count) => (count === 1 ? 'Очистити поле (1)' : `Очистити поля${countSuffix(count)}`);;machine
 thumbnailMenu.deleteFields;code;(count) => (count === 1 ? 'Delete field (1)' : `Delete fields${countSuffix(count)}`);(count) => (count === 1 ? 'Видалити поле (1)' : `Видалити поля${countSuffix(count)}`);;machine
 thumbnailMenu.printPage;text;Print this page;Надрукувати сторінку;;machine
 thumbnailMenu.replacePage;text;Replace with a scan or photo…;Замінити сканом або фото…;;machine
+menuHints.copyContent;text;Copies the text of the page to the clipboard;Копіює текст сторінки в буфер обміну;;machine
+menuHints.recognize;text;Reads the text of a scan, so that it can be searched and edited;Читає текст на скані, щоб його можна було шукати й правити;;machine
+menuHints.findFields;text;Puts empty fields on lines and in boxes;Ставить порожні поля на лініях і в рамках;;machine
+menuHints.fillTable;text;Writes rows from Excel, CSV or the clipboard into the cells of a table on a scan;Вписує рядки з Excel, CSV або буфера в клітинки таблиці на скані;;machine
+menuHints.printPage;text;Prints only this page;Друкує лише цю сторінку;;machine
+menuHints.replacePage;text;Puts a scan or photo in place of the page, such as one signed by hand;Ставить на місце сторінки скан або фото, наприклад із підписом від руки;;machine
+menuHints.clearFields;text;Leaves the added fields empty;Залишає додані поля порожніми;;machine
+menuHints.deleteFields;text;Removes all added fields from the page;Прибирає зі сторінки всі додані поля;;machine
+help.open;text;Help;Довідка;;machine
+help.title;text;Help;Довідка;;machine
+help.guide;text;Guide;Інструкція;;machine
+help.faq;text;Questions and answers;Часті запитання;;machine
+help.search;text;Search the help;Знайти в довідці;;machine
+help.nothing;text;Nothing found. Try another word, or ask a question.;Нічого не знайдено. Спробуйте інше слово або поставте запитання.;;machine
+help.more;text;Read more;Докладніше;;machine
+help.ask;text;No answer here? Ask a question;Не знайшли відповіді? Поставте запитання;;machine
+help.otherLanguage;text;The guide is not available in this language yet, so it is shown in English.;Інструкції цією мовою поки немає, її показано англійською.;;machine
+help.firstStep;text;Open a PDF, a picture or a scan.;Відкрийте PDF, картинку або скан.;;machine
+help.secondStep;text;Choose a tool on the right and click the page to write or change text, or to add a mark or a signature.;Виберіть інструмент праворуч і клацніть по сторінці, щоб вписати або виправити текст, поставити позначку чи підпис.;;machine
+help.thirdStep;text;Press “Download” to save the finished PDF.;Натисніть «Завантажити», щоб зберегти готовий PDF.;;machine
+feedback.open;text;Feedback;Відгук;;machine
+feedback.title;text;Feedback;Зворотний зв’язок;;machine
+feedback.kind;text;What is it about:;Про що пишете:;;machine
+feedback.kinds.problem;text;Problem;Проблема;;machine
+feedback.kinds.idea;text;Idea;Ідея;;machine
+feedback.kinds.question;text;Question;Запитання;;machine
+feedback.intro;text;This text becomes a new issue on GitHub, which anyone can read. Leave out personal data. Complete it, then send it yourself from the GitHub page.;Цей текст стане новим зверненням на GitHub, його зможе прочитати будь-хто. Не вписуйте особистих даних. Допишіть його й надішліть самі зі сторінки GitHub.;;machine
+feedback.account;text;Sending it needs a GitHub account.;Для надсилання потрібен обліковий запис GitHub.;;machine
 fieldsPanel.title;template;Fields ({count});Поля ({count});;machine
 fieldsPanel.showNumbers;text;Show numbers;Показати номери;;machine
 fieldsPanel.empty;text;The document has no fields;У документі немає полів;;machine
@@ -123,6 +152,9 @@ table.openFile;text;Open a file…;Відкрити файл…;;machine
 table.sheet;text;Sheet:;Аркуш:;;machine
 table.fileFailed;text;"The file could not be read. XLSX, CSV and TXT are supported; save an old XLS as XLSX.";"Файл не вдалося прочитати. Підходять XLSX, CSV і TXT; старий XLS збережіть як XLSX.";;machine
 table.fileEmpty;text;The file has no rows.;У файлі немає рядків.;;machine
+table.stepCheck;text;Check the number of rows and columns below the box.;Перевірте кількість рядків і стовпців під полем.;;machine
+table.stepFill;text;Press “Fill in”: the values go into the empty rows. Ctrl+Z takes it all back.;Натисніть «Заповнити»: значення стануть у порожні рядки. Ctrl+Z скасує все.;;machine
+table.noRows;text;No rows yet: open a file or paste text.;Рядків поки немає: відкрийте файл або вставте текст.;;machine
 table.skipHeading;text;The first row is headings, skip it;Перший рядок — заголовки, пропустити;;machine
 table.preview;template;Rows: {rows}, columns: {columns};Рядків: {rows}, стовпців: {columns};;machine
 table.leftOutRows;template;Extra rows that will be left out: {count};Зайві рядки не ввійдуть: {count};;machine

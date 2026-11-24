@@ -41,10 +41,36 @@ export function reportText(facts: ReportFacts): string {
   ].join('\n')
 }
 
+export const FEEDBACK_KINDS = ['problem', 'idea', 'question'] as const
+export type FeedbackKind = (typeof FEEDBACK_KINDS)[number]
+
+/** The title of each kind of issue, and its template on GitHub. */
+export const FEEDBACK_ISSUES: Record<FeedbackKind, { title: string; template: string }> = {
+  problem: { title: 'Problem report', template: 'bug_report.md' },
+  idea: { title: 'Idea', template: 'idea.md' },
+  question: { title: 'Question', template: 'question.md' }
+}
+
+const FEEDBACK_HEADINGS: Record<Exclude<FeedbackKind, 'problem'>, string[]> = {
+  idea: ['**What would you like to do?**', '**How do you do it now?**'],
+  question: ['**Your question**', '**What have you tried?**']
+}
+
+/** What feedback starts with. Recent errors are only of use for a problem. */
+export function feedbackText(kind: FeedbackKind, facts: ReportFacts): string {
+  if (kind === 'problem') return reportText(facts)
+  return [
+    `**LocalPDF version:** ${facts.version}`,
+    `**Variant:** ${facts.variant === 'windows-app' ? 'Windows app' : 'Browser extension'}`,
+    '',
+    ...FEEDBACK_HEADINGS[kind].flatMap((heading) => [heading, '', ''])
+  ].join('\n')
+}
+
 /** The address of a new issue with the report filled in, shortened to fit if it must be. */
-export function issueUrl(title: string, body: string): string {
+export function issueUrl(title: string, body: string, template = FEEDBACK_ISSUES.problem.template): string {
   const build = (text: string) =>
-    `${ISSUE_PAGE}template=bug_report.md&title=${encodeURIComponent(title)}&body=${encodeURIComponent(text)}`
+    `${ISSUE_PAGE}template=${template}&title=${encodeURIComponent(title)}&body=${encodeURIComponent(text)}`
   // Cut whole characters: half of a pair cannot be encoded. One takes at most 12 encoded.
   let characters = Array.from(body)
   let url = build(body)

@@ -6,6 +6,9 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 
 - "Copy form for AI" lists for each group of radio buttons only its own options, and an answer with an option of another group is no longer taken.
 - "Fill a table…" in the menu of a page finds a ruled table on a scan and writes rows from an Excel (.xlsx) or CSV file, or pasted from Excel or Google Sheets, into its empty rows, as one step to undo.
+- A guide and frequent questions inside the app, offline and with a search: the Help button, F1, and "?" beside what is being done. The guide is in English, German and Russian.
+- Feedback takes ideas and questions as well as problems.
+- A "⋯" button beside each thumbnail opens the menu of its page, whose items say what they do. The start screen shows the first steps.
 
 ## 0.9.0-beta.12 (2026-11-17)
 

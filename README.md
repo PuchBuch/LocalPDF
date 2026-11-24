@@ -21,6 +21,7 @@ A PDF editor for Windows that keeps your documents on your computer. Files are n
 - **Manage pages:** delete, rotate, reorder, and merge PDFs and pictures.
 - **Pages signed by hand:** print a single page, sign it, then put a scan or a phone photo of it in its place. A photo is straightened, cropped to the sheet and cleaned up.
 - **Passwords:** opens protected PDFs, and can keep the protection when saving.
+- **Help inside the app:** a searchable guide and frequent questions, offline (F1), in English, German and Russian; other languages see it in English. Feedback is prepared in the app and sent by you on GitHub.
 - **Also:** print, extract text as Markdown, recovery after a crash.
 - **Languages:** English, Deutsch, Français, Español, Italiano, Polski, Українська, Русский.
 
