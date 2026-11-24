@@ -26,6 +26,16 @@ export function Thumbnails() {
   const closeMenu = useCallback(() => setMenu(null), [])
 
   const container = useRef<HTMLDivElement>(null)
+  const menuScrollTop = useRef(0)
+  const openMenu = useCallback((place: ThumbnailMenuPlace) => {
+    menuScrollTop.current = container.current?.scrollTop ?? 0
+    setMenu(place)
+  }, [])
+  // A scroll is told of late, so one from before the menu opened must not close it.
+  const onScroll = () => {
+    if (container.current?.scrollTop !== menuScrollTop.current) closeMenu()
+  }
+
   const layout =useMemo(() => computeLayout(sizes, THUMBNAIL_WIDTH, THUMBNAIL_GAP, ACTIONS_HEIGHT), [sizes])
   const range = useVisibleRange(container, layout, OVERSCAN)
 
@@ -41,7 +51,7 @@ export function Thumbnails() {
   }, [currentIndex, layout])
 
   return (
-    <nav className="thumbnails" data-testid="thumbnails" ref={container} onScroll={closeMenu}>
+    <nav className="thumbnails" data-testid="thumbnails" ref={container} onScroll={onScroll}>
       {menu && <ThumbnailMenu {...menu} onClose={closeMenu} />}
       <div className="thumbnail-strip" style={{ paddingTop: THUMBNAIL_GAP / 2 }}>
         {pages.map((page, index) => (
@@ -56,7 +66,7 @@ export function Thumbnails() {
             onlyPage={pages.length === 1}
             first={index === 0}
             last={index === pages.length - 1}
-            onMenu={setMenu}
+            onMenu={openMenu}
           />
         ))}
         <button
