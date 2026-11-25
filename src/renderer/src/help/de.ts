@@ -38,7 +38,7 @@ export const de: HelpTexts = {
       steps: [
         'Wählen Sie „Text bearbeiten“ und was bearbeitet wird: „Zeile“ oder „Wort“.',
         'Klicken Sie auf den Text und tippen Sie den neuen.',
-        'Bei Bedarf Schrift, Größe, Farbe, fett oder kursiv in der Leiste über dem Feld ändern. Die Pipette übernimmt den Stil eines beliebigen Textes der Seite.',
+        'Bei Bedarf Schrift, Größe, Farbe, fett oder kursiv in der Leiste unter dem Feld ändern. Die Pipette übernimmt den Stil eines beliebigen Textes der Seite.',
         'Speichern. Der alte Text wird aus der Datei herausgeschnitten, nicht nur überdeckt.'
       ],
       tips: [
@@ -54,7 +54,7 @@ export const de: HelpTexts = {
       steps: [
         'Wählen Sie „Text“, „Markierung“ oder „Text in Kästchen“ und klicken Sie auf die Stelle.',
         'Tippen Sie den Text. Bei einer Markierung wählen Sie Haken, Kreuz oder Punkt.',
-        'Ziehen Sie das Feld am Griff; die Schriftgröße ändern die Schaltflächen darüber.'
+        'Ziehen Sie das Feld am Griff; die Schriftgröße ändern die Schaltflächen darunter.'
       ],
       tips: [
         '„Text in Kästchen“ setzt jedes Zeichen in ein eigenes Kästchen, etwa für IBAN oder Geburtsdatum. Die Breite ist einstellbar.',
@@ -267,7 +267,7 @@ export const de: HelpTexts = {
     },
     {
       question: 'Warum sieht der geänderte Text anders aus?',
-      answer: 'In der Datei fehlen Buchstaben der Schrift, daher wird eine ähnliche benutzt. Versuchen Sie die Pipette oder eine andere Schrift in der Leiste über dem Feld.',
+      answer: 'In der Datei fehlen Buchstaben der Schrift, daher wird eine ähnliche benutzt. Versuchen Sie die Pipette oder eine andere Schrift in der Leiste unter dem Feld.',
       section: 'edit'
     },
     {

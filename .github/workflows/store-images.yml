@@ -1,7 +1,7 @@
 name: Store images
 
-# Takes the screenshots for the store in the cloud, on made-up documents, and offers them
-# for download. Nothing is committed: look at them, then put them into store/chrome.
+# Takes the screenshots for the store and the project page in the cloud, on made-up documents,
+# and offers them for download. Nothing is committed: look at them, then put them in place.
 on:
   pull_request:
     paths:
@@ -38,4 +38,5 @@ jobs:
           path: |
             store/chrome/*.jpg
             store/chrome/*.png
+            docs/images/*.jpg
           retention-days: 14

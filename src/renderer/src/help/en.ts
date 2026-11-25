@@ -38,7 +38,7 @@ export const en: HelpTexts = {
       steps: [
         'Choose “Edit text” and what to edit: “Line” or “Word”.',
         'Click the text and type the new one.',
-        'If needed, change the font, size, colour, bold or italic in the bar above the field. The picker takes the style of any text on the page.',
+        'If needed, change the font, size, colour, bold or italic in the bar below the field. The picker takes the style of any text on the page.',
         'Save. The old text is cut out of the file, not only covered.'
       ],
       tips: [
@@ -54,7 +54,7 @@ export const en: HelpTexts = {
       steps: [
         'Choose “Text”, “Mark” or “Text in cells” and click a place on the page.',
         'Type the text. For a mark, choose a tick, a cross or a dot.',
-        'Drag the field by its handle, and change the font size with the buttons above it.'
+        'Drag the field by its handle, and change the font size with the buttons below it.'
       ],
       tips: [
         '“Text in cells” puts each character in a cell of its own, for an IBAN or a date of birth. The width of the cells can be changed.',
@@ -264,7 +264,7 @@ export const en: HelpTexts = {
     },
     {
       question: 'Why does the edited text look different?',
-      answer: 'The file lacks letters of its font, so a similar one is used. Try the picker, or another font in the bar above the field.',
+      answer: 'The file lacks letters of its font, so a similar one is used. Try the picker, or another font in the bar below the field.',
       section: 'edit'
     },
     {
