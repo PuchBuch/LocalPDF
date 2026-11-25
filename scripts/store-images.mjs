@@ -314,7 +314,7 @@ const scenes = [
       await page.getByTestId('field-input').fill('Total due: 1,250.00 EUR')
     },
     notes: (page) => [
-      note('Click and type', page.getByTestId('field-input'), [0.8, 0], [690, 496]),
+      note('Click and type', page.getByTestId('pdf-page').first().getByTestId('field-input'), [0.8, 0], [690, 496]),
       note('Font, size and color', page.locator('.field-panel.bottom'), [1, 0.5], [700, null]),
       note('A whole line or one word', page.getByTestId('edit-scope-line'), [0, 0.5], [840, null])
     ]
@@ -343,10 +343,10 @@ const scenes = [
       await page.mouse.click(1170, 600)
     },
     notes: (page) => [
-      note('The form’s own fields', page.locator('[data-field-name="name"]'), [0.85, 0.5], [860, 232]),
+      note('The form’s own fields', page.getByTestId('pdf-page').first().locator('[data-field-name="name"]'), [0.85, 0.5], [860, 232]),
       note('Add your own text and marks', page.getByTestId('tool-checkbox'), [0, 0.5], [850, 328]),
-      note('Tick boxes', page.locator('[data-field-name="rules"]'), [1, 0.5], [700, null], [190, 0]),
-      note('Draw it or type it', page.getByTestId('field-signature'), [1, 0.5], [800, null])
+      note('Tick boxes', page.getByTestId('pdf-page').first().locator('[data-field-name="rules"]'), [1, 0.5], [700, null], [190, 0]),
+      note('Draw it or type it', page.getByTestId('pdf-page').first().getByTestId('field-signature'), [1, 0.5], [800, null])
     ]
   },
   {
@@ -384,8 +384,8 @@ const scenes = [
     notes: (page) => [
       note('One undo takes it all back', page.getByTestId('undo'), [0, 0.5], [820, 172]),
       note('Menu: Fill a table', page.getByTestId('page-menu'), [0.5, 1], [196, 430]),
-      note('Long text wraps', page.getByTestId('field').nth(21), [0.5, 1], [470, 650]),
-      note('Rows from your own list', page.getByTestId('field').nth(24), [0.5, 1], [780, 650])
+      note('Long text wraps', page.getByTestId('pdf-page').first().getByTestId('field').nth(21), [0.5, 1], [470, 650]),
+      note('Rows from your own list', page.getByTestId('pdf-page').first().getByTestId('field').nth(24), [0.5, 1], [780, 650])
     ]
   },
   {
