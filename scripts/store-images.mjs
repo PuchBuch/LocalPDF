@@ -1,4 +1,5 @@
-// Takes the Chrome Web Store screenshots and draws the promo tiles into store/chrome/.
+// Takes the Chrome Web Store screenshots and draws the promo tiles into store/chrome/, and
+// the pictures of the project page into docs/images/.
 // Runs the built extension (npm run build:extension) in headless Chromium on made-up documents.
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -11,9 +12,13 @@ import { renderIcon } from './make-icons.mjs'
 const ROOT = resolve('.')
 const EXTENSION = join(ROOT, 'out-extension')
 const OUT = join(ROOT, 'store', 'chrome')
+const SITE = join(ROOT, 'docs', 'images')
 const FONTS = join(ROOT, 'src/renderer/public/fonts')
 const BLUE = '#2460c8'
 const NAVY = '#0f2a5c'
+const NOTE = '#ffc247'
+/** Where a screenshot of the 1280×800 window lies in its picture. */
+const SHOT = { x: 104, y: 118, scale: 0.8375 }
 
 GlobalFonts.registerFromPath(join(FONTS, 'Carlito-Bold.ttf'), 'Store Bold')
 GlobalFonts.registerFromPath(join(FONTS, 'Carlito-Regular.ttf'), 'Store')
@@ -84,7 +89,8 @@ async function application() {
   return path
 }
 
-async function scan() {
+/** Paper laid slightly askew, to draw a scan on. */
+function sheet() {
   const canvas = createCanvas(1240, 1754)
   const drawing = canvas.getContext('2d')
   drawing.fillStyle = '#f4f2ec'
@@ -93,23 +99,48 @@ async function scan() {
   drawing.rotate(-0.006)
   drawing.translate(-620, -877)
   drawing.fillStyle = '#26262a'
-  drawing.font = 'bold 56px "Scan Sans"'
-  drawing.fillText('Delivery note 4471', 120, 220)
-  drawing.font = '38px "Scan Sans"'
-  const lines = [
-    'Received from: Maple Street Bakery',
-    'Date: 28 October 2026',
-    '',
-    '12 boxes of paper, A4',
-    '4 toner cartridges',
-    '2 desk lamps',
-    '',
-    'Checked and complete.'
-  ]
-  lines.forEach((line, index) => drawing.fillText(line, 120, 340 + index * 64))
-  const path = join(directory, 'scan.png')
-  await writeFile(path, canvas.toBuffer('image/png'))
+  return { canvas, drawing }
+}
+
+/** A PDF that is only a picture, as scanners make them. A picture itself would be prepared as a page first. */
+async function scanned(canvas, name) {
+  const document = await PDFDocument.create()
+  const page = document.addPage([595, 842])
+  page.drawImage(await document.embedPng(canvas.toBuffer('image/png')), { x: 0, y: 0, width: 595, height: 842 })
+  const path = join(directory, name)
+  await writeFile(path, await document.save())
   return path
+}
+
+const TABLE_COLUMNS = [80, 250, 590, 810, 920, 1160]
+const TABLE_HEADINGS = ['Date', 'Company', 'Contact', 'Kind', 'Result']
+const TABLE_ROWS = [
+  ['02.11.2026', 'Harbor Lane Studio, 14 Harbor Lane, Bayview', 'Anna Reed', '5', 'Waiting'],
+  ['04.11.2026', 'Maple Street Bakery, 3 Maple Street, Bayview', 'Tom Baker', '1', 'Interview on 12.11.'],
+  ['06.11.2026', 'Northgate Print, 21 North Road, Millford', 'Eva Lind', '4', 'Form sent'],
+  ['09.11.2026', 'Bluewater Boats, Pier 7, Bayview', 'Karl Moss', '3', 'Call back'],
+  ['11.11.2026', 'Greenhill Garden Centre, 8 Hill Road, Millford', 'Mia Stone', '5', 'Waiting']
+]
+
+async function tableForm() {
+  const { canvas, drawing } = sheet()
+  drawing.font = 'bold 48px "Scan Sans"'
+  drawing.fillText('Log of applications', 80, 170)
+  drawing.font = '30px "Scan Sans"'
+  drawing.fillText('Please enter one application in each row.', 80, 225)
+  const rows = Array.from({ length: 11 }, (_, row) => 290 + row * 82)
+  drawing.font = 'bold 28px "Scan Sans"'
+  TABLE_HEADINGS.forEach((heading, column) => drawing.fillText(heading, TABLE_COLUMNS[column] + 14, rows[0] + 50))
+  drawing.fillStyle = '#26262a'
+  for (const [index, y] of rows.entries()) {
+    const thick = index === 0 || index === rows.length - 1 ? 6 : 3
+    drawing.fillRect(80 - 3, y - thick / 2, 1080 + 6, thick)
+  }
+  for (const [index, x] of TABLE_COLUMNS.entries()) {
+    const thick = index === 0 || index === TABLE_COLUMNS.length - 1 ? 6 : 3
+    drawing.fillRect(x - thick / 2, rows[0] - 3, thick, rows.at(-1) - rows[0] + 6)
+  }
+  return scanned(canvas, 'log.pdf')
 }
 
 async function report() {
@@ -131,6 +162,25 @@ async function report() {
   const path = join(directory, 'report.pdf')
   await writeFile(path, await document.save())
   return path
+}
+
+async function scan() {
+  const { canvas, drawing } = sheet()
+  drawing.font = 'bold 56px "Scan Sans"'
+  drawing.fillText('Delivery note 4471', 120, 220)
+  drawing.font = '38px "Scan Sans"'
+  const lines = [
+    'Received from: Maple Street Bakery',
+    'Date: 28 October 2026',
+    '',
+    '12 boxes of paper, A4',
+    '4 toner cartridges',
+    '2 desk lamps',
+    '',
+    'Checked and complete.'
+  ]
+  lines.forEach((line, index) => drawing.fillText(line, 120, 340 + index * 64))
+  return scanned(canvas, 'scan.pdf')
 }
 
 async function launch() {
@@ -168,7 +218,7 @@ async function clickPage(page, x, y) {
 }
 
 // A screenshot framed under its headline, as a 1280×800 JPEG: the store takes no transparency.
-async function frame(shot, headline, file) {
+async function frame(shot, { headline, line, store, site }, notes) {
   const canvas = createCanvas(1280, 800)
   const drawing = canvas.getContext('2d')
   drawing.fillStyle = '#e8eef8'
@@ -176,40 +226,104 @@ async function frame(shot, headline, file) {
   drawing.fillStyle = NAVY
   drawing.font = '40px "Store Bold"'
   drawing.textAlign = 'center'
-  drawing.fillText(headline, 640, 66)
+  drawing.fillText(headline, 640, 56)
+  drawing.font = '24px "Store"'
+  drawing.fillText(line, 640, 94)
   const image = await loadImage(shot)
-  const [x, y, width, height] = [80, 104, 1120, 700]
+  const { x, y, scale } = SHOT
+  const [width, height] = [1280 * scale, 800 * scale]
   drawing.save()
   drawing.shadowColor = 'rgba(15, 42, 92, 0.25)'
   drawing.shadowBlur = 24
   drawing.beginPath()
-  drawing.roundRect(x, y, width, height, [12, 12, 0, 0])
+  drawing.roundRect(x, y, width, height, 12)
   drawing.fillStyle = '#ffffff'
   drawing.fill()
   drawing.restore()
   drawing.save()
   drawing.beginPath()
-  drawing.roundRect(x, y, width, height, [12, 12, 0, 0])
+  drawing.roundRect(x, y, width, height, 12)
   drawing.clip()
   drawing.drawImage(image, x, y, width, height)
   drawing.restore()
-  await writeFile(join(OUT, file), canvas.toBuffer('image/jpeg', 92))
+  for (const note of notes) drawNote(drawing, note)
+  const picture = canvas.toBuffer('image/jpeg', 92)
+  if (store) await writeFile(join(OUT, store), picture)
+  if (site) await writeFile(join(SITE, site), picture)
+}
+
+/** A caption with a line to what it is about. */
+function drawNote(drawing, { text, target, at }) {
+  drawing.font = '22px "Store Bold"'
+  const width = drawing.measureText(text).width + 28
+  const height = 38
+  const [left, top] = [at.x - width / 2, at.y - height / 2]
+  const start = {
+    x: Math.min(left + width - 12, Math.max(left + 12, target.x)),
+    y: Math.min(top + height, Math.max(top, target.y))
+  }
+  drawing.save()
+  drawing.strokeStyle = NAVY
+  drawing.fillStyle = NAVY
+  drawing.lineWidth = 3
+  drawing.beginPath()
+  drawing.moveTo(start.x, start.y)
+  drawing.lineTo(target.x, target.y)
+  drawing.stroke()
+  drawing.beginPath()
+  drawing.arc(target.x, target.y, 6, 0, Math.PI * 2)
+  drawing.fill()
+  drawing.fillStyle = NOTE
+  drawing.shadowColor = 'rgba(15, 42, 92, 0.35)'
+  drawing.shadowBlur = 10
+  drawing.beginPath()
+  drawing.roundRect(left, top, width, height, 10)
+  drawing.fill()
+  drawing.restore()
+  drawing.fillStyle = NAVY
+  drawing.textAlign = 'center'
+  drawing.textBaseline = 'middle'
+  drawing.fillText(text, at.x, at.y + 1)
+  drawing.textBaseline = 'alphabetic'
+}
+
+/**
+ * A caption at a place of the picture, for a part of the window: the point is given as shares
+ * of its width and height, and can be moved. Without a height, it is level with that point.
+ */
+async function note(text, locator, [shareX, shareY], [x, y], [moveX, moveY] = [0, 0]) {
+  const box = await locator.boundingBox()
+  if (!box) throw new Error(`Nothing to point at for "${text}"`)
+  const target = {
+    x: SHOT.x + (box.x + box.width * shareX + moveX) * SHOT.scale,
+    y: SHOT.y + (box.y + box.height * shareY + moveY) * SHOT.scale
+  }
+  return { text, target, at: { x, y: y ?? target.y } }
 }
 
 const scenes = [
   {
-    file: '1-edit-text.jpg',
+    store: '1-edit-text.jpg',
+    site: '1-edit-text.jpg',
     headline: 'Edit the text of a PDF, right on the page',
+    line: 'Bold, italic and color carry over. Replaced text is cut out of the saved file.',
     async play(page) {
       await open(page, await invoice())
       await page.getByTestId('tool-edit').click()
       await page.getByRole('button', { name: 'Total due: 1,370.00 EUR', exact: true }).click()
       await page.getByTestId('field-input').fill('Total due: 1,250.00 EUR')
-    }
+    },
+    notes: (page) => [
+      note('Click and type', page.getByTestId('pdf-page').first().getByTestId('field-input'), [0.8, 0], [690, 496], [0, -6]),
+      note('Font, size and color', page.locator('.field-panel.bottom'), [1, 0.5], [710, null], [9, 0]),
+      note('A whole line or one word', page.getByTestId('edit-scope-line'), [0, 0.5], [835, null], [-9, 0])
+    ]
   },
   {
-    file: '2-forms-and-signature.jpg',
+    store: '2-forms-and-signature.jpg',
+    site: '2-forms-and-signature.jpg',
     headline: 'Fill in forms and sign them',
+    line: 'Use the form’s own fields, or place text, marks, pictures and a signature yourself.',
     async play(page) {
       await open(page, await application())
       const widget = (name) => page.locator(`[data-field-name="${name}"]`)
@@ -225,46 +339,89 @@ const scenes = [
       await page.getByTestId('signature-finish').click()
       await page.getByTestId('tool-cursor').click()
       await page.keyboard.press('Escape')
-      await page.mouse.click(1240, 780)
-    }
+      // Away from any control, so that none is shown as chosen.
+      await page.mouse.click(1170, 600)
+    },
+    notes: (page) => [
+      note('The form’s own fields', page.getByTestId('pdf-page').first().locator('[data-field-name="name"]'), [0.85, 0.5], [860, 232]),
+      note('Add your own text and marks', page.getByTestId('tool-checkbox'), [0, 0.5], [845, 328], [-9, 0]),
+      note('Tick boxes', page.getByTestId('pdf-page').first().locator('[data-field-name="rules"]'), [1, 0.5], [700, null], [190, 0]),
+      note('Draw it or type it', page.getByTestId('pdf-page').first().getByTestId('field-signature'), [1, 0.5], [800, null], [12, 0])
+    ]
   },
   {
-    file: '3-recognize-scans.jpg',
+    store: '3-recognize-scans.jpg',
+    site: '3-recognize-scans.jpg',
     headline: 'Make scans searchable, offline, in eight languages',
+    line: 'Text recognition runs inside the extension. Nothing is uploaded.',
     async play(page) {
       await open(page, await scan())
       await page.getByTestId('page-thumbnail').first().click({ button: 'right' })
       await page.getByTestId('recognize').click()
       await page.getByTestId('recognize-this').hover()
-    }
+    },
+    notes: (page) => [
+      note('One page or all of them', page.getByTestId('recognize-this'), [1, 0.5], [780, null]),
+      note('Page menu, or a right click', page.getByTestId('page-menu'), [0.5, 1], [300, 650], [0, 9]),
+      note('The language of the scan', page.getByTestId('ocr-language'), [0, 0.5], [825, null], [-9, 0])
+    ]
   },
   {
-    file: '4-pages.jpg',
+    store: '4-fill-table.jpg',
+    site: '4-fill-table.jpg',
+    headline: 'Fill a table on a scanned form from Excel or CSV',
+    line: 'The cells are found for you, and each value is written into its own.',
+    async play(page) {
+      await open(page, await tableForm())
+      await page.getByTestId('page-menu').click()
+      await page.getByTestId('fill-table').click()
+      const csv = [TABLE_HEADINGS, ...TABLE_ROWS].map((cells) => cells.join(';')).join('\n')
+      await page.getByTestId('table-file').setInputFiles({ name: 'applications.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) })
+      await page.getByTestId('table-skip-heading').check()
+      await page.getByTestId('table-fill').click()
+      await page.getByText(`Cells filled: ${TABLE_ROWS.flat().length}`).waitFor()
+    },
+    notes: (page) => [
+      note('One undo takes it all back', page.getByTestId('undo'), [0, 0.5], [820, null], [-9, 0]),
+      note('Menu: Fill a table', page.getByTestId('page-menu'), [0.5, 1], [208, 430], [0, 9]),
+      note('Long text wraps', page.getByTestId('pdf-page').first().getByTestId('field').nth(21), [0.5, 1], [470, 650], [0, 10]),
+      note('Rows from your own list', page.getByTestId('pdf-page').first().getByTestId('field').nth(24), [0.5, 1], [780, 650], [0, 10])
+    ]
+  },
+  {
+    store: '5-private.jpg',
+    headline: 'No uploads: your files stay on your computer',
+    line: 'No account, no permissions, no network access. Open source.',
+    play: async () => {},
+    notes: (page) => [
+      note('Just choose a file', page.getByTestId('select-file'), [1, 0.5], [1010, null], [9, 0]),
+      note('Eight languages', page.getByTestId('language'), [0, 0.5], [800, null], [-9, 0]),
+      note('Three steps to start', page.getByTestId('first-steps'), [0, 0.5], [235, null], [-9, 0]),
+      note('Guide and answers, offline', page.getByTestId('open-help'), [0, 0.5], [260, null], [-9, 0])
+    ]
+  },
+  {
+    site: '5-pages.jpg',
     headline: 'Reorder, rotate, delete and merge pages',
+    line: 'Photos and scans of pages are straightened and cleaned.',
     async play(page) {
       await open(page, await report())
       await page.getByTestId('rotate-page').nth(2).click()
-    }
-  },
-  {
-    file: '5-private.jpg',
-    headline: 'No permissions, no uploads: your files stay on your computer',
-    async play(page) {
-      await page.getByTestId('language').selectOption('de')
-      await open(page, await invoice())
-    }
+    },
+    notes: (page) => [note('Buttons beside each page', page.getByTestId('page-menu').nth(2), [1, 0.5], [410, null], [9, 0])]
   }
 ]
 
 const only = process.argv[2]
 for (const scene of scenes) {
-  if (only && !scene.file.startsWith(only)) continue
+  if (only && !(scene.store ?? scene.site).startsWith(only)) continue
   const { page, close } = await launch()
   try {
     await scene.play(page)
     await page.waitForTimeout(600)
-    await frame(await page.screenshot(), scene.headline, scene.file)
-    console.log(`Took ${scene.file}`)
+    const notes = await Promise.all(scene.notes(page))
+    await frame(await page.screenshot(), scene, notes)
+    console.log(`Took ${scene.store ?? scene.site}`)
   } finally {
     await close()
   }

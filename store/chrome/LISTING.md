@@ -1,6 +1,6 @@
 # Chrome Web Store listing
 
-What to enter in the Chrome Web Store developer dashboard. Images are in this folder; `node scripts/store-images.mjs` takes them again after `npm run build:extension`.
+What to enter in the Chrome Web Store developer dashboard. Images are in this folder. The "Store images" workflow takes them again in the cloud and offers them as its `store-images` artifact; `node scripts/store-images.mjs` does the same locally after `npm run build:extension`.
 
 ## Package
 
@@ -12,7 +12,7 @@ A German listing is in [LISTING.de.md](LISTING.de.md).
 
 **Name:** LocalPDF (from the manifest)
 
-**Summary** (from the manifest, at most 132 characters):
+**Summary** (from `src/extension/_locales/en`, at most 132 characters):
 
 > Edit PDF files on your computer. Nothing is uploaded: this extension has no permissions and no network access.
 
@@ -29,6 +29,8 @@ A German listing is in [LISTING.de.md](LISTING.de.md).
 > • Keep the look of the document: new text is set in the document's own font when the file holds the letters it needs, and a picker copies the style of any text on the page.
 > • Remove text for real: replaced text is cut out of the saved file, not only covered.
 > • Fill in forms, tick boxes, and sign with a drawn or typed signature.
+> • Fill a table on a scanned form: the cells of a ruled table are found, and rows from an Excel (.xlsx) or CSV file, or pasted from a spreadsheet, are written into its empty rows. One undo takes it all back.
+> • Find fields: blank lines and boxes become fields to fill in.
 > • Add text, pictures and form fields anywhere on a page.
 > • See every field by number, in reading order, and jump to any of them from a list.
 > • Fill a form with any AI chat you choose, without the extension going online: it copies the numbered fields as text, you paste them into the chat yourself, then paste the answer back. Each field is checked, problems are listed, and one undo takes it all back.
@@ -39,14 +41,16 @@ A German listing is in [LISTING.de.md](LISTING.de.md).
 > • Open password-protected PDFs, and keep the protection when saving.
 > • Print, and copy a document's text as Markdown.
 > • Get your work back after a browser crash.
+> • Help inside the extension, offline: a searchable guide and frequent questions in English, German and Russian.
 >
 > The interface is available in English, Deutsch, Français, Español, Italiano, Polski, Українська and Русский.
 >
-> How to use it: click the LocalPDF button in the toolbar, then "Choose a file" and pick a PDF or a picture. Save the result with "Download". "Print" and "Copy text as Markdown" are in the menu of the arrow next to "Download". To make a scan searchable, right-click its page on the left and choose "Recognize text", then "This page" or "All pages". To number the fields, tick "Show numbers" on the right; open "Fields" for the list and for "Copy form for AI" and "Paste AI answer".
+> How to use it: click the LocalPDF button in the toolbar, then "Choose a file" and pick a PDF or a picture. Save the result with "Download". "Print" and "Copy text as Markdown" are in the menu of the arrow next to "Download". The "⋯" button beside a page on the left, or a right-click on the page, has the rest: "Recognize text" makes a scan searchable, "Find fields" adds fields, and "Fill a table…" fills a table from a file. "Help" at the bottom left, or F1, opens the guide. To number the fields, tick "Show numbers" on the right; open "Fields" for the list and for "Copy form for AI" and "Paste AI answer".
 >
 > This is a beta. Check the result before you rely on it, and keep your originals. Some limits:
 > • Text inside pictures and scans cannot be cut out, only covered, and the app warns you.
 > • When a font is not embedded in the file or lacks a letter, edited text uses one of four standard fonts, so an unusual font will look different.
+> • Filling a table needs clear, complete lines, and a word too long for its cell is broken. Old XLS files are not read. Look the result over.
 > • XFA forms and JavaScript in forms are not supported.
 > • PDFs cannot be opened with a double-click in Windows; open them from the extension.
 >
@@ -60,7 +64,7 @@ A German listing is in [LISTING.de.md](LISTING.de.md).
 1. `1-edit-text.jpg`
 2. `2-forms-and-signature.jpg`
 3. `3-recognize-scans.jpg`
-4. `4-pages.jpg`
+4. `4-fill-table.jpg`
 5. `5-private.jpg`
 
 **Small promo tile** (440×280): `promo-small-440x280.jpg`

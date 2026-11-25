@@ -33,9 +33,9 @@ test('prints through a real Windows printer driver', async () => {
     await expect.poll(() => existsSync(PRINTED!), { timeout: 60_000 }).toBe(true)
     await expect(page.getByTestId('download')).toBeEnabled({ timeout: 60_000 })
     await expect(page.getByTestId('notice')).toHaveCount(0)
-    await expect
-      .poll(async () => (await PDFDocument.load(await readFile(PRINTED!))).getPageCount(), { timeout: 60_000 })
-      .toBe(2)
+    // The file is there before the driver has written it, and cannot be read until then.
+    const printedPages = async () => (await PDFDocument.load(await readFile(PRINTED!))).getPageCount()
+    await expect.poll(() => printedPages().catch(() => 0), { timeout: 60_000 }).toBe(2)
   } finally {
     await app.close()
     await rm(directory, { recursive: true, force: true })

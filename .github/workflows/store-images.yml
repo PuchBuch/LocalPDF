@@ -1,0 +1,42 @@
+name: Store images
+
+# Takes the screenshots for the store and the project page in the cloud, on made-up documents,
+# and offers them for download. Nothing is committed: look at them, then put them in place.
+on:
+  pull_request:
+    paths:
+      - scripts/store-images.mjs
+      - .github/workflows/store-images.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - run: npm install --no-audit --no-fund
+
+      - run: npx playwright install chromium
+
+      - run: npm run build:extension
+
+      - run: node scripts/store-images.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-images
+          path: |
+            store/chrome/*.jpg
+            store/chrome/*.png
+            docs/images/*.jpg
+          retention-days: 14

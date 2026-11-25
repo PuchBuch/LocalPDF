@@ -1,6 +1,6 @@
 // Builds the Chrome extension into out-extension/ and packs it for the Chrome Web Store.
 import { execFileSync } from 'node:child_process'
-import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { build } from 'vite'
 import { renderIcon } from './make-icons.mjs'
@@ -18,7 +18,9 @@ const number = prerelease?.split('.').pop()
 const manifest = {
   manifest_version: 3,
   name: 'LocalPDF',
-  description: 'Edit PDF files on your computer. Nothing is uploaded: this extension has no permissions and no network access.',
+  default_locale: 'en',
+  // The store shows it in the language of the visitor, from src/extension/_locales.
+  description: '__MSG_summary__',
   version: number ? `${core}.${number}` : core,
   version_name: version,
   minimum_chrome_version: '116',
@@ -32,6 +34,7 @@ const manifest = {
 }
 await writeFile(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
 await copyFile('src/extension/background.js', join(OUT, 'background.js'))
+await cp('src/extension/_locales', join(OUT, '_locales'), { recursive: true })
 
 await mkdir(join(OUT, 'icons'), { recursive: true })
 for (const size of ICON_SIZES) await writeFile(join(OUT, 'icons', `${size}.png`), await renderIcon(size))
