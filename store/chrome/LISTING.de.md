@@ -2,7 +2,7 @@
 
 The German texts for the Chrome Web Store developer dashboard. Choose **Deutsch** under **Store listing**, then fill in the fields below. Images, the package and the privacy answers are the same as in [LISTING.md](LISTING.md).
 
-The store takes the summary from the manifest, which is in English only. To show this German summary, the extension needs a `_locales/de/messages.json`. Until then, the dashboard shows the English summary for German too.
+The store takes the summary from `src/extension/_locales/de`, from 0.9.0-beta.14 on. Earlier packages have the English summary only.
 
 ## Store listing
 
@@ -20,6 +20,7 @@ The store takes the summary from the manifest, which is in English only. To show
 >
 > Was Sie tun können:
 > • Formulare ausfüllen, Kästchen ankreuzen und mit gezeichneter oder getippter Unterschrift unterschreiben.
+> • Eine Tabelle auf einem gescannten Formular ausfüllen: Die Zellen einer linierten Tabelle werden gefunden, und Zeilen aus einer Excel- (.xlsx) oder CSV-Datei oder aus einer Tabelle eingefügt kommen in ihre leeren Zeilen. Ein Rückgängig nimmt alles zurück.
 > • Felder finden: leere Linien und Kästchen werden zu Feldern zum Ausfüllen.
 > • Jedes Feld nummeriert sehen, in Lesereihenfolge, und aus einer Liste direkt hinspringen.
 > • Ein Formular mit einem KI-Chat Ihrer Wahl ausfüllen, ohne dass die Erweiterung online geht: Sie kopiert die nummerierten Felder als Text, Sie fügen ihn selbst in den Chat ein und die Antwort wieder zurück. Jedes Feld wird geprüft, Probleme werden aufgelistet, und ein Rückgängig nimmt alles zurück.
@@ -34,14 +35,16 @@ The store takes the summary from the manifest, which is in English only. To show
 > • Passwortgeschützte PDFs öffnen und den Schutz beim Speichern behalten.
 > • Drucken und den Text eines Dokuments als Markdown kopieren.
 > • Ihre Arbeit nach einem Browserabsturz zurückbekommen.
+> • Hilfe in der Erweiterung, ohne Internet: durchsuchbare Anleitung und häufige Fragen auf Deutsch, Englisch und Russisch.
 >
 > Die Oberfläche gibt es auf Deutsch, English, Français, Español, Italiano, Polski, Українська und Русский.
 >
-> So geht es: Klicken Sie in der Symbolleiste auf LocalPDF, dann auf „Datei auswählen“, und wählen Sie ein PDF oder ein Bild. Speichern Sie das Ergebnis mit „Herunterladen“. „Drucken“ und „Text als Markdown kopieren“ finden Sie im Menü des Pfeils neben „Herunterladen“. Um einen Scan durchsuchbar zu machen, klicken Sie links mit der rechten Maustaste auf seine Seite und wählen „Text erkennen“, dann „Diese Seite“ oder „Alle Seiten“. Um die Felder zu nummerieren, setzen Sie rechts das Häkchen bei „Nummern anzeigen“; unter „Felder“ finden Sie die Liste sowie „Formular für KI kopieren“ und „KI-Antwort einfügen“.
+> So geht es: Klicken Sie in der Symbolleiste auf LocalPDF, dann auf „Datei auswählen“, und wählen Sie ein PDF oder ein Bild. Speichern Sie das Ergebnis mit „Herunterladen“. „Drucken“ und „Text als Markdown kopieren“ finden Sie im Menü des Pfeils neben „Herunterladen“. Das Übrige bietet links die Schaltfläche „⋯“ neben einer Seite oder ein Rechtsklick auf die Seite: „Text erkennen“ macht einen Scan durchsuchbar, „Felder finden“ fügt Felder ein, „Tabelle ausfüllen…“ füllt eine Tabelle aus einer Datei. „Hilfe“ unten links oder F1 öffnet die Anleitung. Um die Felder zu nummerieren, setzen Sie rechts das Häkchen bei „Nummern anzeigen“; unter „Felder“ finden Sie die Liste sowie „Formular für KI kopieren“ und „KI-Antwort einfügen“.
 >
 > Dies ist eine Beta. Prüfen Sie das Ergebnis, bevor Sie sich darauf verlassen, und behalten Sie Ihre Originale. Einige Grenzen:
 > • Text in Bildern und Scans kann nicht herausgeschnitten, nur überdeckt werden, und die Erweiterung weist Sie darauf hin.
 > • Ist eine Schrift nicht in die Datei eingebettet oder fehlt ihr ein Buchstabe, wird bearbeiteter Text in einer von vier Standardschriften gesetzt, und eine ungewöhnliche Schrift sieht dann anders aus.
+> • Das Ausfüllen einer Tabelle braucht klare, vollständige Linien, und ein für die Zelle zu langes Wort wird getrennt. Alte XLS-Dateien werden nicht gelesen. Sehen Sie das Ergebnis durch.
 > • XFA-Formulare und JavaScript in Formularen werden nicht unterstützt.
 > • PDFs lassen sich in Windows nicht per Doppelklick öffnen; öffnen Sie sie über die Erweiterung.
 >

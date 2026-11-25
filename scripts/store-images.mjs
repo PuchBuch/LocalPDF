@@ -84,7 +84,8 @@ async function application() {
   return path
 }
 
-async function scan() {
+/** Paper laid slightly askew, to draw a scan on. */
+function sheet() {
   const canvas = createCanvas(1240, 1754)
   const drawing = canvas.getContext('2d')
   drawing.fillStyle = '#f4f2ec'
@@ -93,6 +94,52 @@ async function scan() {
   drawing.rotate(-0.006)
   drawing.translate(-620, -877)
   drawing.fillStyle = '#26262a'
+  return { canvas, drawing }
+}
+
+/** A PDF that is only a picture, as scanners make them. A picture itself would be prepared as a page first. */
+async function scanned(canvas, name) {
+  const document = await PDFDocument.create()
+  const page = document.addPage([595, 842])
+  page.drawImage(await document.embedPng(canvas.toBuffer('image/png')), { x: 0, y: 0, width: 595, height: 842 })
+  const path = join(directory, name)
+  await writeFile(path, await document.save())
+  return path
+}
+
+const TABLE_COLUMNS = [80, 250, 590, 810, 920, 1160]
+const TABLE_HEADINGS = ['Date', 'Company', 'Contact', 'Kind', 'Result']
+const TABLE_ROWS = [
+  ['02.11.2026', 'Harbor Lane Studio, 14 Harbor Lane, Bayview', 'Anna Reed', '5', 'Waiting'],
+  ['04.11.2026', 'Maple Street Bakery, 3 Maple Street, Bayview', 'Tom Baker', '1', 'Interview on 12.11.'],
+  ['06.11.2026', 'Northgate Print, 21 North Road, Millford', 'Eva Lind', '4', 'Form sent'],
+  ['09.11.2026', 'Bluewater Boats, Pier 7, Bayview', 'Karl Moss', '3', 'Call back'],
+  ['11.11.2026', 'Greenhill Garden Centre, 8 Hill Road, Millford', 'Mia Stone', '5', 'Waiting']
+]
+
+async function tableForm() {
+  const { canvas, drawing } = sheet()
+  drawing.font = 'bold 48px "Scan Sans"'
+  drawing.fillText('Log of applications', 80, 170)
+  drawing.font = '30px "Scan Sans"'
+  drawing.fillText('Please enter one application in each row.', 80, 225)
+  const rows = Array.from({ length: 11 }, (_, row) => 290 + row * 82)
+  drawing.font = 'bold 28px "Scan Sans"'
+  TABLE_HEADINGS.forEach((heading, column) => drawing.fillText(heading, TABLE_COLUMNS[column] + 14, rows[0] + 50))
+  drawing.fillStyle = '#26262a'
+  for (const [index, y] of rows.entries()) {
+    const thick = index === 0 || index === rows.length - 1 ? 6 : 3
+    drawing.fillRect(80 - 3, y - thick / 2, 1080 + 6, thick)
+  }
+  for (const [index, x] of TABLE_COLUMNS.entries()) {
+    const thick = index === 0 || index === TABLE_COLUMNS.length - 1 ? 6 : 3
+    drawing.fillRect(x - thick / 2, rows[0] - 3, thick, rows.at(-1) - rows[0] + 6)
+  }
+  return scanned(canvas, 'log.pdf')
+}
+
+async function scan() {
+  const { canvas, drawing } = sheet()
   drawing.font = 'bold 56px "Scan Sans"'
   drawing.fillText('Delivery note 4471', 120, 220)
   drawing.font = '38px "Scan Sans"'
@@ -107,30 +154,7 @@ async function scan() {
     'Checked and complete.'
   ]
   lines.forEach((line, index) => drawing.fillText(line, 120, 340 + index * 64))
-  const path = join(directory, 'scan.png')
-  await writeFile(path, canvas.toBuffer('image/png'))
-  return path
-}
-
-async function report() {
-  const document = await PDFDocument.create()
-  const regular = await document.embedFont(StandardFonts.Helvetica)
-  const bold = await document.embedFont(StandardFonts.HelveticaBold)
-  const colors = [rgb(0.14, 0.38, 0.78), rgb(0.96, 0.65, 0.14), rgb(0.13, 0.65, 0.38), rgb(0.55, 0.36, 0.78)]
-  const titles = ['Annual report', 'Visitors', 'Events', 'Budget']
-  titles.forEach((title, index) => {
-    const page = document.addPage([595, 842])
-    page.drawText(title, { x: 60, y: 760, size: 26, font: bold })
-    page.drawText(`Page ${index + 1} of the community centre report`, { x: 60, y: 730, size: 12, font: regular })
-    for (let bar = 0; bar < 5; bar++) {
-      const height = 80 + ((index * 37 + bar * 53) % 220)
-      page.drawRectangle({ x: 80 + bar * 90, y: 360, width: 56, height, color: colors[index] })
-    }
-    page.drawLine({ start: { x: 60, y: 358 }, end: { x: 535, y: 358 }, thickness: 1, color: rgb(0.5, 0.5, 0.5) })
-  })
-  const path = join(directory, 'report.pdf')
-  await writeFile(path, await document.save())
-  return path
+  return scanned(canvas, 'scan.pdf')
 }
 
 async function launch() {
@@ -239,11 +263,17 @@ const scenes = [
     }
   },
   {
-    file: '4-pages.jpg',
-    headline: 'Reorder, rotate, delete and merge pages',
+    file: '4-fill-table.jpg',
+    headline: 'Fill a table on a scanned form from Excel or CSV',
     async play(page) {
-      await open(page, await report())
-      await page.getByTestId('rotate-page').nth(2).click()
+      await open(page, await tableForm())
+      await page.getByTestId('page-menu').click()
+      await page.getByTestId('fill-table').click()
+      const csv = [TABLE_HEADINGS, ...TABLE_ROWS].map((cells) => cells.join(';')).join('\n')
+      await page.getByTestId('table-file').setInputFiles({ name: 'applications.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) })
+      await page.getByTestId('table-skip-heading').check()
+      await page.getByTestId('table-fill').click()
+      await page.getByText(`Cells filled: ${TABLE_ROWS.flat().length}`).waitFor()
     }
   },
   {

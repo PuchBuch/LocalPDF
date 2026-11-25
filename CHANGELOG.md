@@ -4,6 +4,8 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 
 ## Unreleased
 
+- The browser extension has a German summary for the stores. The privacy policy covers feedback and the files a table is filled from.
+
 ## 0.9.0-beta.13 (2026-11-24)
 
 - "Copy form for AI" lists for each group of radio buttons only its own options, and an answer with an option of another group is no longer taken.

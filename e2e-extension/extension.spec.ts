@@ -120,6 +120,12 @@ test('asks for no permissions and allows no outside connections', async () => {
   expect(manifest.optional_permissions).toBeUndefined()
   expect(manifest.content_scripts).toBeUndefined()
   expect(manifest.version).toMatch(/^\d+(\.\d+){0,3}$/)
+  expect(manifest.default_locale).toBe('en')
+  expect(manifest.description).toBe('__MSG_summary__')
+  for (const locale of ['en', 'de']) {
+    const { summary } = JSON.parse(await readFile(join(EXTENSION, '_locales', locale, 'messages.json'), 'utf8'))
+    expect(summary.message.length).toBeGreaterThan(0)
+  }
   const policy: string = manifest.content_security_policy.extension_pages
   expect(policy).toContain("connect-src 'self' blob: data:")
   expect(policy).toContain("default-src 'self'")
