@@ -271,7 +271,7 @@ function drawNote(drawing, { text, target, at }) {
   drawing.lineTo(target.x, target.y)
   drawing.stroke()
   drawing.beginPath()
-  drawing.arc(target.x, target.y, 7, 0, Math.PI * 2)
+  drawing.arc(target.x, target.y, 6, 0, Math.PI * 2)
   drawing.fill()
   drawing.fillStyle = NOTE
   drawing.shadowColor = 'rgba(15, 42, 92, 0.35)'
@@ -314,9 +314,9 @@ const scenes = [
       await page.getByTestId('field-input').fill('Total due: 1,250.00 EUR')
     },
     notes: (page) => [
-      note('Click and type', page.getByTestId('pdf-page').first().getByTestId('field-input'), [0.8, 0], [690, 496]),
-      note('Font, size and color', page.locator('.field-panel.bottom'), [1, 0.5], [700, null]),
-      note('A whole line or one word', page.getByTestId('edit-scope-line'), [0, 0.5], [840, null])
+      note('Click and type', page.getByTestId('pdf-page').first().getByTestId('field-input'), [0.8, 0], [690, 496], [0, -6]),
+      note('Font, size and color', page.locator('.field-panel.bottom'), [1, 0.5], [710, null], [9, 0]),
+      note('A whole line or one word', page.getByTestId('edit-scope-line'), [0, 0.5], [835, null], [-9, 0])
     ]
   },
   {
@@ -344,9 +344,9 @@ const scenes = [
     },
     notes: (page) => [
       note('The form’s own fields', page.getByTestId('pdf-page').first().locator('[data-field-name="name"]'), [0.85, 0.5], [860, 232]),
-      note('Add your own text and marks', page.getByTestId('tool-checkbox'), [0, 0.5], [850, 328]),
+      note('Add your own text and marks', page.getByTestId('tool-checkbox'), [0, 0.5], [845, 328], [-9, 0]),
       note('Tick boxes', page.getByTestId('pdf-page').first().locator('[data-field-name="rules"]'), [1, 0.5], [700, null], [190, 0]),
-      note('Draw it or type it', page.getByTestId('pdf-page').first().getByTestId('field-signature'), [1, 0.5], [800, null])
+      note('Draw it or type it', page.getByTestId('pdf-page').first().getByTestId('field-signature'), [1, 0.5], [800, null], [12, 0])
     ]
   },
   {
@@ -362,8 +362,8 @@ const scenes = [
     },
     notes: (page) => [
       note('One page or all of them', page.getByTestId('recognize-this'), [1, 0.5], [780, null]),
-      note('Page menu, or a right click', page.getByTestId('page-menu'), [0.5, 1], [300, 560]),
-      note('The language of the scan', page.getByTestId('ocr-language'), [0, 0.5], [830, null])
+      note('Page menu, or a right click', page.getByTestId('page-menu'), [0.5, 1], [300, 650], [0, 9]),
+      note('The language of the scan', page.getByTestId('ocr-language'), [0, 0.5], [825, null], [-9, 0])
     ]
   },
   {
@@ -382,10 +382,10 @@ const scenes = [
       await page.getByText(`Cells filled: ${TABLE_ROWS.flat().length}`).waitFor()
     },
     notes: (page) => [
-      note('One undo takes it all back', page.getByTestId('undo'), [0, 0.5], [820, 172]),
-      note('Menu: Fill a table', page.getByTestId('page-menu'), [0.5, 1], [196, 430]),
-      note('Long text wraps', page.getByTestId('pdf-page').first().getByTestId('field').nth(21), [0.5, 1], [470, 650]),
-      note('Rows from your own list', page.getByTestId('pdf-page').first().getByTestId('field').nth(24), [0.5, 1], [780, 650])
+      note('One undo takes it all back', page.getByTestId('undo'), [0, 0.5], [820, null], [-9, 0]),
+      note('Menu: Fill a table', page.getByTestId('page-menu'), [0.5, 1], [208, 430], [0, 9]),
+      note('Long text wraps', page.getByTestId('pdf-page').first().getByTestId('field').nth(21), [0.5, 1], [470, 650], [0, 10]),
+      note('Rows from your own list', page.getByTestId('pdf-page').first().getByTestId('field').nth(24), [0.5, 1], [780, 650], [0, 10])
     ]
   },
   {
@@ -394,10 +394,10 @@ const scenes = [
     line: 'No account, no permissions, no network access. Open source.',
     play: async () => {},
     notes: (page) => [
-      note('Just choose a file', page.getByTestId('select-file'), [1, 0.5], [1010, null]),
-      note('Eight languages', page.getByTestId('language'), [0, 0.5], [800, null]),
-      note('Three steps to start', page.getByTestId('first-steps'), [0, 0.5], [235, null]),
-      note('Guide and answers, offline', page.getByTestId('open-help'), [0, 0.5], [260, null])
+      note('Just choose a file', page.getByTestId('select-file'), [1, 0.5], [1010, null], [9, 0]),
+      note('Eight languages', page.getByTestId('language'), [0, 0.5], [800, null], [-9, 0]),
+      note('Three steps to start', page.getByTestId('first-steps'), [0, 0.5], [235, null], [-9, 0]),
+      note('Guide and answers, offline', page.getByTestId('open-help'), [0, 0.5], [260, null], [-9, 0])
     ]
   },
   {
@@ -408,7 +408,7 @@ const scenes = [
       await open(page, await report())
       await page.getByTestId('rotate-page').nth(2).click()
     },
-    notes: () => []
+    notes: (page) => [note('Buttons beside each page', page.getByTestId('page-menu').nth(2), [1, 0.5], [410, null], [9, 0])]
   }
 ]
 
