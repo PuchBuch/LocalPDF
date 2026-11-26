@@ -19,6 +19,7 @@ import { buildPdf, type ExportFonts } from '../src/export/buildPdf'
 import { pagesWithLeftoverText, pageTextLines, type ContentPage } from '../src/export/extractContent'
 import { dropUnreachableObjects, removeTextInAreas } from '../src/export/removeText'
 import { loadFonts, makeTwoColorPng, openPdf, renderPage, singlePageDocument } from './helpers'
+import { privateSample } from './privateSamples'
 
 const ROOT = resolve(__dirname, '..')
 
@@ -487,7 +488,7 @@ describe('with other parts of a document', () => {
   })
 })
 
-describe.skipIf(!existsSync(join(ROOT, 'samples/private/sample-letter.pdf')))('on real documents', () => {
+describe.skipIf(!privateSample('sample-letter.pdf') || !privateSample('sample-cv.pdf'))('on real documents', () => {
   it.each(['sample-letter.pdf', 'sample-cv.pdf'])('%s: a line leaves, everything else stays', async (name) => {
     const bytes = new Uint8Array(await readFile(join(ROOT, 'samples/private', name)))
     const lines = await linesOf(bytes)

@@ -88,7 +88,7 @@ If Electron crashes with `Cannot read properties of undefined (reading 'isPackag
 - `src/main`, `src/preload`: the Electron process and a narrow bridge to the interface.
 - `src/renderer`: the React interface. Texts are in `src/renderer/src/i18n`.
 - `src/extension`: the same interface as a Chrome extension, with browser APIs in place of the Electron bridge.
-- `tests`, `e2e`, `e2e-extension`: tests. Documents for manual checks go in `samples/private/`, which git ignores.
+- `tests`, `e2e`, `e2e-extension`: tests. Documents for manual checks go in `samples/private/`, which git ignores. Tests read them only with `LOCALPDF_PRIVATE_SAMPLES=1` set, so that personal documents there are never opened by chance.
 
 Tinos, Carlito and Cousine are embedded whole rather than as a subset, because cutting them down loses most of their letters while the text still reads fine to software. Check any new font in pixels, as `tests/word-and-font.test.ts` does.
 

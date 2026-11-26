@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { expect, test, type ElectronApplication, type Page } from '@playwright/test'
 import { PDFDocument } from 'pdf-lib'
 import { answerFileDialog, canvasHasInk, launchApp, ROOT, writePdf } from './harness'
+import { PRIVATE_SKIP, privateSample } from '../tests/privateSamples'
 
 const PRIVATE_SAMPLE = join(ROOT, 'samples/private/sample-letter.pdf')
 
@@ -260,7 +261,7 @@ test('New file returns to the empty screen', async () => {
 })
 
 test('shows a real document', async () => {
-  test.skip(!existsSync(PRIVATE_SAMPLE), 'private sample is not present')
+  test.skip(!privateSample('sample-letter.pdf'), PRIVATE_SKIP)
   await openWithDialog(PRIVATE_SAMPLE)
   await expect(page.getByTestId('pdf-page')).toHaveCount(2)
   await expect(page.locator('.textLayer').first()).toContainText('Bewerbung')

@@ -3,8 +3,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { answerFileDialog, launchApp, ROOT } from './harness'
+import { PRIVATE_SKIP, privateSample } from '../tests/privateSamples'
 
-// Real scans with the text they hold, from Tesseract's own tests, kept outside git.
+// Real scans with the text they hold, from Tesseract's own tests, kept outside git: only with LOCALPDF_PRIVATE_SAMPLES=1.
 const FOLDER = join(ROOT, 'samples', 'private', 'corpus', 'scans')
 const OUT = join(ROOT, 'samples', 'private', 'out')
 
@@ -29,7 +30,7 @@ for (const [image, truth, language, limit] of [
   ['eurotext.png', 'eurotext.txt', 'de', 0.1]
 ] as const) {
   test(`reads ${image} in ${language}`, async () => {
-    test.skip(!existsSync(join(FOLDER, image)), 'the scans are not here')
+    test.skip(!privateSample('corpus', 'scans', image), PRIVATE_SKIP)
     test.setTimeout(180_000)
     const { app, page } = await launchApp({ locale: 'ru' })
     try {

@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test, type ElectronApplication, type Page } from '@playwright/test'
 import { PDFDocument } from 'pdf-lib'
+import { PRIVATE_SKIP, privateSample } from '../tests/privateSamples'
 import {
   answerFileDialog,
   answerSaveDialog,
@@ -510,7 +511,7 @@ test('saving over a file held open elsewhere never leaves it damaged', async () 
 
 test('adds fields to a real document and saves it', async () => {
   const sample = join(ROOT, 'samples/private/sample-letter.pdf')
-  test.skip(!existsSync(sample), 'private sample is not present')
+  test.skip(!privateSample('sample-letter.pdf'), PRIVATE_SKIP)
   await answerFileDialog(app, [sample])
   await page.getByTestId('select-file').click()
   await expect(pages()).toHaveCount(2)

@@ -7,8 +7,9 @@ import { toFormWidget, type FormWidget, type WidgetAnnotation } from '../src/cor
 import type { EditorDocument, FormValue, PageRef } from '../src/core/model'
 import { buildPdf } from '../src/export/buildPdf'
 import { loadFonts, openPdf, renderPage } from './helpers'
+import { privateSample } from './privateSamples'
 
-// Real government forms, kept outside git. Skipped when they are not present.
+// Real government forms, kept outside git, only with LOCALPDF_PRIVATE_SAMPLES=1.
 const FOLDER = resolve(__dirname, '../samples/private/corpus/forms')
 const OUT = resolve(__dirname, '../samples/private/out/forms')
 
@@ -37,7 +38,7 @@ async function widgetsOf(pdf: Awaited<ReturnType<typeof openPdf>>) {
   return { all, counts }
 }
 
-const names = existsSync(FOLDER) ? (await readdir(FOLDER)).filter((name) => name.endsWith('.pdf')) : []
+const names = privateSample('corpus', 'forms') ? (await readdir(FOLDER)).filter((name) => name.endsWith('.pdf')) : []
 
 describe.skipIf(names.length === 0)('real government forms', () => {
   it.each(names)('%s: every kind of field can be filled in and saved', { timeout: 120_000 }, async (name) => {
