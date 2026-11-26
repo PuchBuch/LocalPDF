@@ -6,8 +6,9 @@ import { describe, expect, it } from 'vitest'
 import { buildPdf } from '../src/export/buildPdf'
 import type { EditorDocument } from '../src/core/model'
 import { loadFonts, readDisplayedText, renderPage } from './helpers'
+import { privateSample } from './privateSamples'
 
-// Checks on real documents kept outside git. Skipped when they are not present.
+// Checks on real documents kept outside git, only with LOCALPDF_PRIVATE_SAMPLES=1.
 const ROOT = resolve(__dirname, '..')
 const SAMPLES = join(ROOT, 'samples/private')
 const LEBENSLAUF = join(SAMPLES, 'sample-cv.pdf')
@@ -25,7 +26,7 @@ function makeTestSignature(): Uint8Array {
   return new Uint8Array(canvas.toBuffer('image/png'))
 }
 
-describe.skipIf(!existsSync(LEBENSLAUF) || !existsSync(ANSCHREIBEN))('real documents', () => {
+describe.skipIf(!privateSample('sample-cv.pdf') || !privateSample('sample-letter.pdf'))('real documents', () => {
   it('merges both files and adds fields', async () => {
     const fonts = await loadFonts()
     const document: EditorDocument = {

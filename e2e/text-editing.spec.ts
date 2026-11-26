@@ -8,6 +8,7 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { cmapTable, rebuildFont } from '../src/export/documentFont'
 import { safeFontkit } from '../src/export/safeFontkit'
 import { answerFileDialog, answerSaveDialog, canvasHasInk, expectSavedMatchesScreen, inkBox, launchApp, ROOT } from './harness'
+import { PRIVATE_SKIP, privateSample } from '../tests/privateSamples'
 
 const OUT = join(ROOT, 'samples', 'private', 'out')
 const SAMPLE = join(ROOT, 'samples', 'private', 'sample-letter.pdf')
@@ -497,7 +498,7 @@ test.describe('keeping the look of the line', () => {
 })
 
 test('on a real document', async () => {
-  test.skip(!existsSync(SAMPLE), 'the personal sample is not here')
+  test.skip(!privateSample('sample-letter.pdf'), PRIVATE_SKIP)
   await openDocument(SAMPLE)
   await page.getByTestId('tool-edit').click()
   await expect(lines().first()).toBeVisible()
