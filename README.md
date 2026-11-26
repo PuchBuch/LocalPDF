@@ -35,7 +35,7 @@ To open PDFs with a double-click, right-click a PDF, then **Open with**, **Choos
 
 ## Chrome extension
 
-The same editor also runs as a Chrome extension. It asks for no permissions and allows no outside connections. It is not in the Chrome Web Store yet. To try it, run `npm run build:extension`, open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked** and pick the `out-extension` folder.
+The same editor also runs as a Chrome extension. It asks for no permissions and allows no outside connections. Install it from the [Chrome Web Store](https://chromewebstore.google.com/detail/bhcdhcbnlichfpnigpoeiennmhfpblph). To build it yourself, run `npm run build:extension`, open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked** and pick the `out-extension` folder.
 
 It differs from the Windows app in a few ways:
 

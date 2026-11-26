@@ -4,6 +4,8 @@ Every fix or change adds a line under **Unreleased**. Once a week `node scripts/
 
 ## Unreleased
 
+- The browser extension is in the Chrome Web Store; the project page and the READMEs link to it.
+
 ## 0.9.0-beta.14 (2026-11-25)
 
 - The browser extension has a German summary for the stores. The privacy policy covers feedback and the files a table is filled from.

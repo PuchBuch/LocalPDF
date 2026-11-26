@@ -35,7 +35,7 @@ Um PDFs per Doppelklick zu öffnen: Rechtsklick auf ein PDF → **Öffnen mit** 
 
 ## Browser-Erweiterung
 
-Derselbe Editor läuft auch als Erweiterung für Chrome und Edge. Sie verlangt keine Berechtigungen und lässt keine Verbindungen nach außen zu. In den Stores ist sie noch nicht. Zum Ausprobieren: `npm run build:extension` ausführen, `chrome://extensions` öffnen, den **Entwicklermodus** einschalten, **Entpackte Erweiterung laden** wählen und den Ordner `out-extension` auswählen.
+Derselbe Editor läuft auch als Erweiterung für Chrome und Edge. Sie verlangt keine Berechtigungen und lässt keine Verbindungen nach außen zu. Installieren Sie sie aus dem [Chrome Web Store](https://chromewebstore.google.com/detail/bhcdhcbnlichfpnigpoeiennmhfpblph). Zum Selbstbauen: `npm run build:extension` ausführen, `chrome://extensions` öffnen, den **Entwicklermodus** einschalten, **Entpackte Erweiterung laden** wählen und den Ordner `out-extension` auswählen.
 
 Von der Windows-App unterscheidet sie sich so:
 
